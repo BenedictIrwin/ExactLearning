@@ -1,8 +1,8 @@
 Here is a clean version of the script:
 
-Step 1: python ... .py
+Step 1: python generate_simple.py
 
-Step 2: python ... .py
+Step 2: python fit_gammas.py
 
 
 
