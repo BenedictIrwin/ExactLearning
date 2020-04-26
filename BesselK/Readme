@@ -1,0 +1,3 @@
+This directory has the files for attempting to fit a BesselK[0,x] function. 
+The problem with this is that there is an infinity at x=0, so this is not a distribution, but it has nice moments in terms of gamam functions
+I.e. 2^(s-2)Gamma[s/2]^2 
