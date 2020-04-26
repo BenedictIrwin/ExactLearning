@@ -1,3 +1,25 @@
 This directory has the files for attempting to fit a BesselK[0,x] function. 
 The problem with this is that there is an infinity at x=0, so this is not a distribution, but it has nice moments in terms of gamam functions
 I.e. 2^(s-2)Gamma[s/2]^2 
+
+The output is (subject to random): 
+
+[1.51428095 0.32285122 0.44921704 2.13583531]
+1.5113251767001423
+      fun: 1.511325176700141
+ hess_inv: array([[ 0.05600085, -0.03795967, -0.02561352,  0.07494793],
+       [-0.03795967,  0.02576719,  0.01738207, -0.05067541],
+       [-0.02561352,  0.01738207,  0.01173915, -0.03422763],
+       [ 0.07494793, -0.05067541, -0.03422763,  0.10175251]])
+      jac: array([-2.83122063e-07, -2.65240669e-06,  3.15904617e-06,  8.94069672e-08])
+  message: 'Optimization terminated successfully.'
+     nfev: 396
+      nit: 55
+     njev: 66
+   status: 0
+  success: True
+        x: array([1.51428095, 0.32285122, 0.44921704, 2.1358353 ])
+Final Loss: 1.511325176700141
+
+
+The ideal parameter vector is [sqrt(2),1/2,1/2,2] fdor the exact moments. The output is [1.5,0.32,0.45,2.1] which is close. 
