@@ -9,3 +9,25 @@ for example the prescence of a term gamma(1/2 + s/2).
 
 In this solution we had to introduce a polynomial alongside the generalised form shown in the paper, which adds additional flexibility.
 This is only a second order polynomial and it uses 3 of the 7 coefficients.
+
+python python_solve.py
+python fit_gammas_H4.py
+
+Final Parameters for an example run: 
+[ 3.61621187e-01  1.18918735e+00  5.00008946e-01  5.73389270e-06
+  1.75882982e+00 -2.34512799e+00  2.34506510e+00]
+7.906546898658158e-10
+
+we can see that p[2] = 1/2.
+
+For another run we found 
+
+[ 0.34648851,  1.18917214,  0.50001699,  0.50004459,  3.99839001, -2.28486871, 2.28477497]
+
+Where both p[2] and p[3] = 1/2, also p[4] is close to 4
+In both cases p[5] = - p[6] which indicates another constant could be removed. 
+
+We can rerun as: p = [p[0],p[1],1/2,1/2,4,p[2],-p[2]] which requires only 3 parameters.
+
+
+
