@@ -1,6 +1,8 @@
 import numpy as np
 
 ### Cite the python notebook example
+### Grabbed some code here from
+### https://github.com/mholtrop/QMPython/blob/master/Harmonic%20Oscillator.ipynb
 
 hbar=1
 m=1
