@@ -1,0 +1,11 @@
+Here we have a mini-project to 'learn' the n=4 wavefunction for the time-independant schrodinger equation.
+We first solve the equation numerically (of course the solutions are known, but we pretend we do not know them)
+Next we numerically integrate the complex moments of the numeric solution
+We transport these complex moments to the exact learning script
+
+The script uses BFGS to fit a 7 parameter form to the log-moments and the loss comes out at around 1e-9 showing a great fit.
+The fitted parameters have very clear structure that translates directly into mathematical understanding of the solution, 
+for example the prescence of a term gamma(1/2 + s/2).
+
+In this solution we had to introduce a polynomial alongside the generalised form shown in the paper, which adds additional flexibility.
+This is only a second order polynomial and it uses 3 of the 7 coefficients.
