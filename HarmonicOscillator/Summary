@@ -29,5 +29,15 @@ In both cases p[5] = - p[6] which indicates another constant could be removed.
 
 We can rerun as: p = [p[0],p[1],1/2,1/2,4,p[2],-p[2]] which requires only 3 parameters.
 
+N.B.
 
+I have now sped up the fitting mechanism so it only takes a few seconds 
+and appears to give 6 significant figures of accuracy for this test.
 
+        x: array([5.65426304e-01, 1.41421157e+00, 2.78081874e-07, 5.00000433e-01,
+       7.19359190e-01, 9.59148917e-01, 9.59148480e-01])
+Final Loss: 0.043983083370040296
+
+Note the sqrt(2) appearing, 0, 0.5.
+
+We can now perform a variational method to get some of the other constants
