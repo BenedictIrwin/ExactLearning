@@ -7,7 +7,7 @@ Within each directory is an example of fitting a function using the algorithm an
 Update:
 Had a nice improvement by including a closed form suggestion for solved parameters: 
 
-
+```
 *** Assembling Dictionary ***
 *** Loading Data ***
 *** Initial Guess ***
@@ -29,5 +29,5 @@ p[2] ~ 0 : i.e. 0.00019581360916189755 ~ 0.0
 p[3] ~ recip(2) : i.e. 0.5000337654908391 ~ 0.5
 p[4] ~ diff(0,quot(4,3)) : i.e. -1.3330751254138067 ~ -1.3333333333333333
 p[5] ~ diff(2,quot(2,3)) : i.e. 1.3334209495203304 ~ 1.3333333333333335
-
+```
 All of these steps apart from p[0] are actually correct (just a little convoluted) for this solution.
