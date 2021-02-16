@@ -1,0 +1,5 @@
+This is an Object Oriented Implementation of an 'ExactEstimator' class. 
+This will read in moments and try a sequence of fits according to prewritten collections of gamma functions ('fingerprints')
+
+Recent updates to include hypergeometric terms as well in the fit using the mpmath library. 
+
