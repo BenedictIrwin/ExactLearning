@@ -1,3 +1,5 @@
+### For the demo/walkthrough pertaining to the most recent journal submission, please see ExactLearning.zip
+
 # ExactLearning
 Algorithms to exactly learn analytic functions given numerical data
 
