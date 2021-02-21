@@ -1,4 +1,4 @@
-### For the demo/walkthrough pertaining to the most recent journal submission, please see ExactLearning.zip
+### For the demo/walkthrough pertaining to the most recent journal submission, please see the contents of "ExactLearning.zip"
 
 # ExactLearning
 Algorithms to exactly learn analytic functions given numerical data
