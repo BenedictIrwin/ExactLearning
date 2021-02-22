@@ -1,8 +1,7 @@
 ### For the demo/walkthrough pertaining to the most recent journal submission, please see the contents of "ExactLearning.zip"
 
 # ExactLearning
-Algorithms to exactly learn analytic functions given numerical data
-
+Algorithms to exactly learn analytic functions given numerical data.
 Within each directory is an example of fitting a function using the algorithm and the scripts that are run to do this.
 
 
@@ -35,40 +34,40 @@ p[5] ~ diff(2,quot(2,3)) : i.e. 1.3334209495203304 ~ 1.3333333333333335
 All of these steps apart from p[0] are actually correct (just a little convoluted) for this solution.
 
 
-1. System requirements
-  > Requires scientific python3 packages including numpy, scipy
-  > For advanced functions (hypergeometric, Meijer-G it uses mpmath libraries).
+# 1. System requirements:
+Requires scientific python3 packages including numpy, scipy
+For advanced functions (hypergeometric, Meijer-G it uses mpmath libraries).
 
 Versions the software has been tested on:
-  > Tested with Windows 10 Pro
-  > Tested with numpy 1.19.4
-  > Tested with scipy 1.1.0
-  > Tested with mpmath 1.1.0
-  > Tested with matplotlib 3.0.0
+Tested with Windows 10 Pro
+Tested with numpy 1.19.4
+Tested with scipy 1.1.0
+Tested with mpmath 1.1.0
+Tested with matplotlib 3.0.0
 
 Any required non-standard hardware:
-  > None
+ None
 
-2. Installation guide:
+# 2. Installation guide:
 Instructions:
-
-  > pip install numpy
-  > pip install scipy
-  > pip install mpmath
-  > pip install matplotlib
-  > pip install mpl_toolkits
-
+'''
+pip install numpy
+pip install scipy
+pip install mpmath
+pip install matplotlib
+pip install mpl_toolkits
+'''
 Typical install time on a "normal" desktop computer:
 
-  > Up to 5 mins
+Up to 5 mins
 
-3. Demo:
+# 3. Demo:
 Instructions to run on data:
 
   > python demo.py
 
 Expected output:
-  > Subject to random variation, the output is as follows:
+Subject to random variation, the output is as follows:
 
 '''
 (base) C:\...\NatureCodeZip>python demo.py
@@ -135,20 +134,20 @@ Best result is:
 0.5001719623633856 ~ 9/17  (Δ = 0.02923980234249679)
 ***  ~~~  ***
 '''
-  > For each fingerprint, the code will write a custom function and store it in the folder Functions/ with a random string.
-  > The code then applies complex BFGS fits of the function to get the parameters.
-  > From this process we can deduce the 'best' fingerprint is ":first:max:P2:c:c^s:linear-gamma"
-  > The 'best' loss jumped from ~ 0.01 to 1e-6 which is a great fit (indicating 'exactness' + noise)
-  > The format of the fingerprint has a second order polynomial (P2), a constant c, a simple power c^s and a linear gamma term.
-  > We could write this as: phi(s) = (1 + p0*s + p1*s^2)* p2^2 * (p3^2)^s * Gamma( p4 + p5*s )
-  > The solution indicates: phi(s) = (1 + (-4/3)*s + (4/3)*s^2)* 0.47988^2 * (1.1888^2)^s * Gamma( 0 + s/2 )
-  > 1.1888 is approximately the 4th root of 2, the current version of the code does not pick this up yet, but it would be simple to add.
-  > The figure "InterpretingResults.py" makes it clearer how this result is related to the functional form of the wavefunction.
-  > The actual solution is a Gaussian multipled by the 4th Hermite polynomial, and this is captured by the simple fingerprint.
+ For each fingerprint, the code will write a custom function and store it in the folder Functions/ with a random string.
+ The code then applies complex BFGS fits of the function to get the parameters.
+ From this process we can deduce the 'best' fingerprint is ":first:max:P2:c:c^s:linear-gamma"
+ The 'best' loss jumped from ~ 0.01 to 1e-6 which is a great fit (indicating 'exactness' + noise)
+ The format of the fingerprint has a second order polynomial (P2), a constant c, a simple power c^s and a linear gamma term.
+ We could write this as: phi(s) = (1 + p0*s + p1*s^2)* p2^2 * (p3^2)^s * Gamma( p4 + p5*s )
+ The solution indicates: phi(s) = (1 + (-4/3)*s + (4/3)*s^2)* 0.47988^2 * (1.1888^2)^s * Gamma( 0 + s/2 )
+ 1.1888 is approximately the 4th root of 2, the current version of the code does not pick this up yet, but it would be simple to add.
+ The figure "InterpretingResults.py" makes it clearer how this result is related to the functional form of the wavefunction.
+ The actual solution is a Gaussian multipled by the 4th Hermite polynomial, and this is captured by the simple fingerprint.
 
 Expected run time for demo on a "normal" desktop computer:
 
-  > Approximately 4 minutes
-  > Computer ~ 8GB RAM, 64bitx64 Intel Core i3-8300 @ 3.70 GHz
-  > The code is not optimised for speed at all
+ Approximately 4 minutes
+ Computer ~ 8GB RAM, 64bitx64 Intel Core i3-8300 @ 3.70 GHz
+ The code is not optimised for speed at all
 
