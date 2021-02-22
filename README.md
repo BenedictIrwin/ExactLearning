@@ -50,13 +50,13 @@ Any required non-standard hardware:
 
 # 2. Installation guide:
 Instructions:
-'''
+```
 pip install numpy
 pip install scipy
 pip install mpmath
 pip install matplotlib
 pip install mpl_toolkits
-'''
+```
 Typical install time on a "normal" desktop computer:
 
 Up to 5 mins
@@ -69,7 +69,7 @@ Instructions to run on data:
 Expected output:
 Subject to random variation, the output is as follows:
 
-'''
+```
 (base) C:\...\NatureCodeZip>python demo.py
 Writing function:  :first:max:c:linear-gamma krqksrcjnq
 New record solution! 0.10132724594367028
@@ -133,7 +133,7 @@ Best result is:
 0.5001719623633856 ~ 9/19  (Δ = 0.026487751837069806)
 0.5001719623633856 ~ 9/17  (Δ = 0.02923980234249679)
 ***  ~~~  ***
-'''
+```
  For each fingerprint, the code will write a custom function and store it in the folder Functions/ with a random string.
  The code then applies complex BFGS fits of the function to get the parameters.
  From this process we can deduce the 'best' fingerprint is ":first:max:P2:c:c^s:linear-gamma"
