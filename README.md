@@ -3,7 +3,9 @@
 # ExactLearning
 Algorithms to exactly learn analytic functions given numerical data.
 Within each directory is an example of fitting a function using the algorithm and the scripts that are run to do this.
-
+Based on the Paper: https://assets.researchsquare.com/files/rs-149856/v1_stamped.pdf
+and supplementary materials: https://assets.researchsquare.com/files/rs-149856/v1/697b3dbc4955ac5967f00c71.pdf
+Previous version: https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3596606
 
 Update:
 Had a nice improvement by including a closed form suggestion for solved parameters: 
