@@ -406,13 +406,39 @@ class ExactEstimator:
     if(self.fit_mode == "normal"):
       print("Normal BFGS not currently supported!")
       exit()
-    print("DEBUG_init: ",p0) 
+
+      
+    print("TEST OVERRIDE!")
+    p0 = [np.sqrt(2**(-7/2)/3),np.sqrt(2**(1/2)),9/2,1/2]
+    print("DEBUG_init f1: ",p0, "loss", f1(p0))
+    print("DEBUG_init f2: ",p0, "loss", f2(p0))
+
+    plots(self.s_values,self.logmoments,fingerprint(*p0))
+    test = np.array(self.logmoments)
+    pred = np.array(fingerprint(*p0))[0]
+    print(test.shape)
+    print(pred.shape)
+
+    print(test[:10])
+    print(pred[:10])
+    print(np.real(test[:10]))
+    print(np.real(pred[:10]))
+    print(np.imag(test[:10]))
+    print(np.imag(pred[:10]))
+
+    from sklearn.metrics import r2_score
+
+    print(r2_score(np.real(test),np.real(pred)))
+    print(f1(p0))
+
+    exit()
+
     res = minimize(f1, x0=p0, method = "BFGS", tol = 1e-6)
-    print("DEBUG_v1: ",res.x) 
+    print("DEBUG_v1: ",res.x, "loss", f1(res.x)) 
     #print("Params: ", res.x)
     #print("Loss: ", f1(res.x))
     res = minimize(f2, x0=res.x, method = "BFGS", tol = 1e-8)
-    print("DEBUG_v2: ",res.x) 
+    print("DEBUG_v2: ",res.x, "loss", f2(res.x)) 
     loss = f2(res.x)
     #print("Final Solution: ",res.x)
     #print("Loss: ", loss)
@@ -445,13 +471,21 @@ class ExactEstimator:
 
   ## Vectorised difference function
   def real_log_loss(self,p): 
-    A = fingerprint(*p)
-    B = np.abs(np.real(A)-self.real_logm[self.sample_array])
-    B = np.maximum(0.0,B-self.real_log_diff[self.sample_array])
+    A = fingerprint(*p)[0]
+    print(self.sample_array)
+    print(self.sample_array.shape)
+
+    #B = np.abs(np.real(A)-self.real_logm[self.sample_array])
+    #B = np.maximum(0.0,B-self.real_log_diff[self.sample_array])
+
+    B = np.abs(np.real(A)-self.real_logm)
+    B = np.maximum(0.0,B-self.real_log_diff)
     return np.mean(B)
 
   ## Vectorised difference function
   def complex_log_loss(self,p):
+    print("WARNING SELF.sample_array seems broken!")
+    exit()
     A = fingerprint(*p)
     B = np.abs(np.real(A)-self.real_logm[self.sample_array])
     B = np.maximum(0.0,B-self.real_log_diff[self.sample_array])
@@ -524,11 +558,11 @@ def gen_fpdict(parlist,N='max',mode='first',name=''):
 EE = ExactEstimator("Chi_Distribution", folder = "Chi_Distribution")
 
 fps=[
-gen_fpdict(['c','linear-gamma']),
-gen_fpdict(['c^s','linear-gamma']),
+#gen_fpdict(['c','linear-gamma']),
+#gen_fpdict(['c^s','linear-gamma']),
 gen_fpdict(['c','c^s','linear-gamma']),
 #gen_fpdict(['c','c^s','neg-linear-gamma']),
-gen_fpdict(['c','c^s','linear-gamma','neg-linear-gamma']),
+#gen_fpdict(['c','c^s','linear-gamma','neg-linear-gamma']),
 #gen_fpdict(['c','c^s','linear-gamma','neg-linear-gamma','linear-gamma']),
 #gen_fpdict(['c','c^s','linear-gamma','neg-linear-gamma','neg-linear-gamma']),
 #gen_fpdict(['c','c^s','linear-gamma','linear-gamma','neg-linear-gamma','neg-linear-gamma']),
@@ -548,7 +582,7 @@ gen_fpdict(['c','c^s','linear-gamma','neg-linear-gamma']),
 for k in fps:
   print("Setting Fingerprint: ",k)
   EE.set_fingerprint(k)
-  n_bfgs = 10
+  n_bfgs = 1
   for i in range(n_bfgs):
     EE.BFGS()
     print("{}%".format(100*(i+1)/n_bfgs),flush=True)
@@ -557,6 +591,10 @@ print("Completed!")
 EE.speculate()
 
 EE.set_fingerprint(EE.best_fingerprint)
+
+print(EE.best_params)
+#optimal_params = [np.sqrt(2**(-7/2)/3),np.sqrt(2**(1/2)),9/2,1/2]
+#plots(EE.s_values,EE.logmoments,fingerprint(*optimal_params))
 plots(EE.s_values,EE.logmoments,fingerprint(*EE.best_params))
 
 
