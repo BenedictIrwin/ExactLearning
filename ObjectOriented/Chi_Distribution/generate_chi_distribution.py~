@@ -41,7 +41,7 @@ plt.show()
 
 
 ## Generate real and imaginary part complex moments
-s_size = 1000
+s_size = 100
 s1 = np.random.uniform(low = 1, high =3, size = s_size)
 s2 = np.random.uniform(low = -np.pi, high = np.pi, size = s_size)
 s = np.expand_dims(s1 + s2*1j, axis = 0)

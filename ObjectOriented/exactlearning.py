@@ -166,6 +166,7 @@ for repeats in range(2):
 PT = np.array([-1,-2,-1/2,-3/4,3/4,3/2,5/2,2/3,np.sqrt(np.sqrt(2)),1/np.sqrt(np.sqrt(2)),1e-6,1,2,3,4,1/2,1/3,1/4,1/5,np.sqrt(2),np.sqrt(3),1/np.sqrt(2),1/np.sqrt(3),np.pi,1.0/np.pi])
 #PT = np.reshape([PT,-PT],2*len(PT))
 
+
 if(False):
   values = []
   index_to_drop = []
@@ -318,7 +319,12 @@ if(False):
   print(observations)
   
 ## Currently broken
-def plots(s,logm,fit): 
+def plots(s,logm,fit):
+  real_s = np.real(s)
+  imag_s = np.imag(s)
+  real_logm = np.real(logm)
+  imag_logm = np.imag(logm)
+
   ax = plt.axes(projection='3d')
   # Data for three-dimensional scattered points
   ax.scatter3D(real_s, imag_s, real_logm, c=real_logm, cmap='Reds', label = "Numeric")
@@ -339,5 +345,5 @@ def plots(s,logm,fit):
   plt.legend()
   plt.show()
 
-  p_best = popt
+  #p_best = popt
 

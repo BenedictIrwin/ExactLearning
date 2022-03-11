@@ -1,7 +1,7 @@
 import numpy as np
 import os
 import sys
-from exactlearning import wrap
+from exactlearning import wrap, plots
 from scipy.optimize import minimize
 from scipy.spatial import KDTree
 
@@ -257,8 +257,9 @@ def parse_terms(terms):
 ## The exact learning estimator class
 ## Not designed to take a lot of information
 class ExactEstimator:
-  def __init__(self,tag):
+  def __init__(self,tag, folder = ""):
     self.tag = tag
+    self.folder = folder
     self.sample_mode = "first"
     self.fit_mode = "log"
     self.N_terms = None
@@ -284,12 +285,22 @@ class ExactEstimator:
     self.results = {}
 
     ## Data
-    self.s_values    = np.load("s_values_{}.npy".format(tag))
+    self.s_values    = np.load("{}/s_values_{}.npy".format(folder,tag))
     self.sample_array = np.arange(self.s_values.shape[0])  ## This is for sampling from the samples
-    self.moments     = np.load("moments_{}.npy".format(tag))
+    self.moments     = np.load("{}/moments_{}.npy".format(folder,tag))
     self.logmoments  = np.log(self.moments)
-    self.real_error = np.load("real_error_{}.npy".format(tag))
-    self.imag_error = np.load("imag_error_{}.npy".format(tag))
+
+    ## If the errors are to be found
+    if(os.path.exists("{}/real_error_{}.npy".format(folder,tag))):
+      self.real_error = np.load("real_error_{}.npy".format(tag))
+    else:
+      self.real_error = np.zeros(self.moments.shape)
+    
+    if(os.path.exists("{}/imag_error_{}.npy".format(folder,tag))):
+      self.imag_error = np.load("imag_error_{}.npy".format(tag))
+    else:
+      self.imag_error = np.zeros(self.moments.shape)
+
     self.real_s = np.real(self.s_values)
     self.imag_s = np.imag(self.s_values)
     self.real_m = np.real(self.moments)
@@ -387,18 +398,21 @@ class ExactEstimator:
 
   ## A gradient based approach to get the optimial parameters for a given fingerprint
   def BFGS(self,p0=None):
-    if(p0==None): p0=np.random.random(self.N_terms)
+    #if(p0==None): p0=np.random.random(self.N_terms)
+    if(p0==None): p0=np.random.uniform(low=-10,high=10,size=self.N_terms)
     if(self.fit_mode=="log"):
       f1 = self.real_log_loss
       f2 = self.complex_log_loss
     if(self.fit_mode == "normal"):
       print("Normal BFGS not currently supported!")
       exit()
-    
+    print("DEBUG_init: ",p0) 
     res = minimize(f1, x0=p0, method = "BFGS", tol = 1e-6)
+    print("DEBUG_v1: ",res.x) 
     #print("Params: ", res.x)
     #print("Loss: ", f1(res.x))
     res = minimize(f2, x0=res.x, method = "BFGS", tol = 1e-8)
+    print("DEBUG_v2: ",res.x) 
     loss = f2(res.x)
     #print("Final Solution: ",res.x)
     #print("Loss: ", loss)
@@ -467,6 +481,15 @@ class ExactEstimator:
     print("- Loss: ",self.best_loss)
     terms_list = self.function_terms_dict[self.best_function]
 
+    print("Best Function ID: ",self.best_function)
+    print("Log Space Function Expression: ~~~~")
+    with open("Functions/{}.py".format(self.best_function),"r") as ff:
+      flines = [i.strip() for i in ff.readlines()]
+      flines = [i for i in flines if "ret " in i]
+      for i in flines: 
+        print(i)
+    print("~~~~~~~~~~~~~~~~~~~~~~~~~")
+
     ## For each parameter get the correct list:KDTree pair
     for par,value in zip(terms_list.keys(),self.best_params):
       term_type = terms_list[par]
@@ -475,7 +498,7 @@ class ExactEstimator:
       distances, IDs = global_trees_dict[term_type].query([np.abs(value)],k=4)
       dict_IDs = [ list(global_constants_dict[term_type].keys())[i] for i in IDs]
       for i, delta in zip(dict_IDs,distances):
-        print(value,"~","{}".format("-" if value < 0 else "")+i,u" (\u0394 = {})".format(delta))
+        print(value,"~","{}".format("-" if value < 0 else "")+i,u" (\u0394 = {})".format(delta).encode('utf-8'))
       
       print("*** ","~~~"," ***") 
 
@@ -498,14 +521,14 @@ def gen_fpdict(parlist,N='max',mode='first',name=''):
 
 #########################################
 ## Start the code here pointing to a file
-EE = ExactEstimator("pgame3")
+EE = ExactEstimator("Chi_Distribution", folder = "Chi_Distribution")
 
 fps=[
-#gen_fpdict(['c','linear-gamma']),
+gen_fpdict(['c','linear-gamma']),
 gen_fpdict(['c^s','linear-gamma']),
 gen_fpdict(['c','c^s','linear-gamma']),
 #gen_fpdict(['c','c^s','neg-linear-gamma']),
-#gen_fpdict(['c','c^s','linear-gamma','neg-linear-gamma']),
+gen_fpdict(['c','c^s','linear-gamma','neg-linear-gamma']),
 #gen_fpdict(['c','c^s','linear-gamma','neg-linear-gamma','linear-gamma']),
 #gen_fpdict(['c','c^s','linear-gamma','neg-linear-gamma','neg-linear-gamma']),
 #gen_fpdict(['c','c^s','linear-gamma','linear-gamma','neg-linear-gamma','neg-linear-gamma']),
@@ -523,10 +546,19 @@ gen_fpdict(['c','c^s','linear-gamma']),
 
 ## Looping over fingerprints to see which is best
 for k in fps:
+  print("Setting Fingerprint: ",k)
   EE.set_fingerprint(k)
-  for i in range(10): EE.BFGS()
+  n_bfgs = 10
+  for i in range(n_bfgs):
+    EE.BFGS()
+    print("{}%".format(100*(i+1)/n_bfgs),flush=True)
 
+print("Completed!")
 EE.speculate()
+
+EE.set_fingerprint(EE.best_fingerprint)
+plots(EE.s_values,EE.logmoments,fingerprint(*EE.best_params))
+
 
 exit()
 
