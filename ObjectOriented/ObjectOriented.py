@@ -334,7 +334,8 @@ class ExactEstimator:
     self.function_terms_dict[key] = {values[i]:keys[i] for i in range(len(keys))}
 
     ## Writing a file that will rapidly fit the fingerprint 
-    with open(".\\Functions\\"+key+".py","w") as f:
+    #with open(".\\Functions\\"+key+".py","w") as f:
+    with open("./Functions/"+key+".py","w") as f:
       for req in requirements: f.write(req+"\n")
       f.write("from numpy import array, frompyfunc\n")
       f.write("def fp({}):\n".format(",".join(["p{}".format(i) for i in range(self.N_terms)])))
@@ -381,7 +382,8 @@ class ExactEstimator:
       print(self.fingerprint_function_dict)
       self.function = self.fingerprint_function_dict[self.fingerprint]
       print(self.function)
-      with open(".\\Functions\\{}.py".format(self.function),"r") as f: flines = f.readlines()
+      #with open(".\\Functions\\{}.py".format(self.function),"r") as f: flines = f.readlines()
+      with open("./Functions/{}.py".format(self.function),"r") as f: flines = f.readlines()
       if('fingerprint' in globals().keys()): del globals()['fingerprint']
       exec("".join(flines),globals())
       print("Function is reset to {}!".format(self.function))
@@ -391,7 +393,8 @@ class ExactEstimator:
     key = "".join([np.random.choice(string_list) for i in range(10)])
     self.write_function(key)
     if('fingerprint' in globals().keys()): del globals()['fingerprint']
-    with open(".\\Functions\\{}.py".format(key),"r") as f: flines = f.readlines()
+    #with open(".\\Functions\\{}.py".format(key),"r") as f: flines = f.readlines()
+    with open("./Functions/{}.py".format(key),"r") as f: flines = f.readlines()
     exec("".join(flines),globals())
     self.fingerprint_function_dict[self.fingerprint] = key
     self.function = key
@@ -407,12 +410,11 @@ class ExactEstimator:
       print("Normal BFGS not currently supported!")
       exit()
 
-      
+    '''  
     print("TEST OVERRIDE!")
     p0 = [np.sqrt(2**(-7/2)/3),np.sqrt(2**(1/2)),9/2,1/2]
     print("DEBUG_init f1: ",p0, "loss", f1(p0))
     print("DEBUG_init f2: ",p0, "loss", f2(p0))
-
     plots(self.s_values,self.logmoments,fingerprint(*p0))
     test = np.array(self.logmoments)
     pred = np.array(fingerprint(*p0))[0]
@@ -432,13 +434,16 @@ class ExactEstimator:
     print(f1(p0))
 
     exit()
+    '''
 
     res = minimize(f1, x0=p0, method = "BFGS", tol = 1e-6)
     print("DEBUG_v1: ",res.x, "loss", f1(res.x)) 
+    ##plots(self.s_values,self.logmoments,fingerprint(*res.x))
     #print("Params: ", res.x)
     #print("Loss: ", f1(res.x))
     res = minimize(f2, x0=res.x, method = "BFGS", tol = 1e-8)
     print("DEBUG_v2: ",res.x, "loss", f2(res.x)) 
+    ##plots(self.s_values,self.logmoments,fingerprint(*res.x))
     loss = f2(res.x)
     #print("Final Solution: ",res.x)
     #print("Loss: ", loss)
@@ -472,8 +477,8 @@ class ExactEstimator:
   ## Vectorised difference function
   def real_log_loss(self,p): 
     A = fingerprint(*p)[0]
-    print(self.sample_array)
-    print(self.sample_array.shape)
+    #print(self.sample_array)
+    #print(self.sample_array.shape)
 
     #B = np.abs(np.real(A)-self.real_logm[self.sample_array])
     #B = np.maximum(0.0,B-self.real_log_diff[self.sample_array])
@@ -484,13 +489,17 @@ class ExactEstimator:
 
   ## Vectorised difference function
   def complex_log_loss(self,p):
-    print("WARNING SELF.sample_array seems broken!")
-    exit()
+    #print("WARNING SELF.sample_array seems broken!")
+    #exit()
     A = fingerprint(*p)
-    B = np.abs(np.real(A)-self.real_logm[self.sample_array])
-    B = np.maximum(0.0,B-self.real_log_diff[self.sample_array])
-    C = np.abs(wrap(np.imag(A)-self.imag_logm[self.sample_array]))
-    C = np.maximum(0.0,C-self.imag_log_diff[self.sample_array])
+    #B = np.abs(np.real(A)-self.real_logm[self.sample_array])
+    #B = np.maximum(0.0,B-self.real_log_diff[self.sample_array])
+    #C = np.abs(wrap(np.imag(A)-self.imag_logm[self.sample_array]))
+    #C = np.maximum(0.0,C-self.imag_log_diff[self.sample_array])
+    B = np.abs(np.real(A)-self.real_logm)
+    B = np.maximum(0.0,B-self.real_log_diff)
+    C = np.abs(wrap(np.imag(A)-self.imag_logm))
+    C = np.maximum(0.0,C-self.imag_log_diff)
     return np.mean(B+C)
 
   def set_mode(self,mode): 
@@ -582,7 +591,7 @@ gen_fpdict(['c','c^s','linear-gamma']),
 for k in fps:
   print("Setting Fingerprint: ",k)
   EE.set_fingerprint(k)
-  n_bfgs = 1
+  n_bfgs = 3
   for i in range(n_bfgs):
     EE.BFGS()
     print("{}%".format(100*(i+1)/n_bfgs),flush=True)
