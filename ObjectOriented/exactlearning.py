@@ -318,7 +318,7 @@ if(False):
   print(losses)
   print(observations)
   
-## Currently broken
+## Plot real and imaginary parts for 1D distribution
 def plots(s,logm,fit):
   real_s = np.real(s)
   imag_s = np.imag(s)

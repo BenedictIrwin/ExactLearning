@@ -412,9 +412,12 @@ class ExactEstimator:
 
     '''  
     print("TEST OVERRIDE!")
-    p0 = [np.sqrt(2**(-7/2)/3),np.sqrt(2**(1/2)),9/2,1/2]
-    print("DEBUG_init f1: ",p0, "loss", f1(p0))
-    print("DEBUG_init f2: ",p0, "loss", f2(p0))
+    '''
+    #p0 = [np.sqrt(2**(-7/2)/3),np.sqrt(2**(1/2)),9/2,1/2]
+    #print("DEBUG_init f1: ",p0, "loss", f1(p0))
+    #print("DEBUG_init f2: ",p0, "loss", f2(p0))
+    #exit()
+    '''
     plots(self.s_values,self.logmoments,fingerprint(*p0))
     test = np.array(self.logmoments)
     pred = np.array(fingerprint(*p0))[0]
@@ -545,6 +548,8 @@ class ExactEstimator:
       
       print("*** ","~~~"," ***") 
 
+    p0 = [np.sqrt(2**(-7/2)/3),np.sqrt(2**(1/2)),9/2,1/2]
+    print("Ideal (test)--> ", p0)
 
 ## A function that helps
 def gen_fpdict(parlist,N='max',mode='first',name=''):
@@ -591,7 +596,7 @@ gen_fpdict(['c','c^s','linear-gamma']),
 for k in fps:
   print("Setting Fingerprint: ",k)
   EE.set_fingerprint(k)
-  n_bfgs = 3
+  n_bfgs = 30
   for i in range(n_bfgs):
     EE.BFGS()
     print("{}%".format(100*(i+1)/n_bfgs),flush=True)
@@ -606,6 +611,8 @@ print(EE.best_params)
 #plots(EE.s_values,EE.logmoments,fingerprint(*optimal_params))
 plots(EE.s_values,EE.logmoments,fingerprint(*EE.best_params))
 
+##print(EE.__dict__)
+print(EE.results)
 
 exit()
 
