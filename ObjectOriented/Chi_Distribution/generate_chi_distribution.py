@@ -20,7 +20,7 @@ keyword = "Chi_Distribution"
 n_dims = 10
 mean = np.zeros(n_dims)
 cov = np.eye(n_dims)
-size = 100000
+size = 10000000
 random_samples = np.random.multivariate_normal(mean, cov, size)
 
 ## Sum the squares and sqrt
@@ -40,12 +40,14 @@ plt.show()
 
 
 
-## Generate real and imaginary part complex moments
-s_size = 1000
-s1 = np.random.uniform(low = 1, high =3, size = s_size)
-s2 = np.random.uniform(low = -np.pi, high = np.pi, size = s_size)
+## Generate reail and imaginary part complex moments
+s_size = 10
+s1 = np.random.uniform(low = 1, high = 5, size = s_size)
+s2 = np.random.uniform(low = -1*np.pi, high = 1*np.pi, size = s_size)
 s = np.expand_dims(s1 + s2*1j, axis = 0)
 print(s)
+
+#s = np.array([1+0j,2+0j,3+0j,4+0j, 1.5+1j, 1.5-1j, 2.5+1.5j, 2.5-1.5j])
 
 #q, qre, qie = vec_int(s)
 

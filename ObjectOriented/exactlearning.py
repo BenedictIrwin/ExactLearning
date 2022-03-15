@@ -320,12 +320,13 @@ if(False):
   print(losses)
   print(observations)
   
-## Currently broken
+## Plot real and imaginary parts for 1D distribution
 def plots(s,logm,fit):
   real_s = np.real(s)
   imag_s = np.imag(s)
   real_logm = np.real(logm)
   imag_logm = np.imag(logm)
+
 
   ax = plt.axes(projection='3d')
   # Data for three-dimensional scattered points
@@ -336,7 +337,7 @@ def plots(s,logm,fit):
   ax.set_zlabel('$\log Re(E[x^{s-1}])$')
   plt.legend()
   plt.show()
-  
+ 
   ax = plt.axes(projection='3d')
   # Data for three-dimensional scattered points
   ax.scatter3D(real_s, imag_s, imag_logm, c=imag_logm, cmap='Reds', label = "Numeric")
@@ -345,7 +346,10 @@ def plots(s,logm,fit):
   ax.set_ylabel('Im(s)')
   ax.set_zlabel('$\log Im(E[x^{s-1}])$')
   plt.legend()
+
+  #print("PLOTTING")
   plt.show()
+  #print("PLOTTED")
 
   #p_best = popt
 
