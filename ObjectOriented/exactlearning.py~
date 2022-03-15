@@ -7,6 +7,9 @@ from mpl_toolkits import mplot3d
 from math import frexp
 from mpmath import mp, hyper, nstr, hyperu
 
+from sklearn.metrics import r2_score
+
+
 ##
 def BFGS_search(p0):
   print("*** Initial Guess ***")
@@ -345,5 +348,5 @@ def plots(s,logm,fit):
   plt.legend()
   plt.show()
 
-  p_best = popt
+  #p_best = popt
 

@@ -334,7 +334,8 @@ class ExactEstimator:
     self.function_terms_dict[key] = {values[i]:keys[i] for i in range(len(keys))}
 
     ## Writing a file that will rapidly fit the fingerprint 
-    with open(".\\Functions\\"+key+".py","w") as f:
+    #with open(".\\Functions\\"+key+".py","w") as f:
+    with open("./Functions/"+key+".py","w") as f:
       for req in requirements: f.write(req+"\n")
       f.write("from numpy import array, frompyfunc\n")
       f.write("def fp({}):\n".format(",".join(["p{}".format(i) for i in range(self.N_terms)])))
@@ -381,7 +382,8 @@ class ExactEstimator:
       print(self.fingerprint_function_dict)
       self.function = self.fingerprint_function_dict[self.fingerprint]
       print(self.function)
-      with open(".\\Functions\\{}.py".format(self.function),"r") as f: flines = f.readlines()
+      #with open(".\\Functions\\{}.py".format(self.function),"r") as f: flines = f.readlines()
+      with open("./Functions/{}.py".format(self.function),"r") as f: flines = f.readlines()
       if('fingerprint' in globals().keys()): del globals()['fingerprint']
       exec("".join(flines),globals())
       print("Function is reset to {}!".format(self.function))
@@ -391,10 +393,35 @@ class ExactEstimator:
     key = "".join([np.random.choice(string_list) for i in range(10)])
     self.write_function(key)
     if('fingerprint' in globals().keys()): del globals()['fingerprint']
-    with open(".\\Functions\\{}.py".format(key),"r") as f: flines = f.readlines()
+    #with open(".\\Functions\\{}.py".format(key),"r") as f: flines = f.readlines()
+    with open("./Functions/{}.py".format(key),"r") as f: flines = f.readlines()
     exec("".join(flines),globals())
     self.fingerprint_function_dict[self.fingerprint] = key
     self.function = key
+
+  ## Searching for a good starting point
+  def preseed(self, num_samples):
+    #p0 = np.random.uniform(low=-10,high=10,size=[num_samples, self.N_terms])
+    p0 = np.random.choice([np.sqrt(2),1/2,1,2,3], size = [num_samples, self.N_terms])
+
+
+    if(self.fit_mode=="log"):
+      f1 = self.real_log_loss
+      f2 = self.complex_log_loss
+    if(self.fit_mode == "normal"):
+      print("Normal BFGS not currently supported!")
+      exit()
+    losses = [self.real_log_loss(q) for q in p0]
+    print(losses)
+    print(np.amin(losses))
+    print(np.amax(losses))
+    amin = np.argmin(losses)
+    print(amin)
+    print(p0[amin])
+
+    exit()
+
+
 
   ## A gradient based approach to get the optimial parameters for a given fingerprint
   def BFGS(self,p0=None):
@@ -406,13 +433,44 @@ class ExactEstimator:
     if(self.fit_mode == "normal"):
       print("Normal BFGS not currently supported!")
       exit()
-    print("DEBUG_init: ",p0) 
+
+    '''  
+    print("TEST OVERRIDE!")
+    '''
+    #p0 = [np.sqrt(2**(-7/2)/3),np.sqrt(2**(1/2)),9/2,1/2]
+    #print("DEBUG_init f1: ",p0, "loss", f1(p0))
+    #print("DEBUG_init f2: ",p0, "loss", f2(p0))
+    #exit()
+    '''
+    plots(self.s_values,self.logmoments,fingerprint(*p0))
+    test = np.array(self.logmoments)
+    pred = np.array(fingerprint(*p0))[0]
+    print(test.shape)
+    print(pred.shape)
+
+    print(test[:10])
+    print(pred[:10])
+    print(np.real(test[:10]))
+    print(np.real(pred[:10]))
+    print(np.imag(test[:10]))
+    print(np.imag(pred[:10]))
+
+    from sklearn.metrics import r2_score
+
+    print(r2_score(np.real(test),np.real(pred)))
+    print(f1(p0))
+
+    exit()
+    '''
+
     res = minimize(f1, x0=p0, method = "BFGS", tol = 1e-6)
-    print("DEBUG_v1: ",p0) 
+    #print("DEBUG_v1: ",res.x, "loss", f1(res.x)) 
+    ##plots(self.s_values,self.logmoments,fingerprint(*res.x))
     #print("Params: ", res.x)
     #print("Loss: ", f1(res.x))
     res = minimize(f2, x0=res.x, method = "BFGS", tol = 1e-8)
-    print("DEBUG_v2: ",p0) 
+    #print("DEBUG_v2: ",res.x, "loss", f2(res.x)) 
+    ##plots(self.s_values,self.logmoments,fingerprint(*res.x))
     loss = f2(res.x)
     #print("Final Solution: ",res.x)
     #print("Loss: ", loss)
@@ -431,7 +489,8 @@ class ExactEstimator:
       self.best_function = self.function
 
     descriptors = self.descriptors_from_fingerprint(self.fingerprint)
-    self.results[self.fingerprint].append({"params" : params, "loss" : loss, "descriptors" : descriptors})
+    self.results["descriptors"] = descriptors
+    self.results[self.fingerprint].append({"params" : params, "loss" : loss})
 
   ## Convert params to a unifed set of descriptors
   ## This may be useful to train models that predict loss via function composition
@@ -445,18 +504,30 @@ class ExactEstimator:
 
   ## Vectorised difference function
   def real_log_loss(self,p): 
-    A = fingerprint(*p)
-    B = np.abs(np.real(A)-self.real_logm[self.sample_array])
-    B = np.maximum(0.0,B-self.real_log_diff[self.sample_array])
+    A = fingerprint(*p)[0]
+    #print(self.sample_array)
+    #print(self.sample_array.shape)
+
+    #B = np.abs(np.real(A)-self.real_logm[self.sample_array])
+    #B = np.maximum(0.0,B-self.real_log_diff[self.sample_array])
+
+    B = np.abs(np.real(A)-self.real_logm)
+    B = np.maximum(0.0,B-self.real_log_diff)
     return np.mean(B)
 
   ## Vectorised difference function
   def complex_log_loss(self,p):
+    #print("WARNING SELF.sample_array seems broken!")
+    #exit()
     A = fingerprint(*p)
-    B = np.abs(np.real(A)-self.real_logm[self.sample_array])
-    B = np.maximum(0.0,B-self.real_log_diff[self.sample_array])
-    C = np.abs(wrap(np.imag(A)-self.imag_logm[self.sample_array]))
-    C = np.maximum(0.0,C-self.imag_log_diff[self.sample_array])
+    #B = np.abs(np.real(A)-self.real_logm[self.sample_array])
+    #B = np.maximum(0.0,B-self.real_log_diff[self.sample_array])
+    #C = np.abs(wrap(np.imag(A)-self.imag_logm[self.sample_array]))
+    #C = np.maximum(0.0,C-self.imag_log_diff[self.sample_array])
+    B = np.abs(np.real(A)-self.real_logm)
+    B = np.maximum(0.0,B-self.real_log_diff)
+    C = np.abs(wrap(np.imag(A)-self.imag_logm))
+    C = np.maximum(0.0,C-self.imag_log_diff)
     return np.mean(B+C)
 
   def set_mode(self,mode): 
@@ -473,8 +544,11 @@ class ExactEstimator:
     for i,j in zip(keys,minimum_loss):
       print(i,j)
 
+  def point_evaluation(self, q):
+    return self.real_log_loss(q), self.complex_log_loss(q)
+
   ## A function which suggests possible closed forms
-  def speculate(self):
+  def speculate(self, samples = None, k = 4):
     print("Best result is: ")
     print("- Fingerprint: ",self.best_fingerprint)
     print("- Parameters: ",self.best_params)
@@ -490,17 +564,62 @@ class ExactEstimator:
         print(i)
     print("~~~~~~~~~~~~~~~~~~~~~~~~~")
 
+    ## A place to store lists of samples
+    sample_dict = {i : [] for i in terms_list.keys()}
+
     ## For each parameter get the correct list:KDTree pair
     for par,value in zip(terms_list.keys(),self.best_params):
       term_type = terms_list[par]
-      print("*** ",par,":",term_type," ***")
       ## Could do a search within  tolerance or just do nearest neighbours
-      distances, IDs = global_trees_dict[term_type].query([np.abs(value)],k=4)
+
+      ## For the parameters that were fixed to squared to keep 
+      if( term_type == "_sqrtnotzero_"):
+        print("*** ",par,"**2 :",term_type," ***")
+        distances, IDs = global_trees_dict[term_type].query([np.abs(value**2)],k)
+      else:
+        print("*** ",par,":",term_type," ***")
+        distances, IDs = global_trees_dict[term_type].query([np.abs(value)],k)
+
       dict_IDs = [ list(global_constants_dict[term_type].keys())[i] for i in IDs]
-      for i, delta in zip(dict_IDs,distances):
-        print(value,"~","{}".format("-" if value < 0 else "")+i,u" (\u0394 = {})".format(delta).encode('utf-8'))
+
+      ## Use softmax to get probabilities?
+      d_sum = np.sum([ np.exp(-d/np.mean(distances)) for d in distances ])
+      probs = [ np.exp(-d/np.mean(distances))/d_sum for d in distances ]
+
+
+      #### ADD SOMETHING LIKE if _sqrtnotzero_, just do 'best', or historical values, or random...
+      #### Later we might want to make a comprehensive dict of values like 2^(-7/2), but could be huge...
+      #### For gamma linear just do the best few
+      if( term_type == "_sqrtnotzero_" ):
+        sample_dict[par] = [value for i in range(samples)]        
+      else:
+        samp = np.random.choice([i for i in range(k)], size = samples, p = probs)
+        sample_dict[par] = [ dict_IDs[j] for j in samp]
+        sample_dict[par] = [global_constants_dict[term_type][q] for q in sample_dict[par]]
+
+      for i, delta, p in zip(dict_IDs,distances, probs):
+        delta = np.round(delta, decimals = 8)
+        p = np.round(p, decimals = 3)
+        ##i = i.replace("/1","")
+        if( term_type == "_sqrtnotzero_"):
+          print(value**2,"~","{}".format("-" if value < 0 else "")+i," (Delta = {}, p = {})".format(delta,p))
+        else:
+          print(value,"~","{}".format("-" if value < 0 else "")+i," (Delta = {}, p = {})".format(delta,p))
       
       print("*** ","~~~"," ***") 
+
+    p0 = [np.sqrt(2**(-7/2)/3),np.sqrt(2**(1/2)),9/2,1/2]
+    print("Ideal (test)--> ", p0)
+    #if(samples == None): return []
+
+    samp_points = []
+    ## Generate samples
+    #print(sample_dict)
+    samples = np.vstack(list(sample_dict.values())).T
+    samples = np.unique(samples,axis = 0)
+    #print(samples.shape)
+    return samples
+    #exit()
 
 
 ## A function that helps
@@ -519,16 +638,48 @@ def gen_fpdict(parlist,N='max',mode='first',name=''):
   hash_string = ":".join([name,mode,str(N),hash_string])
   return hash_string
 
+
+
+
+##
+EE = ExactEstimator("Disk_Line_Picking", folder = "Disk_Line_Picking")
+fps = [gen_fpdict(['c','linear-gamma','linear-gamma','neg-linear-gamma','neg-linear-gamma','neg-linear-gamma'])]
+for k in fps:
+  print("Setting Fingerprint: ",k)
+  EE.set_fingerprint(k)
+
+  ## Do a bit of a random search
+  EE.preseed(100000)
+
+  exit()
+
+
+  n_bfgs = 100
+  for i in range(n_bfgs):
+    EE.BFGS()
+    print("{}%".format(100*(i+1)/n_bfgs),flush=True)
+
+print("Completed!")
+EE.speculate(samples = 1, k = 4)
+
+optimal_points = [np.sqrt(2),2,1,3,1,3,1,2,1/2,3,1/2]
+
+loss = EE.point_evaluation(optimal_points)
+print(loss,optimal_points)
+
+exit()
+
+
 #########################################
 ## Start the code here pointing to a file
 EE = ExactEstimator("Chi_Distribution", folder = "Chi_Distribution")
 
 fps=[
-gen_fpdict(['c','linear-gamma']),
-gen_fpdict(['c^s','linear-gamma']),
+#gen_fpdict(['c','linear-gamma']),
+#gen_fpdict(['c^s','linear-gamma']),
 gen_fpdict(['c','c^s','linear-gamma']),
 #gen_fpdict(['c','c^s','neg-linear-gamma']),
-gen_fpdict(['c','c^s','linear-gamma','neg-linear-gamma']),
+#gen_fpdict(['c','c^s','linear-gamma','neg-linear-gamma']),
 #gen_fpdict(['c','c^s','linear-gamma','neg-linear-gamma','linear-gamma']),
 #gen_fpdict(['c','c^s','linear-gamma','neg-linear-gamma','neg-linear-gamma']),
 #gen_fpdict(['c','c^s','linear-gamma','linear-gamma','neg-linear-gamma','neg-linear-gamma']),
@@ -548,16 +699,40 @@ gen_fpdict(['c','c^s','linear-gamma','neg-linear-gamma']),
 for k in fps:
   print("Setting Fingerprint: ",k)
   EE.set_fingerprint(k)
-  n_bfgs = 10
+  n_bfgs = 300
   for i in range(n_bfgs):
     EE.BFGS()
     print("{}%".format(100*(i+1)/n_bfgs),flush=True)
 
 print("Completed!")
-EE.speculate()
+
+## Get a few samples
+samples_to_try = EE.speculate(samples = 100, k =4)
+
+## Constrains that normalisation is true (s=1) --> Integral = 1
+for q in samples_to_try:
+  loss = EE.point_evaluation(q)
+  print(q, loss)
+
 
 EE.set_fingerprint(EE.best_fingerprint)
+
+print(EE.best_params)
+#plots(EE.s_values,EE.logmoments,fingerprint(*optimal_params))
 plots(EE.s_values,EE.logmoments,fingerprint(*EE.best_params))
+
+##print(EE.__dict__)
+print(EE.results)
+
+best_loss = EE.point_evaluation(EE.best_params)
+print("Best Param Loss:", best_loss)
+optimal_params = [np.sqrt(2**(-7/2)/3),np.sqrt(2**(1/2)),9/2,1/2]
+best_loss = EE.point_evaluation(optimal_params)
+print("Theoretical Best Loss:", best_loss)
+
+### Consider a routine to enforce certain parameter values...
+
+
 
 
 exit()
