@@ -7,6 +7,8 @@ from mpl_toolkits import mplot3d
 from math import frexp
 from mpmath import mp, hyper, nstr, hyperu
 
+
+
 ##
 def BFGS_search(p0):
   print("*** Initial Guess ***")
