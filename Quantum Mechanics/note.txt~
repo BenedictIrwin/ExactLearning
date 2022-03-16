@@ -1,0 +1,17 @@
+With only two parameters: Assuming a factor of Gamma(s/2)
+[0.61283021 1.18920588]
+6.038092521731367e-08  
+
+With only 3 parameters: 
+Fitting gamma(c*s)
+
+[0.61283815 1.18920113 0.50000591]
+3.674429251730295e-09 
+
+
+With 4 parameters:
+fitting gamma( a + b s) 
+
+[6.12843364e-01 1.18919766e+00 5.00008648e-01 4.89731521e-06]
+1.3718245625715519e-09
+

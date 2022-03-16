@@ -1,0 +1,42 @@
+Airy trials
+
+*** Assembling Dictionary ***                                                                                                                                                                                                                []                                                                                                                                                                                                                                           *** Loading Data ***                                                                                                                                                                                                                         *** Initial Guess ***                                                                                                                                                                                                                        Params:  [ 0.60794256  0.9894208  -0.00636472  0.45736542  0.15941933  0.00722564]                                                                                                                                                           Loss:  0.1486273677121636                                                                                                                                                                                                                    *** Refined Guess ***                                                                                                                                                                                                                        Params:  [ 0.60790842  0.98948593 -0.00639197  0.45735059  0.15933577  0.00720549]                                                                                                                                                           Loss:  0.0003724875024745046                                                                                                                                                                                                                 Final Loss: 0.0003724875024745046                                                                                                                                                                                                            Situation Report                                                                                                                                                                                                                             p[0] ~ quot(6,prod(Pi,Pi)) : i.e. 0.6079084160725655 ~ 0.6079271018540267                                                                                                                                                                    p[1] ~ quot(quot(Pi,2),3rt(4)) : i.e. 0.9894859316933218 ~ 0.9895396786132182                                                                                                                                                                p[2] ~ quot(diff(3,Pi),prod(4,6)) : i.e. -0.006391971341829661 ~ -0.0058996938995747135                                                                                                                                                      p[3] ~ quot(quot(Pi,6),log(Pi)) : i.e. 0.4573505933834696 ~ 0.45739941104951903                                                                                                                                                              p[4] ~ quot(2,prod(Pi,4)) : i.e. 0.15933577286959166 ~ 0.15915494309189535                                                                                                                                                                   p[5] ~ quot(diff(Pi,3),prod(4,5)) : i.e. 0.007205485733876482 ~ 0.007079632679489656                                                                                                                                                         forrtl: error (200): program aborting due to control-C event                                                                                                                                                                                 Image              PC                Routine            Line        Source                                                                                                                                                                   libifcoremd.dll    00007FFDD27294C4  Unknown               Unknown  Unknown                                                                                                                                                                  KERNELBASE.dll     00007FFDFCD65FE3  Unknown               Unknown  Unknown                                                                                                                                                                  KERNEL32.DLL       00007FFDFEAD7BD4  Unknown               Unknown  Unknown                                                                                                                                                                  ntdll.dll          00007FFDFFB6CE51  Unknown               Unknown  Unknown                                                                                                                                                                  QObject::~QObject: Timers cannot be stopped from another thread                                                                                                                                                                                                                                                                                                                                                                                                                           (base) C:\Users\ben\Documents\Mellin_Write_Up\Quantum Mechanics>vim rapid_fit.py                                                                                                                                                             
+(base) C:\Users\ben\Documents\Mellin_Write_Up\Quantum Mechanics>python rapid_fit.py
+*** Assembling Dictionary ***
+[]
+*** Loading Data ***
+*** Initial Guess ***
+Params:  [ 0.69331766  0.60026157 -0.27961776  0.78646241  1.26531197  0.81057736
+  0.3075442 ]
+Loss:  0.6517164844218224
+*** Refined Guess ***
+Params:  [ 0.63670909  0.91739437 -0.00240199  0.49183577  0.31039783  0.0286349
+  0.00131335]
+Loss:  0.000301760139761825
+Final Loss: 0.000301760139761825
+Situation Report
+p[0] ~ prod(quot(2,5),quot(5,Pi)) : i.e. 0.6367090855909656 ~ 0.6366197723675815
+p[1] ~ quot(quot(Pi,3),diff(Pi,2)) : i.e. 0.9173943674508583 ~ 0.9173127979613696
+p[2] ~ diff(4rt(Pi),quot(4,3)) : i.e. -0.0024019923335018567 ~ -0.001997969532943511
+p[3] ~ quot(log(3),sqrt(5)) : i.e. 0.4918357654090047 ~ 0.49131435167570303
+p[4] ~ quot(recip(2),log(5)) : i.e. 0.31039783277106225 ~ 0.31066746727980593
+p[5] ~ quot(diff(4,Pi),prod(5,6)) : i.e. 0.028634901564901803 ~ 0.028613578213673562
+p[6] ~ diff(quot(4,3),4rt(Pi)) : i.e. 0.0013133527743699434 ~ 0.001997969532943511
+
+
+
+*** Loading Data ***
+*** Initial Guess ***
+Params:  [1.68833462 0.11607879 1.28750511 0.62428845 0.44202206 0.54925865]
+Loss:  0.14883824286138705
+*** Refined Guess ***
+Params:  [1.68834599 0.11608606 1.2874932  0.62428857 0.44201315 0.54925971]
+Loss:  0.0005600791470902359
+Final Loss: 0.0005600791470902359
+Situation Report
+p[0] ~ 4rt(sum(Pi,5)) : i.e. 1.6883459933784883 ~ 1.6891854907864043
+p[1] ~ diff(4rt(3),quot(6,5)) : i.e. 0.11608605600343445 ~ 0.11607401295249242
+p[2] ~ quot(log(5),quot(5,4)) : i.e. 1.2874931954413982 ~ 1.2875503299472801
+p[3] ~ quot(5,prod(2,4)) : i.e. 0.6242885664909726 ~ 0.625
+p[4] ~ sum(diff(2,3),3rt(3)) : i.e. 0.44201314921603796 ~ 0.4422495703074083
+p[5] ~ log(sqrt(3)) : i.e. 0.5492597078085737 ~ 0.5493061443340548
