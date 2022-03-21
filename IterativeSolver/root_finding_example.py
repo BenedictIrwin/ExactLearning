@@ -19,25 +19,31 @@ v = np.random.uniform(0,1,size=[6])  ## hidden actual
 
 from scipy.optimize import root
 
-def fun(x,c):
-  return np.real(gamma(x[0] + x[1]*1j) - c), np.imag(gamma(x[0] + x[1]*1j) - c)
+#def fun(x,c):
+#  return np.real(gamma(x[0] + x[1]*1j) - c), np.imag(gamma(x[0] + x[1]*1j) - c)
 
 def fun(x,c):
   return gamma(x) - c
 
-def get_root(p0,p1):
+## Grad is the option to extract the b term in a+ b*s 
+## Default is to extract the a term
+def get_root(p0,p1, grad = False):
   success = False
   it = 0
+  x0 = 10
+  k = -1/1.5
   while(not success):
-    x0 = np.random.uniform(-10,50) 
-    if(it==0): x0 =10
-    r = root(fun, x0=x0, args = (p0))
-    print(r)
+    k = -1.5*k
+    if(grad): r = root(fun, x0=x0, args = (k*p1))
+    else: r = root(fun, x0=x0, args = (k*p0))
+    #print(r)
     success = r.success
     it+=1
-  return (r.x[0]-p0)/p1
+  return (r.x[0]-p0)/p1, k
 
-for i in range(1000):
+
+print("start c",c)
+for i in range(10):
   ## Initialise a space
   c_new = np.zeros(len(c))  
   
@@ -48,78 +54,67 @@ for i in range(1000):
   c_new[0] = p0*gamma(c[4])/gamma(c[2])
   c_new[1] = p1*gamma(c[4]+c[5])/gamma(c[2]+c[3])/c[0]
 
-  pp,qq = 0.74, 0.91
+  #pp,qq = -10, 0.91
   #pp,qq = np.pi, exp(1)
-  a = get_root(pp,qq)
-  print(a)
-  print(gamma(pp + a*qq))
+  #a, k = get_root(pp,qq)
 
-  exit()
-
-  root_2 = get_root(c[2],c[3])
-  print(root_2)
-  print(c[2],gamma(c[2] + root_2 * c[3]))
-  exit()
-
-  #c_new[2] =  
-  #c_new[3] =  ## derivative?
-  #c_new[4] =
-  #c_new[5] =  ## derivative?
+  ## Workign to some extent
+  #print(a,k)
+  #print("G(a+bs)",gamma(pp + a*qq))
+  #print("G(a+bs)/k",gamma(pp + a*qq)/k)
+  #print("a,b", pp, qq)
 
 
-    
-  ## Solve
+  ## Try a new function that makes
+  #Gamma(a + b * root) = a * k
+  ## With k being a number that makes a*k large and positive..
+  ## However we are not apriori going to know what a is....
+  ## But we will pretend we do as we iterate... so k is also likely to change as the iteration goes on... 
 
-  dp0 = logdivphi(0, v)
-
-  t1 = phi((1-c3)/c4, v)
-  t2 = phi((2-c3)/c4, v)
-  ##log_term = np.log(t2/t1) / np.log(c2) 
-
-  th1 = logdivphi((1-c3)/c4, v)
-  th2 = logdivphi((2-c3)/c4, v)
-
-  c3_new = t1*phi(1/c4, v)/p0/t2
+  c = np.nan_to_num(c, nan = 1)
 
 
-  #c2_new = t2**c4/t1**c4
-  #c2_new = p1/c1/gamma(c3+c4)
-  #c2_new = exp(dp0 - c4*digamma(c3))
-  c1_new = p0/gamma(c3)
-  #c4_new = 1/log_term
-  #c4_new = (dp0 - log(c2))/digamma(c3)
-  #c4_new = (dp0 - log(c2_new))/digamma(c3)# + 0.05*(th2-th1)/(1-2*g)
-  c4_new = th2 - th1
-  c2_new = exp((th2 + th1 - c4_new*(1 - 2*g))/2)
+  root_2, k_2 = get_root(c[2],c[3])
+  root_3, k_3 = get_root(c[2],c[3], True)
+  root_4, k_4 = get_root(c[4],c[5])
+  root_5, k_5 = get_root(c[4],c[5], True)
 
-  c1 = c1_new
-  c2 = c2_new
-  c3 = c3_new
-  c4 = c4_new
+
+  #print("root, k",root_2, k_2)
+  #print("c2, gamma/k",c[2],gamma(c[2] + root_2 * c[3])/k_2)
+  #print(c[2],"->",c_new[2])
   
-  print(c1,c2,c3,c4)
 
-print(v)
+  #print("root3, k3",root_3, k_3)
+  #print("c3, gamma/k3",c[3],gamma(c[2] + root_3 * c[3])/k_3)
 
-exit()
-
-M = [[1,-digamma(c3)],[2,1-2*g]]
-t = [dp0,th1+th2]
-
-sol = np.linalg.inv(M)@t
-print(sol)
-print(exp(sol))
-
-print(digamma(1))
-print(g)
-
-print(logdivphi((2-1)/0.5))
-print(logdivphi((1-1)/0.5))
-print(logdivphi((2-1)/0.5) - logdivphi((1-1)/0.5))
+  ## Upper gammas
+  c_new[2] = gamma(c[4] + c[5]*root_2)*phi(root_2,v)/k_2/c[0]/c[1]**root_2  
+  c_new[3] = gamma(c[4] + c[5]*root_3)*phi(root_3,v)/k_3/c[0]/c[1]**root_3 
 
 
-print(logdivphi((2-1)/0.5) + logdivphi((1-1)/0.5))
-print(2*log(2) + 0.5*(1 - 2*g))
+  ## Note these are lower gammas
+  c_new[4] = gamma(c[2] + c[3]*root_4)*c[0]*c[1]**root_4 * k_4/phi(root_4,v)
+  c_new[5] = gamma(c[2] + c[3]*root_5)*c[0]*c[1]**root_5 * k_5/phi(root_5,v)
+
+  #print(c,"->", c_new)
+  #print(c)
+  #for i in range(len(c_new)):
+  #  if(abs(c_new[i]) > 100): c_new[i] = np.random.uniform(-1,1)
+
+  #c = 0.99*c + 0.01*c_new
+
+  c[0] = c_new[0]
+  c[1] = c_new[1]
+  c[2] = c_new[2]
+
+
+  print(c)
+
+
+
+print("c",c)
+print("v",v)
 
 
 
