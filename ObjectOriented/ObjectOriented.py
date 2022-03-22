@@ -14,6 +14,26 @@ string_list = "a b c d e f g h i j k l m n o p q r s t u v w x y z".split(" ")
 ## In order to best examine the spaces etc.
 ## We define sets of constants
 
+
+### Notes for extensions... 
+
+## Where we have phi(s) = C K^s P_k(s)/Q_l(s) * Gamma()/Gamma() product
+## With P and Q as polynomials (i.e. Quantum Mechanics Examples)
+## We can isolate a quantity
+
+## phi'(s)/phi(s) + Q'(s)/Q(s) - P'(s)/P(s) = log(K) + Sum( digamma(...) )
+## I.e. we can insert the polynomial terms to the other side as well
+
+## This allows the logd estimator to be used for polynomial terms
+
+## In general... any new term added by product to the fingerprint i.e. zeta(s)Gamma(s)
+## When the logarithmic derivative is taken, we get the extra term, so this can be very general
+## phi'(s)/phi(s) + zeta'(s)/zeta(s)
+
+
+
+
+
 ## A dict of integers and rationals
 rationals_dict = {}
 
@@ -74,7 +94,9 @@ constant_dict = {
 "moment" : "_notzero_", 
 "logmoment" : "log(_sqrtnotzero_**2)",
 "logderivative" : "0",
-"logderivativereq" : ""
+"logderivativereq" : "",
+"logderivative2" : "0",
+"logderivative2req" : ""
 }
 
 power_dict = {
@@ -84,7 +106,9 @@ power_dict = {
 "moment" : "_notzero_**_s_", 
 "logmoment" : "_s_*log(_sqrtnotzero_**2)",
 "logderivative" : "log(_sqrtnotzero_**2)",
-"logderivativereq" : "from numpy import log"
+"logderivativereq" : "from numpy import log",
+"logderivative2" : "0",
+"logderivative2req" : ""
 }
 
 linear_gamma_dict = {
@@ -94,7 +118,9 @@ linear_gamma_dict = {
 "moment" : "gamma(_gamma-rational_ + _s_*_gamma-rational_)", 
 "logmoment" : "loggamma(_gamma-rational_ + _s_*_gamma-rational_)",
 "logderivative" : "_VAR2_*digamma(_gamma-rational_ + _s_*_gamma-rational_)",
-"logderivativereq" : "from scipy.special import digamma"
+"logderivativereq" : "from scipy.special import digamma",
+"logderivative2" : "_VAR2_**2*array([complex(psi(1,_gamma-rational_ + ss*_gamma-rational_)) for ss in _s_])",
+"logderivative2req" : "from mpmath import psi"
 }
 
 scale_gamma_dict = {
@@ -118,7 +144,9 @@ neg_linear_gamma_dict = {
 "moment" : "rgamma(_gamma-rational_ + _s_*_gamma-rational_)", 
 "logmoment" : "-loggamma(_gamma-rational_ + _s_*_gamma-rational_)",
 "logderivative" : "-_VAR2_*digamma(_gamma-rational_ + _s_*_gamma-rational_)",
-"logderivativereq" : "from scipy.special import digamma"
+"logderivativereq" : "from scipy.special import digamma",
+"logderivative2" : "-_VAR2_**2*array([complex(psi(1,_gamma-rational_ + ss*_gamma-rational_)) for ss in _s_])",
+"logderivative2req" : "from mpmath import psi"
 }
 
 neg_scale_gamma_dict = {
@@ -276,6 +304,8 @@ class ExactEstimator:
     self.fit_mode = "log"
     self.N_terms = None
 
+    self.BFGS_derivative_order = 0
+
     ## These are the object
     ## The fingerpint is the dict
     ## The function is a key that is a file (could eventually make a string) containing the function
@@ -304,6 +334,7 @@ class ExactEstimator:
 
     ## Load in the ratio dq/q which is expected to be a sum of digamma functions
     self.ratio = np.load("{}/logderivative_{}.npy".format(folder,tag))
+    self.ratio2 = np.load("{}/logderivative2_{}.npy".format(folder,tag))
 
     ## If the errors are to be found
     if(os.path.exists("{}/real_error_{}.npy".format(folder,tag))):
@@ -341,16 +372,13 @@ class ExactEstimator:
     print("Writing function: ",self.fingerprint,key)
     params = self.fingerprint.split(":")[3:]
 
-    print("WRITE FUNCTION")
-    print(params)
-
     if(self.fit_mode == "log"):
       requirements = set( term_dict[term]["logreq"] for term in params )
       terms = ":".join([ term_dict[term]["logmoment"] for term in params])
       logderivative_requirements = set( term_dict[term]["logderivativereq"] for term in params )
       logderivative_terms = ":".join([ term_dict[term]["logderivative"] for term in params])
-      print(requirements)
-      print(terms)
+      logderivative2_requirements = set( term_dict[term]["logderivative2req"] for term in params )
+      logderivative2_terms = ":".join([ term_dict[term]["logderivative2"] for term in params])
       print(logderivative_terms)
       print(logderivative_requirements)
     if(self.fit_mode == "normal"): 
@@ -376,6 +404,11 @@ class ExactEstimator:
           self.sample_array = np.arange(0,self.fingerprint_N)
           S = self.s_values[self.sample_array]
       f.write("  S = array({})\n".format(list(S)))
+
+      #print(S)
+      #print("{}".format(list(S)))
+      #exit()
+
       f.write("  ret = 0\n")
       for term in params:
         n_ = term_dict[term]["n"]
@@ -425,6 +458,40 @@ class ExactEstimator:
           f.write("  ret += {}\n".format(expression.replace("_s_","S")))
         f.write("  return ret\n")
         f.write("logderivative = frompyfunc(fp,{},1)\n".format(self.N_terms))
+    
+    ## Also write a log derivate 2 function
+    if(True):
+      with open("./Functions/"+key+"_logderivative2.py","w") as f:
+        for req in logderivative2_requirements: f.write(req+"\n")
+        f.write("from numpy import array, frompyfunc\n")
+        ### N.B. c term will do nothing
+        f.write("def fp({}):\n".format(",".join(["p{}".format(i) for i in range(self.N_terms)])))
+        iterate = 0
+        if(self.fingerprint_N=="max"):
+          S = self.s_values
+        #else:
+        #  if(self.sample_mode == "random"):
+        #    self.sample_array = np.random.choice(np.arange(self.fingerprint_N))
+        #    S = self.s_values[self.sample_array]
+        #  if(self.sample_mode == "first"): 
+        #    self.sample_array = np.arange(0,self.fingerprint_N)
+        #    S = self.s_values[self.sample_array]
+        f.write("  S = array({})\n".format(list(S)))
+        f.write("  ret = 0\n")
+        for term in params:
+          n_ = term_dict[term]["n"]
+          #if(self.fit_mode == 'log'): expression = term_dict[term]['logmoment']
+          #if(self.fit_mode == 'normal'): expression = term_dict[term]['moment']
+          expression = term_dict[term]['logderivative2']
+          for subterm in range(n_):
+            expression = expression.replace(keys[iterate+subterm],values[iterate+subterm],1)
+            ## Add an exception to reference the already used variables using a keyword
+            subterm_var = "_VAR"+str(subterm+1)+"_"
+            expression = expression.replace(subterm_var,values[iterate+subterm])
+          iterate+=n_
+          f.write("  ret += {}\n".format(expression.replace("_s_","S")))
+        f.write("  return ret\n")
+        f.write("logderivative2 = frompyfunc(fp,{},1)\n".format(self.N_terms))
 
   def set_fingerprint(self,fp_hash):
     self.fingerprint = fp_hash
@@ -458,12 +525,14 @@ class ExactEstimator:
       #with open(".\\Functions\\{}.py".format(self.function),"r") as f: flines = f.readlines()
       if('fingerprint' in globals().keys()): del globals()['fingerprint']
       if('logderivative' in globals().keys()): del globals()['logderivative']
+      if('logderivative2' in globals().keys()): del globals()['logderivative']
       
-      with open("./Functions/{}.py".format(self.function),"r") as f: flines = f.readlines()
       ## Executes the python in the custom file (i.e. a function)
+      with open("./Functions/{}.py".format(self.function),"r") as f: flines = f.readlines()
       exec("".join(flines),globals())
       with open("./Functions/{}_logderivative.py".format(self.function),"r") as f: flines = f.readlines()
-      ## Executes the python in the custom file (i.e. a function)
+      exec("".join(flines),globals())
+      with open("./Functions/{}_logderivative2.py".format(self.function),"r") as f: flines = f.readlines()
       exec("".join(flines),globals())
 
       print("Function is reset to {}!".format(self.function))
@@ -479,10 +548,13 @@ class ExactEstimator:
     ## Overwrite any existing function with the name 
     if('fingerprint' in globals().keys()): del globals()['fingerprint']
     if('logderivative' in globals().keys()): del globals()['logderivative']
+    if('logderivative2' in globals().keys()): del globals()['logderivative']
     #with open(".\\Functions\\{}.py".format(key),"r") as f: flines = f.readlines()
     with open("./Functions/{}.py".format(key),"r") as f: flines = f.readlines()
     exec("".join(flines),globals())
     with open("./Functions/{}_logderivative.py".format(key),"r") as f: flines = f.readlines()
+    exec("".join(flines),globals())
+    with open("./Functions/{}_logderivative2.py".format(key),"r") as f: flines = f.readlines()
     exec("".join(flines),globals())
 
     self.fingerprint_function_dict[self.fingerprint] = key
@@ -517,61 +589,20 @@ class ExactEstimator:
 
 
   ## A gradient based approach to get the optimial parameters for a given fingerprint
-  def BFGS(self,p0=None, logd=False):
+  def BFGS(self,p0=None, order=0):
+    #self.BFGS_derivative_order = derivative_order
     #if(p0==None): p0=np.random.random(self.N_terms)
-    if(p0==None): p0=np.random.uniform(low=-10,high=10,size=self.N_terms)
+    if(p0==None): p0=np.random.uniform(low=-1,high=1,size=self.N_terms)
     if(self.fit_mode=="log"):
-      if(logd == True):
-        f1 = self.real_logd_loss
-        f2 = self.imag_logd_loss
-      else:
-        f1 = self.real_log_loss
-        f2 = self.complex_log_loss
+      f1 = self.real_log_loss
+      f2 = self.complex_log_loss
     if(self.fit_mode == "normal"):
       print("Normal BFGS not currently supported!")
       exit()
 
-    '''  
-    print("TEST OVERRIDE!")
-    '''
-    #p0 = [np.sqrt(2**(-7/2)/3),np.sqrt(2**(1/2)),9/2,1/2]
-    #print("DEBUG_init f1: ",p0, "loss", f1(p0))
-    #print("DEBUG_init f2: ",p0, "loss", f2(p0))
-    #exit()
-    '''
-    plots(self.s_values,self.logmoments,fingerprint(*p0))
-    test = np.array(self.logmoments)
-    pred = np.array(fingerprint(*p0))[0]
-    print(test.shape)
-    print(pred.shape)
-
-    print(test[:10])
-    print(pred[:10])
-    print(np.real(test[:10]))
-    print(np.real(pred[:10]))
-    print(np.imag(test[:10]))
-    print(np.imag(pred[:10]))
-
-    from sklearn.metrics import r2_score
-
-    print(r2_score(np.real(test),np.real(pred)))
-    print(f1(p0))
-
-    exit()
-    '''
-
-    res = minimize(f1, x0=p0, method = "BFGS", tol = 1e-6)
-    #print("DEBUG_v1: ",res.x, "loss", f1(res.x)) 
-    ##plots(self.s_values,self.logmoments,fingerprint(*res.x))
-    #print("Params: ", res.x)
-    #print("Loss: ", f1(res.x))
-    res = minimize(f2, x0=res.x, method = "BFGS", tol = 1e-8)
-    #print("DEBUG_v2: ",res.x, "loss", f2(res.x)) 
-    ##plots(self.s_values,self.logmoments,fingerprint(*res.x))
-    loss = f2(res.x)
-    #print("Final Solution: ",res.x)
-    #print("Loss: ", loss)
-    ## Add this result to the list
+    res = minimize(f1, x0=p0, args = (order), method = "BFGS", tol = 1e-6)
+    res = minimize(f2, x0=res.x, args = (order), method = "BFGS", tol = 1e-8)
+    loss = f2(res.x, order)
     self.register(res.x,loss)
     return res.x, loss
 
@@ -600,41 +631,37 @@ class ExactEstimator:
     return descriptors
 
   ## Vectorised difference function
-  def real_log_loss(self,p): 
-    A = fingerprint(*p)[0]
-    B = np.abs(np.real(A)-self.real_logm)
-    B = np.maximum(0.0,B-self.real_log_diff)
+  def real_log_loss(self,p, order):
+    if(order == 0): 
+      A = fingerprint(*p)[0]
+      B = np.abs(np.real(A)-self.real_logm)
+      B = np.maximum(0.0,B-self.real_log_diff)
+    if(order == 1): 
+      A = logderivative(*p)[0]
+      B = np.abs(np.real(A)-np.real(self.ratio))
+      #B = np.maximum(0.0,B-self.real_log_diff)
+    if(order == 2): 
+      A = logderivative2(*p)[0]# - logderivative(*p)[0]**2
+      B = np.abs(np.real(A)-np.real(self.ratio2)+np.real(self.ratio**2))
+      #B = np.maximum(0.0,B-self.real_log_diff)
     return np.mean(B)
   
-## Vectorised difference function
-  def real_logd_loss(self,p): 
-    A = logderivative(*p)[0]
-    B = np.abs(np.real(A)-np.real(self.ratio))
-    #B = np.maximum(0.0,B-self.real_log_diff)
-    return np.mean(B)
-
   ## Vectorised difference function
-  def complex_log_loss(self,p):
-    #print("WARNING SELF.sample_array seems broken!")
-    #exit()
-    A = fingerprint(*p)
-    #B = np.abs(np.real(A)-self.real_logm[self.sample_array])
-    #B = np.maximum(0.0,B-self.real_log_diff[self.sample_array])
-    #C = np.abs(wrap(np.imag(A)-self.imag_logm[self.sample_array]))
-    #C = np.maximum(0.0,C-self.imag_log_diff[self.sample_array])
-    B = np.abs(np.real(A)-self.real_logm)
-    B = np.maximum(0.0,B-self.real_log_diff)
-    C = np.abs(wrap(np.imag(A)-self.imag_logm))
-    C = np.maximum(0.0,C-self.imag_log_diff)
-    return np.mean(B+C)
-
-  ## Vectorised difference function
-  def imag_logd_loss(self,p):
-    A = logderivative(*p)
-    B = np.abs(np.real(A)-np.real(self.ratio))
-    #B = np.maximum(0.0,B-self.real_log_diff)
-    C = np.abs(wrap(np.imag(A)-np.imag(self.ratio)))
-    #C = np.maximum(0.0,C-self.imag_log_diff)
+  def complex_log_loss(self,p,order):
+    if(order == 0): 
+      A = fingerprint(*p)
+      B = np.abs(np.real(A)-self.real_logm)
+      B = np.maximum(0.0,B-self.real_log_diff)
+      C = np.abs(wrap(np.imag(A)-self.imag_logm))
+      C = np.maximum(0.0,C-self.imag_log_diff)
+    if(order == 1): 
+      A = logderivative(*p)
+      B = np.abs(np.real(A)-np.real(self.ratio))
+      C = np.abs(wrap(np.imag(A)-np.imag(self.ratio)))
+    if(order == 2): 
+      A = logderivative2(*p)# - logderivative(*p)**2
+      B = np.abs(np.real(A)-np.real(self.ratio2)+np.real(self.ratio**2))
+      C = np.abs(wrap(np.imag(A)-np.imag(self.ratio2)+np.imag(self.ratio**2)))
     return np.mean(B+C)
 
   def set_mode(self,mode): 
@@ -651,9 +678,8 @@ class ExactEstimator:
     for i,j in zip(keys,minimum_loss):
       print(i,j)
 
-  def point_evaluation(self, q, logd = False):
-    if(logd == True): return self.real_logd_loss(q), self.imag_logd_loss(q)
-    return self.real_log_loss(q), self.complex_log_loss(q)
+  def point_evaluation(self, q, order = 0):
+    return self.real_log_loss(q, order), self.complex_log_loss(q, order)
 
   ## A function which suggests possible closed forms
   def speculate(self, samples = None, k = 4):
@@ -748,12 +774,20 @@ def gen_fpdict(parlist,N='max',mode='first',name=''):
 
 
 
+#### Working Example... ####
+EE = ExactEstimator("Simple_Exponential", folder = "Simple_Exponential")
+EE.set_fingerprint( gen_fpdict(['linear-gamma']))
+for i in range(3): EE.BFGS(order=2)
+EE.speculate(samples = 1, k = 4)
+############################
+
+exit()
 
 ##
-#EE = ExactEstimator("Disk_Line_Picking", folder = "Disk_Line_Picking")
-EE = ExactEstimator("Chi_Distribution", folder = "Chi_Distribution")
-#fps = [gen_fpdict(['c','linear-gamma','linear-gamma','neg-linear-gamma','neg-linear-gamma','neg-linear-gamma'])]
-fps = [gen_fpdict(['c','c^s','linear-gamma'])]
+EE = ExactEstimator("Disk_Line_Picking", folder = "Disk_Line_Picking")
+#EE = ExactEstimator("Chi_Distribution", folder = "Chi_Distribution")
+fps = [gen_fpdict(['c','c^s','linear-gamma','linear-gamma','neg-linear-gamma','neg-linear-gamma'])]
+#fps = [gen_fpdict(['c','c^s','linear-gamma'])]
 for k in fps:
   print("Setting Fingerprint: ",k)
   EE.set_fingerprint(k)
@@ -762,25 +796,44 @@ for k in fps:
   ##EE.preseed(1000, logd = True)
 
   ##exit()
-  n_bfgs = 100
+  n_bfgs = 50
   for i in range(n_bfgs):
-    EE.BFGS(logd = True)
+    EE.BFGS(order = 1)
     print("{}%".format(100*(i+1)/n_bfgs),flush=True)
 
 print("Completed!")
 EE.speculate(samples = 1, k = 4)
 
-#optimal_points = [np.sqrt(2),2,1,3,1,3,1,2,1/2,3,1/2]
-optimal_points = [np.sqrt(2**(-7/2)/3),np.sqrt(2**(1/2)),9/2,1/2]
+optimal_points = [2/np.pi**(1/4),np.sqrt(2),1,1/2,1,1,2,1,5/2,1/2]
+#optimal_points = [np.sqrt(2**(-7/2)/3),np.sqrt(2**(1/2)),9/2,1/2]
+print(optimal_points)
+print(np.array(optimal_points).shape)
 
-loss = EE.point_evaluation(optimal_points)
+
+print("Theoretical Best!")
+loss = EE.point_evaluation(optimal_points, order = 0)
 print("log phi(s)",loss,optimal_points)
-
-loss = EE.point_evaluation(optimal_points, logd = True)
+loss = EE.point_evaluation(optimal_points, order = 1)
 print("D_s log phi(s)",loss,optimal_points)
+loss = EE.point_evaluation(optimal_points, order = 2)
+print("D_s D_s log phi(s)",loss,optimal_points)
 
-#plots(EE.s_values,EE.logmoments,fingerprint(*optimal_points))
-#plots(EE.s_values,EE.ratio,logderivative(*optimal_points))
+plots(EE.s_values,EE.logmoments,fingerprint(*optimal_points))
+plots(EE.s_values,EE.ratio,logderivative(*optimal_points))
+plots(EE.s_values,EE.ratio2-EE.ratio**2,logderivative2(*optimal_points))
+
+print("\n~~~ Numerical Best! ~~~")
+loss = EE.point_evaluation(EE.best_params, order = 0)
+print("log phi(s)",loss,EE.best_params)
+loss = EE.point_evaluation(EE.best_params, order = 1)
+print("D_s log phi(s)",loss,EE.best_params)
+loss = EE.point_evaluation(EE.best_params, order = 2)
+print("D_s D_s log phi(s)",loss,EE.best_params)
+
+pp = EE.best_params
+plots(EE.s_values,EE.logmoments,fingerprint(*pp))
+plots(EE.s_values,EE.ratio,logderivative(*pp))
+plots(EE.s_values,EE.ratio2-EE.ratio**2,logderivative2(*pp))
 
 exit()
 

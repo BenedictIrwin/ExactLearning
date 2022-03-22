@@ -45,7 +45,6 @@ s_size = 10
 s1 = np.random.uniform(low = 1, high = 5, size = s_size)
 s2 = np.random.uniform(low = -1*np.pi, high = 1*np.pi, size = s_size)
 s = np.expand_dims(s1 + s2*1j, axis = 0)
-print(s)
 
 #s = np.array([1+0j,2+0j,3+0j,4+0j, 1.5+1j, 1.5-1j, 2.5+1.5j, 2.5-1.5j])
 
@@ -56,9 +55,10 @@ print(s)
 ## For each moment, get the expectation of s-1 for Mellin Transform
 q = np.mean(np.power(np.expand_dims(random_samples,1),s-1),axis=0)
 dq = np.mean( np.expand_dims(np.log(random_samples), axis = 1) * np.power(np.expand_dims(random_samples,1),s-1),axis=0)
+ddq = np.mean( np.expand_dims(np.log(random_samples)**2, axis = 1) * np.power(np.expand_dims(random_samples,1),s-1),axis=0)
+s = s[0]
 
-
-if(True):
+if(False):
   ax = plt.axes(projection='3d')
   # Data for three-dimensional scattered points
   ax.scatter3D(np.real(s), np.imag(s), np.real(q), c=np.real(q), cmap='Reds');
@@ -83,5 +83,6 @@ np.save("s_values_{}".format(keyword),s)
 np.save("moments_{}".format(keyword),q)
 np.save("logmoments_{}".format(keyword),np.log(q))
 np.save("logderivative_{}".format(keyword),dq/q)
+np.save("logderivative2_{}".format(keyword),ddq/q)
 #np.save("real_error_{}".format(keyword),qre)
 #np.save("imag_error_{}".format(keyword),qie)
