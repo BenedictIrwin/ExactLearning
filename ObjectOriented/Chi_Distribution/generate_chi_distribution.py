@@ -55,6 +55,8 @@ print(s)
 
 ## For each moment, get the expectation of s-1 for Mellin Transform
 q = np.mean(np.power(np.expand_dims(random_samples,1),s-1),axis=0)
+dq = np.mean( np.expand_dims(np.log(random_samples), axis = 1) * np.power(np.expand_dims(random_samples,1),s-1),axis=0)
+
 
 if(True):
   ax = plt.axes(projection='3d')
@@ -80,5 +82,6 @@ if(True):
 np.save("s_values_{}".format(keyword),s)
 np.save("moments_{}".format(keyword),q)
 np.save("logmoments_{}".format(keyword),np.log(q))
+np.save("logderivative_{}".format(keyword),dq/q)
 #np.save("real_error_{}".format(keyword),qre)
 #np.save("imag_error_{}".format(keyword),qie)
