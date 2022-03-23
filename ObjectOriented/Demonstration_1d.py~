@@ -1,0 +1,23 @@
+from ObjectOriented import *
+
+#### Working Example... ####
+EE = ExactEstimator("Simple_Exponential", folder = "Simple_Exponential")
+EE.set_fingerprint( gen_fpdict(['linear-gamma']))
+n_bfgs = 100
+for i in range(n_bfgs): 
+  EE.BFGS(order=2)
+  print("{}%".format(100*(i+1)/n_bfgs),flush=True)
+EE.speculate(samples = 1, k = 4)
+############################
+
+
+#### Working Example... ####
+EE = ExactEstimator("Beta_Distribution", folder = "Beta_Distribution")
+EE.set_fingerprint( gen_fpdict(['c','shift-gamma','neg-shift-gamma']))
+n_bfgs = 100
+for i in range(n_bfgs): 
+  EE.BFGS(order=2)
+  print("{}%".format(100*(i+1)/n_bfgs),flush=True)
+EE.speculate(samples = 1, k = 4)
+############################
+
