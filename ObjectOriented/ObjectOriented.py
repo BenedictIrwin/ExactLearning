@@ -119,8 +119,9 @@ linear_gamma_dict = {
 "logmoment" : "loggamma(_gamma-rational_ + _s_*_gamma-rational_)",
 "logderivative" : "_VAR2_*digamma(_gamma-rational_ + _s_*_gamma-rational_)",
 "logderivativereq" : "from scipy.special import digamma",
-"logderivative2" : "_VAR2_**2*array([complex(psi(1,_gamma-rational_ + ss*_gamma-rational_)) for ss in _s_])",
-"logderivative2req" : "from mpmath import psi"
+"logderivative2" : "_VAR2_**2*np.trigamma(_gamma-rational_ + _s_*_gamma-rational_)",
+#"logderivative2req" : "from mpmath import psi"
+"logderivative2req" : "from AdvancedFunctions import *"
 }
 
 scale_gamma_dict = {
@@ -145,8 +146,10 @@ neg_linear_gamma_dict = {
 "logmoment" : "-loggamma(_gamma-rational_ + _s_*_gamma-rational_)",
 "logderivative" : "-_VAR2_*digamma(_gamma-rational_ + _s_*_gamma-rational_)",
 "logderivativereq" : "from scipy.special import digamma",
-"logderivative2" : "-_VAR2_**2*array([complex(psi(1,_gamma-rational_ + ss*_gamma-rational_)) for ss in _s_])",
-"logderivative2req" : "from mpmath import psi"
+#"logderivative2" : "-_VAR2_**2*array([complex(psi(1,_gamma-rational_ + ss*_gamma-rational_)) for ss in _s_])",
+"logderivative2" : "-_VAR2_**2*np.trigamma(_gamma-rational_ + _s_*_gamma-rational_)",
+#"logderivative2req" : "from mpmath import psi"
+"logderivative2req" : "from AdvancedFunctions import *"
 }
 
 neg_scale_gamma_dict = {
@@ -777,7 +780,10 @@ def gen_fpdict(parlist,N='max',mode='first',name=''):
 #### Working Example... ####
 EE = ExactEstimator("Simple_Exponential", folder = "Simple_Exponential")
 EE.set_fingerprint( gen_fpdict(['linear-gamma']))
-for i in range(3): EE.BFGS(order=2)
+n_bfgs = 100
+for i in range(n_bfgs): 
+  EE.BFGS(order=2)
+  print("{}%".format(100*(i+1)/n_bfgs),flush=True)
 EE.speculate(samples = 1, k = 4)
 ############################
 
