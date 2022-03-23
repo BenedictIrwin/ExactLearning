@@ -3,12 +3,15 @@ from ObjectOriented import *
 #### Working Example... ####
 EE = ExactEstimator("Simple_Exponential", folder = "Simple_Exponential")
 EE.set_fingerprint( gen_fpdict(['linear-gamma']))
-n_bfgs = 10
+n_bfgs = 1
 for i in range(n_bfgs): 
   EE.BFGS(order=2)
   print("{}%".format(100*(i+1)/n_bfgs),flush=True)
-EE.speculate(samples = 1, k = 4)
+EE.speculate(k = 4)
 ############################
+
+EE.cascade_search()
+
 
 
 #### Working Example... ####
@@ -18,8 +21,10 @@ n_bfgs = 10
 for i in range(n_bfgs): 
   EE.BFGS(order=2)
   print("{}%".format(100*(i+1)/n_bfgs),flush=True)
-EE.speculate(samples = 1, k = 4)
+EE.speculate(k = 4)
 ############################
+
+EE.cascade_search()
 
 exit()
 

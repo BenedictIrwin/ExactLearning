@@ -104,6 +104,8 @@ global_trees_dict = { i : KDTree([ [j] for j in global_constants_dict[i].values(
 
 ## Add a square to insist on positive log
 constant_dict = {
+"MMA" : "_sqrtnotzero_**2",
+"sympy" : "_sqrtnotzero_**2",
 "n" : 1, 
 "req" : "", 
 "logreq" : "from numpy import log", 
@@ -112,7 +114,8 @@ constant_dict = {
 "logderivative" : "0",
 "logderivativereq" : "",
 "logderivative2" : "0",
-"logderivative2req" : ""
+"logderivative2req" : "",
+"terms" : ["_sqrtnotzero_"]
 }
 
 power_dict = {
@@ -124,7 +127,8 @@ power_dict = {
 "logderivative" : "log(_sqrtnotzero_**2)",
 "logderivativereq" : "from numpy import log",
 "logderivative2" : "0",
-"logderivative2req" : ""
+"logderivative2req" : "",
+"terms" : ["_sqrtnotzero_"]
 }
 
 linear_gamma_dict = {
@@ -136,7 +140,10 @@ linear_gamma_dict = {
 "logderivative" : "_VAR2_*digamma(_gamma-rational_ + _s_*_gamma-rational_)",
 "logderivativereq" : "from scipy.special import digamma",
 "logderivative2" : "_VAR2_**2*np.trigamma(_gamma-rational_ + _s_*_gamma-rational_)",
-"logderivative2req" : "from AdvancedFunctions import *"
+"logderivative2req" : "from AdvancedFunctions import *",
+"MMA" : "Gamma[_gamma-rational_ + _s_*_gamma-rational_]",
+"sympy" : "gamma(_gamma-rational_ + _s_*_gamma-rational_)",
+"terms" : ["_gamma-rational_","_gamma-rational_"]
 }
 
 scale_gamma_dict = {
@@ -144,7 +151,8 @@ scale_gamma_dict = {
 "req" : "from scipy.special import gamma", 
 "logreq" : "from scipy.special import loggamma", 
 "moment" : "gamma(_s_*_gamma-rational_)", 
-"logmoment" : "loggamma(_s_*_gamma-rational_)"
+"logmoment" : "loggamma(_s_*_gamma-rational_)",
+"terms" : ["_gamma-rational_"]
 }
 
 shift_gamma_dict = {
@@ -156,7 +164,10 @@ shift_gamma_dict = {
 "logderivative" : "digamma(_gamma-rational_ + _s_)",
 "logderivativereq" : "from scipy.special import digamma",
 "logderivative2" : "np.trigamma(_gamma-rational_ + _s_)",
-"logderivative2req" : "from AdvancedFunctions import *"
+"logderivative2req" : "from AdvancedFunctions import *",
+"MMA" : "Gamma[_gamma-rational_ + _s_]",
+"sympy" : "gamma(_gamma-rational_ + _s_)",
+"terms" : ["_gamma-rational_"]
 }
 
 neg_linear_gamma_dict = {
@@ -170,15 +181,18 @@ neg_linear_gamma_dict = {
 #"logderivative2" : "-_VAR2_**2*array([complex(psi(1,_gamma-rational_ + ss*_gamma-rational_)) for ss in _s_])",
 "logderivative2" : "-_VAR2_**2*np.trigamma(_gamma-rational_ + _s_*_gamma-rational_)",
 #"logderivative2req" : "from mpmath import psi"
-"logderivative2req" : "from AdvancedFunctions import *"
+"logderivative2req" : "from AdvancedFunctions import *",
+"terms" : ["_gamma-rational_","_gamma-rational_"]
 }
 
 neg_scale_gamma_dict = {
-        "n" : 1, 
-        "req" : "from scipy.special import rgamma", 
-        "logreq" : "from scipy.special import loggamma", 
-        "moment" : "rgamma(_s_*_gamma-rational_)", 
-        "logmoment" : "-loggamma(_s_*_gamma-rational_)"}
+"n" : 1, 
+"req" : "from scipy.special import rgamma", 
+"logreq" : "from scipy.special import loggamma", 
+"moment" : "rgamma(_s_*_gamma-rational_)", 
+"logmoment" : "-loggamma(_s_*_gamma-rational_)",
+"terms" : ["_gamma-rational_"]
+}
 
 neg_shift_gamma_dict = {
 "n" : 1, 
@@ -189,7 +203,10 @@ neg_shift_gamma_dict = {
 "logderivative" : "-digamma(_gamma-rational_ + _s_)",
 "logderivativereq" : "from scipy.special import digamma",
 "logderivative2" : "-np.trigamma(_gamma-rational_ + _s_)",
-"logderivative2req" : "from AdvancedFunctions import *"
+"logderivative2req" : "from AdvancedFunctions import *",
+"MMA" : "(Gamma[_gamma-rational_ + _s_])^(-1)",
+"sympy" : "(gamma(_gamma-rational_ + _s_))**(-1)",
+"terms" : ["_gamma-rational_"]
 }
 ## We only have one constant and let the prefactor absorb the scaling
 P1_dict = {
@@ -710,7 +727,7 @@ class ExactEstimator:
     return self.real_log_loss(q, order), self.complex_log_loss(q, order)
 
   ## A function which suggests possible closed forms
-  def speculate(self, samples = None, k = 4):
+  def speculate(self, k = 4):
     print("Best result is: ")
     print("- Fingerprint: ",self.best_fingerprint)
     print("- Parameters: ",self.best_params)
@@ -727,12 +744,17 @@ class ExactEstimator:
     print("~~~~~~~~~~~~~~~~~~~~~~~~~")
 
     ## A place to store lists of samples
-    sample_dict = {i : [] for i in terms_list.keys()}
+
+    results_dict = {}
+
+    #sample_dict = {i : [] for i in terms_list.keys()}
+    #terms_dict = {i : [] for i in terms_list.keys()}
 
     ## For each parameter get the correct list:KDTree pair
     for par,value in zip(terms_list.keys(),self.best_params):
       term_type = terms_list[par]
       ## Could do a search within  tolerance or just do nearest neighbours
+
 
       ## For the parameters that were fixed to squared to keep 
       if( term_type == "_sqrtnotzero_"):
@@ -748,18 +770,26 @@ class ExactEstimator:
       d_sum = np.sum([ np.exp(-d/np.mean(distances)) for d in distances ])
       probs = [ np.exp(-d/np.mean(distances))/d_sum for d in distances ]
 
+      results_dict[par] = {}
+      results_dict[par]["term_type"] = term_type
+      results_dict[par]["best"] = value
+      results_dict[par]["distances"] = distances
+      results_dict[par]["probs"] = probs
+      results_dict[par]["guesses"] = dict_IDs
 
       #### ADD SOMETHING LIKE if _sqrtnotzero_, just do 'best', or historical values, or random...
       #### Later we might want to make a comprehensive dict of values like 2^(-7/2), but could be huge...
       #### For gamma linear just do the best few
-      if( term_type == "_sqrtnotzero_" ):
-        sample_dict[par] = [value for i in range(samples)]        
-      else:
-        samp = np.random.choice([i for i in range(k)], size = samples, p = probs)
-        sample_dict[par] = [ dict_IDs[j] for j in samp]
-        sample_dict[par] = [global_constants_dict[term_type][q] for q in sample_dict[par]]
+      #if( term_type == "_sqrtnotzero_" ):
+      #  sample_dict[par] = [value for i in range(samples)]        
+      #else:
+      #  samp = np.random.choice([i for i in range(k)], size = samples, p = probs)
+      #  print(samp)
+      #  terms_dict[par] = [ dict_IDs[j] for j in samp]
+      #  sample_dict[par] = [global_constants_dict[term_type][q] for q in terms_dict[par]]
+      #  terms_dict[par] = dict_IDs.copy()
 
-      for i, delta, p in zip(dict_IDs,distances, probs):
+      for i, delta, p in zip(dict_IDs, distances, probs):
         delta = np.round(delta, decimals = 8)
         p = np.round(p, decimals = 3)
         ##i = i.replace("/1","")
@@ -770,18 +800,105 @@ class ExactEstimator:
       
       print("*** ","~~~"," ***") 
 
-    p0 = [np.sqrt(2**(-7/2)/3),np.sqrt(2**(1/2)),9/2,1/2]
-    print("Ideal (test)--> ", p0)
+    #p0 = [np.sqrt(2**(-7/2)/3),np.sqrt(2**(1/2)),9/2,1/2]
+    #print("Ideal (test)--> ", p0)
     #if(samples == None): return []
 
-    samp_points = []
+    ## Need to overhaul this such that on the first pass it generates all of the information
+    ## Then below it does a clean sampling on obviously named lists and writes out the results
+    #print(results_dict)
+
+
+    #samp_points = []
     ## Generate samples
     #print(sample_dict)
-    samples = np.vstack(list(sample_dict.values())).T
-    samples = np.unique(samples,axis = 0)
+    #samples = np.vstack(list(sample_dict.values())).T
+    #terms = np.vstack(list(terms_dict.values())).T
+    #samples = np.unique(samples,axis = 0)
+    #terms = np.unique(terms,axis = 0)
+    #probs = 0
     #print(samples.shape)
-    return samples
+    return results_dict
     #exit()
+
+  def most_likely_from_results(self, results):
+    p = []
+    for i in results.keys():
+      am = np.argmax(results[i]["probs"])
+      #print(i,results[i],results[i]["guesses"][am])
+      p.append(results[i]["guesses"][am])
+    return p
+
+  def print_function_from_guess(self, p, language = "MMA"):
+    print(self.fingerprint)
+    fp_list = self.fingerprint.split(":")[3:]
+    print(fp_list)
+    string_list = []
+    itr = 0
+    for i in fp_list:
+      #print(term_dict[i])
+      #print(term_dict[i][language])
+      expression = term_dict[i][language]
+      for tt in range(term_dict[i]["n"]):
+        expression = expression.replace(term_dict[i]["terms"][tt],p[itr],1)
+        itr+=1
+      string_list.append(expression)
+    string = " * ".join(string_list)
+    string = string.replace("_s_","s")
+    return string
+
+  ## Given a sympy result attempt the inverse Mellin Transform
+  ## This should return a functional form that can be used to inspect the original data...
+  def compute_inverse_mellin_transform(self, fingerprint):
+    from sympy import inverse_mellin_transform, oo, gamma
+    from sympy.abc import x, s
+    result = eval("inverse_mellin_transform({}, s, x, (0, oo))".format(fingerprint))
+    return result
+
+
+  ## A function that attempts to generally solve with a given fingerprint
+  def cascade_search(self):
+    ## First do a few high order BFGS to get gamma parameters
+    print("Getting Order 2 BFGS")
+    for i in range(10):
+      self.BFGS(order = 2)
+    ## Get the best params,
+    ## Check for consistency in order 1 and order 0
+    results = self.speculate()
+    #print(results)
+    p_best = self.most_likely_from_results(results)
+    print(p_best)
+    string = self.print_function_from_guess(p_best, "sympy")
+    print(string) 
+
+    function_guess = self.compute_inverse_mellin_transform(string)
+    print(function_guess)
+
+    ## A new function that samples results of a speculate()
+
+
+    ##
+    ## Check for rounded parameters high high probability
+
+    ## Specifically for 0 shift and 1 scale parameters consider a reduction in the fingerprint definition?
+
+
+
+    ## Reenter the rounded combinations to get losses
+
+    ## Decide on which parameters to fix...
+
+    ## Perform a constrained BFGS! (We might have to write a different method)...
+    ## Ideally it will only optimize over a few variables and expands the solution vector as it goes..
+
+    ## For parameters of the form :c: perform a simple normalisation!
+
+    ## For parameters of the form :c^s: perform a log(c) trick...
+
+    #OR syMPY## Return a guess at the closed form (in Mathematica Language)
+    
+
+
 
 
 ## A function that helps
@@ -799,6 +916,11 @@ def gen_fpdict(parlist,N='max',mode='first',name=''):
     exit()
   hash_string = ":".join([name,mode,str(N),hash_string])
   return hash_string
+
+
+
+
+
 
 
 
