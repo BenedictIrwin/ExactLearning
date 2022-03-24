@@ -51,8 +51,8 @@ plt.show()
 
 
 
-## Generate reail and imaginary part complex moments
-s_size = 150
+## Generate real and imaginary part complex moments
+s_size = 10
 s1 = np.random.uniform(low = 1, high = 7, size = s_size)
 s2 = np.random.uniform(low = -1*np.pi, high = 1*np.pi, size = s_size)
 s = np.expand_dims(s1 + s2*1j, axis = 0)
@@ -80,6 +80,7 @@ from scipy.special import gamma
 
 dq = np.mean( np.expand_dims(np.log(lengths), axis = 1) * np.power(np.expand_dims(lengths,1),s-1),axis=0)
 ddq = np.mean( np.expand_dims(np.log(lengths)**2, axis = 1) * np.power(np.expand_dims(lengths,1),s-1),axis=0)
+dddq = np.mean( np.expand_dims(np.log(lengths)**3, axis = 1) * np.power(np.expand_dims(lengths,1),s-1),axis=0)
 s = s[0]
 
 ## Get the ratio...
@@ -116,6 +117,7 @@ np.save("logmoments_{}".format(keyword),np.log(q))
 np.save("derivative_{}".format(keyword),dq)
 np.save("logderivative_{}".format(keyword),dq/q)
 np.save("logderivative2_{}".format(keyword),ddq/q)
+np.save("logderivative3_{}".format(keyword),dddq/q)
 
 
 

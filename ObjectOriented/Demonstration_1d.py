@@ -1,6 +1,50 @@
 from ObjectOriented import *
 
 
+
+##
+EE = ExactEstimator("Disk_Line_Picking", folder = "Disk_Line_Picking")
+#EE = ExactEstimator("Chi_Distribution", folder = "Chi_Distribution")
+fps = [gen_fpdict(['c','c^s','linear-gamma','linear-gamma','neg-linear-gamma','neg-linear-gamma'])]
+fps = [gen_fpdict(['c','c^s','linear-gamma','neg-linear-gamma','neg-P1'])]
+fps = [gen_fpdict(['c','c^s','alt-linear-gamma','alt-neg-linear-gamma','neg-P1'])]
+#fps = [gen_fpdict(['c','c^s','linear-gamma'])]
+for k in fps:
+  print("Setting Fingerprint: ",k)
+  EE.set_fingerprint(k)
+
+  ## Do a bit of a random search
+  ##EE.preseed(1000, logd = True)
+
+  ##exit()
+  n_bfgs = 10
+  for i in range(n_bfgs):
+    EE.BFGS(order = 2)
+    print("{}%".format(100*(i+1)/n_bfgs),flush=True)
+
+print("Completed!")
+EE.speculate(k = 4)
+
+EE.cascade_search()
+
+exit()
+
+#### Working Example... ####
+EE = ExactEstimator("Simple_Exponential", folder = "Simple_Exponential")
+EE.set_fingerprint( gen_fpdict(['linear-gamma']))
+EE.set_fingerprint( gen_fpdict(['scale-gamma']))
+n_bfgs = 1
+for i in range(n_bfgs): 
+  EE.BFGS(order=2)
+  print("{}%".format(100*(i+1)/n_bfgs),flush=True)
+EE.speculate(k = 4)
+############################
+
+EE.cascade_search()
+exit()
+
+
+
 #### Working Example... ####
 EE = ExactEstimator("Beta_Distribution", folder = "Beta_Distribution")
 EE.set_fingerprint( gen_fpdict(['c','shift-gamma','neg-shift-gamma']))
@@ -28,17 +72,6 @@ EE.speculate(k = 4)
 
 EE.cascade_search()
 
-#### Working Example... ####
-EE = ExactEstimator("Simple_Exponential", folder = "Simple_Exponential")
-EE.set_fingerprint( gen_fpdict(['linear-gamma']))
-n_bfgs = 1
-for i in range(n_bfgs): 
-  EE.BFGS(order=2)
-  print("{}%".format(100*(i+1)/n_bfgs),flush=True)
-EE.speculate(k = 4)
-############################
-
-EE.cascade_search()
 
 
 

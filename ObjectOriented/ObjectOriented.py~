@@ -107,7 +107,7 @@ poly_coeff_dict = rationals_dict.copy()
 
 
 ## A global list of constants, this is used for key matching
-global_constants_dict = { "_notzero_" : not_zero_dict, "_sqrtnotzero_" : sqrt_not_zero_dict, "_gamma-rational_" : rationals_dict, "_hyp-arg_" : hyp_arg_dict, "poly-coeff" : poly_coeff_dict }
+global_constants_dict = { "_notzero_" : not_zero_dict, "_sqrtnotzero_" : sqrt_not_zero_dict, "_gamma-rational_" : rationals_dict, "_hyp-arg_" : hyp_arg_dict, "_poly-coeff_" : poly_coeff_dict }
 
 ## This is a dict of trees for lookup of each type of constant
 global_trees_dict = { i : KDTree([ [j] for j in global_constants_dict[i].values() ]) for i in global_constants_dict.keys() }
@@ -115,8 +115,6 @@ global_trees_dict = { i : KDTree([ [j] for j in global_constants_dict[i].values(
 
 ## Add a square to insist on positive log
 constant_dict = {
-"MMA" : "_sqrtnotzero_**2",
-"sympy" : "_sqrtnotzero_**2",
 "n" : 1, 
 "req" : "", 
 "logreq" : "from numpy import log", 
@@ -126,7 +124,9 @@ constant_dict = {
 "logderivativereq" : "",
 "logderivative2" : "0",
 "logderivative2req" : "",
-"terms" : ["_sqrtnotzero_"]
+"terms" : ["_sqrtnotzero_"],
+"MMA" : "_sqrtnotzero_**2",
+"sympy" : "_sqrtnotzero_**2",
 }
 
 power_dict = {
@@ -159,13 +159,34 @@ linear_gamma_dict = {
 "terms" : ["_gamma-rational_","_gamma-rational_"]
 }
 
+alt_linear_gamma_dict = {
+"n" : 2, 
+"req" : "from scipy.special import gamma", 
+"logreq" : "from scipy.special import loggamma", 
+"moment" : "gamma(_VAR2_*_gamma-rational_ + _s_*_gamma-rational_)", 
+"logmoment" : "loggamma(_VAR2_*_gamma-rational_ + _s_*_gamma-rational_)",
+"logderivative" : "_VAR2_*digamma(_VAR2_*_gamma-rational_ + _s_*_gamma-rational_)",
+"logderivativereq" : "from scipy.special import digamma",
+"logderivative2" : "_VAR2_**2*np.trigamma(_VAR2_*_gamma-rational_ + _s_*_gamma-rational_)",
+"logderivative2req" : "from AdvancedFunctions import *",
+"MMA" : "Gamma[_VAR2_*_gamma-rational_ + _s_*_gamma-rational_]",
+"sympy" : "gamma(_VAR2_*_gamma-rational_ + _s_*_gamma-rational_)",
+"terms" : ["_gamma-rational_","_gamma-rational_"]
+}
+
 scale_gamma_dict = {
 "n" : 1, 
 "req" : "from scipy.special import gamma", 
 "logreq" : "from scipy.special import loggamma", 
 "moment" : "gamma(_s_*_gamma-rational_)", 
 "logmoment" : "loggamma(_s_*_gamma-rational_)",
-"terms" : ["_gamma-rational_"]
+"terms" : ["_gamma-rational_"],
+"logderivative" : "_VAR1_*digamma(_s_*_gamma-rational_)",
+"logderivativereq" : "from scipy.special import digamma",
+"logderivative2" : "_VAR1_**2*np.trigamma(_s_*_gamma-rational_)",
+"logderivative2req" : "from AdvancedFunctions import *",
+"MMA" : "Gamma[_s_*_gamma-rational_]",
+"sympy" : "gamma(_s_*_gamma-rational_)",
 }
 
 shift_gamma_dict = {
@@ -191,10 +212,25 @@ neg_linear_gamma_dict = {
 "logmoment" : "-loggamma(_gamma-rational_ + _s_*_gamma-rational_)",
 "logderivative" : "-_VAR2_*digamma(_gamma-rational_ + _s_*_gamma-rational_)",
 "logderivativereq" : "from scipy.special import digamma",
-#"logderivative2" : "-_VAR2_**2*array([complex(psi(1,_gamma-rational_ + ss*_gamma-rational_)) for ss in _s_])",
 "logderivative2" : "-_VAR2_**2*np.trigamma(_gamma-rational_ + _s_*_gamma-rational_)",
-#"logderivative2req" : "from mpmath import psi"
 "logderivative2req" : "from AdvancedFunctions import *",
+"terms" : ["_gamma-rational_","_gamma-rational_"],
+"MMA" : "(Gamma[_gamma-rational_ + _s_*_gamma-rational_])^(-1)",
+"sympy" : "(gamma(_gamma-rational_ + _s_*_gamma-rational_))**(-1)",
+}
+
+alt_neg_linear_gamma_dict = {
+"n" : 2, 
+"req" : "from scipy.special import gamma", 
+"logreq" : "from scipy.special import loggamma", 
+"moment" : "gamma(_VAR2_*_gamma-rational_ + _s_*_gamma-rational_)", 
+"logmoment" : "loggamma(_VAR2_*_gamma-rational_ + _s_*_gamma-rational_)",
+"logderivative" : "_VAR2_*digamma(_VAR2_*_gamma-rational_ + _s_*_gamma-rational_)",
+"logderivativereq" : "from scipy.special import digamma",
+"logderivative2" : "_VAR2_**2*np.trigamma(_VAR2_*_gamma-rational_ + _s_*_gamma-rational_)",
+"logderivative2req" : "from AdvancedFunctions import *",
+"MMA" : "Gamma[_VAR2_*_gamma-rational_ + _s_*_gamma-rational_]",
+"sympy" : "gamma(_VAR2_*_gamma-rational_ + _s_*_gamma-rational_)",
 "terms" : ["_gamma-rational_","_gamma-rational_"]
 }
 
@@ -204,7 +240,13 @@ neg_scale_gamma_dict = {
 "logreq" : "from scipy.special import loggamma", 
 "moment" : "rgamma(_s_*_gamma-rational_)", 
 "logmoment" : "-loggamma(_s_*_gamma-rational_)",
-"terms" : ["_gamma-rational_"]
+"terms" : ["_gamma-rational_"],
+"logderivative" : "-_VAR1_*digamma(_s_*_gamma-rational_)",
+"logderivativereq" : "from scipy.special import digamma",
+"logderivative2" : "-_VAR1_**2*np.trigamma(_s_*_gamma-rational_)",
+"logderivative2req" : "from AdvancedFunctions import *",
+"MMA" : "(Gamma[_s_*_gamma-rational_])^(-1)",
+"sympy" : "(gamma(_s_*_gamma-rational_))**(-1)",
 }
 
 neg_shift_gamma_dict = {
@@ -223,11 +265,34 @@ neg_shift_gamma_dict = {
 }
 ## We only have one constant and let the prefactor absorb the scaling
 P1_dict = {
-        "n" : 1, 
-        "req" : "", 
-        "logreq" : "from numpy import log", 
-        "moment" : "(1 + _s_*_poly-coeff_)", 
-        "logmoment" : "log(1 + _s_*_poly-coeff_)"}
+"n" : 1, 
+"req" : "", 
+"logreq" : "from numpy import log", 
+"moment" : "(1 + _s_*_poly-coeff_)", 
+"logmoment" : "log(1 + _s_*_poly-coeff_)",
+"logderivative" : "_VAR1_/(1 + _s_*_poly-coeff_)",
+"logderivativereq" : "",
+"logderivative2" : "-_VAR1_**2/(1+_s_*_poly-coeff_)**2",
+"logderivative2req" : "",
+"MMA" : "(1 + _s_*_poly-coeff_)",
+"sympy" : "(1 + _s_*_poly-coeff_)",
+"terms" : ["_poly-coeff_"]
+}
+
+neg_P1_dict = {
+"n" : 1, 
+"req" : "", 
+"logreq" : "from numpy import log", 
+"moment" : "(1 + _s_*_poly-coeff_)", 
+"logmoment" : "log(1 + _s_*_poly-coeff_)",
+"logderivative" : "-_VAR1_/(1 + _s_*_poly-coeff_)",
+"logderivativereq" : "",
+"logderivative2" : "_VAR1_**2/(1+_s_*_poly-coeff_)**2",
+"logderivative2req" : "",
+"MMA" : "(1 + _s_*_poly-coeff_)^(-1)",
+"sympy" : "(1 + _s_*_poly-coeff_)**(-1)",
+"terms" : ["_poly-coeff_"]
+}
 
 P2_dict = {
         "n" : 2, 
@@ -319,12 +384,15 @@ term_dict = {
 "c" : constant_dict,
 "c^s" : power_dict,
 "linear-gamma" : linear_gamma_dict,
+"alt-linear-gamma" : alt_linear_gamma_dict,
 "scale-gamma" : scale_gamma_dict,
 "shift-gamma" : shift_gamma_dict,
 "neg-linear-gamma" : neg_linear_gamma_dict,
+"alt-neg-linear-gamma" : alt_neg_linear_gamma_dict,
 "neg-scale-gamma" : neg_scale_gamma_dict,
 "neg-shift-gamma" : neg_shift_gamma_dict,
 "P1" : P1_dict,
+"neg-P1" : neg_P1_dict,
 "P2" : P2_dict,
 "2F1" : twoFone_dict
 }
@@ -1066,10 +1134,10 @@ class ExactEstimator:
     string = self.print_function_from_guess(p_best, "sympy")
     print("Into inv. Mellin Transform",string+"/{}".format(coeff))
     
+    from sympy import nsimplify
     string_in = nsimplify(string+"/{}".format(coeff))
     print("Simplified: ",string_in)
     function_guess = self.compute_inverse_mellin_transform(string_in, start = 0) 
-    from sympy import nsimplify
     print(function_guess)
     print(nsimplify(function_guess, rational = True))
     
