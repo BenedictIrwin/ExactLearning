@@ -1,18 +1,5 @@
 from ObjectOriented import *
 
-#### Working Example... ####
-EE = ExactEstimator("Simple_Exponential", folder = "Simple_Exponential")
-EE.set_fingerprint( gen_fpdict(['linear-gamma']))
-n_bfgs = 1
-for i in range(n_bfgs): 
-  EE.BFGS(order=2)
-  print("{}%".format(100*(i+1)/n_bfgs),flush=True)
-EE.speculate(k = 4)
-############################
-
-EE.cascade_search()
-
-
 
 #### Working Example... ####
 EE = ExactEstimator("Beta_Distribution", folder = "Beta_Distribution")
@@ -27,6 +14,32 @@ EE.speculate(k = 4)
 EE.cascade_search()
 
 exit()
+
+
+#### Working Example... ####
+EE = ExactEstimator("ChiSquare_Distribution", folder = "ChiSquare_Distribution")
+EE.set_fingerprint( gen_fpdict(['c','c^s','shift-gamma']))
+n_bfgs = 1
+for i in range(n_bfgs): 
+  EE.BFGS(order=2)
+  print("{}%".format(100*(i+1)/n_bfgs),flush=True)
+EE.speculate(k = 4)
+############################
+
+EE.cascade_search()
+
+#### Working Example... ####
+EE = ExactEstimator("Simple_Exponential", folder = "Simple_Exponential")
+EE.set_fingerprint( gen_fpdict(['linear-gamma']))
+n_bfgs = 1
+for i in range(n_bfgs): 
+  EE.BFGS(order=2)
+  print("{}%".format(100*(i+1)/n_bfgs),flush=True)
+EE.speculate(k = 4)
+############################
+
+EE.cascade_search()
+
 
 
 

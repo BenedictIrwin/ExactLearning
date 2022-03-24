@@ -49,6 +49,17 @@ string_list = "a b c d e f g h i j k l m n o p q r s t u v w x y z".split(" ")
 ## D[ Log[phi[s1,s2]], s1,s2] // FullSimplify
 ## PolyGamma[1, s1 + s2]
 #############################################################################
+## This might need to be improved?
+def deal(p0,states):
+  p0 = list(p0)
+  itr = 0
+  mx = len(states)
+  vec = []
+  while(itr<mx):
+    if(states[itr]):vec.append(0)
+    else: vec.append(p0.pop(0))
+    itr+=1
+  return np.array(vec)
 
 ## A dict of integers and rationals
 rationals_dict = {}
@@ -128,7 +139,9 @@ power_dict = {
 "logderivativereq" : "from numpy import log",
 "logderivative2" : "0",
 "logderivative2req" : "",
-"terms" : ["_sqrtnotzero_"]
+"terms" : ["_sqrtnotzero_"],
+"MMA" : "_sqrtnotzero_^(2*_s_)",
+"sympy" : "_sqrtnotzero_**(2*_s_)",
 }
 
 linear_gamma_dict = {
@@ -633,6 +646,86 @@ class ExactEstimator:
 
 
 
+  ## A way of calling BFGS on a subspace of the parameters...
+  def partial_BFGS(self, fix_dict, p0=None, order=0):
+
+    print(fix_dict) ## Try to get the constraints in as well for params which must be >0
+  
+    ## Look into fix dict
+    states = np.array([fix_dict[i]["fixed"] for i in fix_dict.keys()])
+    #mask = ??? ## zeros ones
+    ## Let values be 0
+    values = np.array([fix_dict[i]["value"] for i in fix_dict.keys()])
+    print(states)
+    print(values)
+
+    num_free_vars = np.sum(~states)
+    print(num_free_vars)
+
+    if( p0 == None): p0 = np.random.uniform(low = -1, high = 1, size = num_free_vars)
+
+    ## Taking p0, states and values, expand to full vector
+    print(p0)
+
+    #full = states * values + deal(p0, states)
+    #print(full) 
+
+
+    if(self.fit_mode=="log"):
+      f1 = self.partial_real_log_loss
+      f2 = self.partial_complex_log_loss
+    if(self.fit_mode == "normal"):
+      print("Normal BFGS not currently supported!")
+      exit()
+
+    ## Figure out how to assemble the problem in the loss function?
+    res = minimize(f1, x0=p0, args = (order, states, values), method = "BFGS", tol = 1e-6)
+    res = minimize(f2, x0=res.x, args = (order, states, values), method = "BFGS", tol = 1e-8)
+    x_final = states*values + deal(res.x,states) 
+    loss = f2(res.x, order, states, values)
+    self.register(x_final,loss)
+    return x_final, loss
+  
+  ## Vectorised difference function
+  def partial_real_log_loss(self,p, order, states,  values):
+    full = states*values + deal(p, states)
+    if(order == 0): 
+      A = fingerprint(*full)[0]
+      B = np.abs(np.real(A)-self.real_logm)
+      B = np.maximum(0.0,B-self.real_log_diff)
+    if(order == 1): 
+      A = logderivative(*full)[0]
+      B = np.abs(np.real(A)-np.real(self.ratio))
+      #B = np.maximum(0.0,B-self.real_log_diff)
+    if(order == 2): 
+      A = logderivative2(*full)[0]# - logderivative(*p)[0]**2
+      B = np.abs(np.real(A)-np.real(self.ratio2)+np.real(self.ratio**2))
+      #B = np.maximum(0.0,B-self.real_log_diff)
+    return np.mean(B)
+ 
+  ## WE CAN PROBABLY TIDY THIS UP USING DEFAULT ARGUMENTS
+  ## Vectorised difference function
+  def partial_complex_log_loss(self,p,order, states, values):
+    full = states*values + deal(p, states)
+    if(order == 0): 
+      A = fingerprint(*full)
+      B = np.abs(np.real(A)-self.real_logm)
+      B = np.maximum(0.0,B-self.real_log_diff)
+      C = np.abs(wrap(np.imag(A)-self.imag_logm))
+      C = np.maximum(0.0,C-self.imag_log_diff)
+    if(order == 1): 
+      A = logderivative(*full)
+      B = np.abs(np.real(A)-np.real(self.ratio))
+      C = np.abs(wrap(np.imag(A)-np.imag(self.ratio)))
+    if(order == 2): 
+      A = logderivative2(*full)# - logderivative(*p)**2
+      B = np.abs(np.real(A)-np.real(self.ratio2)+np.real(self.ratio**2))
+      C = np.abs(wrap(np.imag(A)-np.imag(self.ratio2)+np.imag(self.ratio**2)))
+    return np.mean(B+C)
+
+    
+
+
   ## A gradient based approach to get the optimial parameters for a given fingerprint
   def BFGS(self,p0=None, order=0):
     #self.BFGS_derivative_order = derivative_order
@@ -829,7 +922,7 @@ class ExactEstimator:
       p.append(results[i]["guesses"][am])
     return p
 
-  def print_function_from_guess(self, p, language = "MMA"):
+  def print_function_from_guess(self, p, language = "MMA", s_value = "s"):
     print(self.fingerprint)
     fp_list = self.fingerprint.split(":")[3:]
     print(fp_list)
@@ -844,15 +937,23 @@ class ExactEstimator:
         itr+=1
       string_list.append(expression)
     string = " * ".join(string_list)
-    string = string.replace("_s_","s")
+    string = string.replace("_s_", s_value)
     return string
 
   ## Given a sympy result attempt the inverse Mellin Transform
   ## This should return a functional form that can be used to inspect the original data...
-  def compute_inverse_mellin_transform(self, fingerprint):
+  def compute_inverse_mellin_transform(self, fingerprint, start = 0):
     from sympy import inverse_mellin_transform, oo, gamma, sqrt
     from sympy.abc import x, s
-    result = eval("inverse_mellin_transform({}, s, x, (0, oo))".format(fingerprint))
+    result = eval("inverse_mellin_transform({}, s, x, ({}, oo))".format(fingerprint,start))
+    return result
+
+  def get_normalisation_coefficient(self, fingerprint):
+    from sympy import gamma, sqrt
+    from sympy.abc import s
+    print(fingerprint)
+    result = eval(fingerprint)
+    print(result)
     return result
 
 
@@ -868,6 +969,127 @@ class ExactEstimator:
     #print(results)
     p_best = self.most_likely_from_results(results)
     print(p_best)
+
+    #####
+    ## OPTIONAL --> Do the other fittings anyway just to check.. 
+    #####
+ 
+    fp_list = self.fingerprint.split(":")[3:]
+    print(p_best)
+    print(fp_list)
+    for ii in fp_list:
+      print(term_dict[ii])
+    par_nums = [term_dict[ii]['n'] for ii in fp_list]
+    print(par_nums)
+    print(self.best_function)
+
+    order_2_terms = ["shift-gamma","neg-shift-gamma","linear-gamma","neg-linear-gamma","scale-gamma","neg-scale-gamma"]
+    order_1_terms = ["c^s"] + order_2_terms 
+
+    positive_terms = ["c","c^s"]
+
+    ## Figure out which parameters are order 2 and could be fixed...
+
+
+    fix_dict = {}
+    ## Determine which parameters are which
+    itr = 0
+    for ii in fp_list:
+      for jj in range(term_dict[ii]['n']):
+        token = "p{}".format(itr)
+        fix_dict[token] = {}
+        if(ii in order_2_terms):
+          fix_dict[token]["fixed"] = True
+          fix_dict[token]["value"] = float(eval(p_best[itr]))
+        else:
+          fix_dict[token]["fixed"] = False
+          fix_dict[token]["value"] = 0
+        itr+=1
+
+    #print(fix_dict)
+    #input()
+
+
+    ## Do a (constrained) order 1?
+    if( "c^s" in fp_list):
+      res = []
+      for i in range(10):
+        ret = self.partial_BFGS(fix_dict, order = 1)
+        res.append(ret)
+      best_idx = np.argmin([r[1] for r in res])
+      print("best local params", res[best_idx])
+      
+      ## DO SOME KIND OF CHECK ON THE LOSS?
+
+      idx_where_cs = 1
+      fix_dict["p{}".format(idx_where_cs)]["fixed"] = True
+      fix_dict["p{}".format(idx_where_cs)]["value"] = res[best_idx][0][idx_where_cs]
+   
+    print(fix_dict)
+
+    ## Do a constrained order 0 (for the constant) ?? Can also normalise?
+    if( "c" in fp_list):
+      res = []
+      for i in range(10):
+        ret = self.partial_BFGS(fix_dict, order = 0)
+        res.append(ret)
+      best_idx = np.argmin([r[1] for r in res])
+      print("best local params", res[best_idx])
+      
+      
+      idx_where_c = 0
+      fix_dict["p{}".format(idx_where_c)]["fixed"] = True
+      fix_dict["p{}".format(idx_where_c)]["value"] = res[best_idx][0][idx_where_c]
+
+    print(fix_dict)
+    p_new = [fix_dict[key]["value"] for key in fix_dict.keys()]
+    final_loss = self.point_evaluation(p_new, order = 0)
+    print(final_loss)
+    final_loss = self.point_evaluation(p_new, order = 1)
+    print(final_loss)
+    final_loss = self.point_evaluation(p_new, order = 2)
+    print(final_loss)
+
+    ## Hack
+    self.best_params = p_new
+    results = self.speculate()
+   
+    print(results)
+    p_best = self.most_likely_from_results(results)
+    print(p_best)
+
+    string = self.print_function_from_guess(p_best, "sympy", s_value = "1")
+    print(string)
+    coeff = self.get_normalisation_coefficient(string) 
+    print("Normalisation Coefficient:",coeff)
+    
+    string = self.print_function_from_guess(p_best, "sympy")
+    print("Into inv. Mellin Transform",string+"/{}".format(coeff))
+    
+    from sympy import nsimplify
+    string_in = nsimplify(string+"/{}".format(coeff))
+    print("Simplified: ",string_in)
+    function_guess = self.compute_inverse_mellin_transform(string_in, start = 0) 
+    print(function_guess)
+    print(nsimplify(function_guess, rational = True))
+    
+
+
+    exit()
+
+ 
+    if("c" in fp_list and "c^s" not in fp_list):
+      ## Take the best parameters, fix them... evalulate at s=1 and 'normalise'
+      p_best[0] = "1" ## Ignore the fitted constant which is nonsense
+      string = self.print_function_from_guess(p_best, "sympy", s_value = "1")
+      coeff = self.get_normalisation_coefficient(string) 
+      p_best[0] = "("+str(coeff)+")**(-1)"
+      string = self.print_function_from_guess(p_best, "sympy", s_value = "1")
+      coeff = self.get_normalisation_coefficient(string) 
+      exit()
+
+
+
     string = self.print_function_from_guess(p_best, "sympy")
     print(string) 
 
