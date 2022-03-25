@@ -49,6 +49,14 @@ string_list = "a b c d e f g h i j k l m n o p q r s t u v w x y z".split(" ")
 ## D[ Log[phi[s1,s2]], s1,s2] // FullSimplify
 ## PolyGamma[1, s1 + s2]
 #############################################################################
+
+## Consider MGF, log-convex.
+## Consider bounds on the variables going into the gamma functions thus.
+## Gamma(a + b s), tested for all s... if the Re(a + b s) is <= 0 then there is a problem
+
+
+
+
 ## This might need to be improved?
 def deal(p0,states):
   p0 = list(p0)
@@ -127,6 +135,66 @@ constant_dict = {
 "terms" : ["_sqrtnotzero_"],
 "MMA" : "_sqrtnotzero_**2",
 "sympy" : "_sqrtnotzero_**2",
+}
+
+s_dict = {
+"n" : 0, 
+"req" : "", 
+"logreq" : "from numpy import log", 
+"moment" : "_s_", 
+"logmoment" : "log(_s_)",
+"logderivative" : "1/_s_",
+"logderivativereq" : "",
+"logderivative2" : "-1/(_s_**2)",
+"logderivative2req" : "",
+"terms" : [],
+"MMA" : "_s_",
+"sympy" : "_s_",
+}
+
+s_power_dict = {
+"n" : 1, 
+"req" : "", 
+"logreq" : "from numpy import log", 
+"moment" : "_s_**_poly-coeff_", 
+"logmoment" : "_poly-coeff_*log(_s_)",
+"logderivative" : "_poly-coeff_/_s_",
+"logderivativereq" : "",
+"logderivative2" : "-_poly-coeff_/(_s_**2)",
+"logderivative2req" : "",
+"terms" : ["_poly-coeff_"],
+"MMA" : "_s_**_poly-coeff_",
+"sympy" : "_s_**_poly-coeff_",
+}
+
+neg_s_dict = {
+"n" : 0, 
+"req" : "", 
+"logreq" : "from numpy import log", 
+"moment" : "(1/_s_)", 
+"logmoment" : "-log(_s_)",
+"logderivative" : "-1/_s_",
+"logderivativereq" : "",
+"logderivative2" : "1/(_s_**2)",
+"logderivative2req" : "",
+"terms" : [],
+"MMA" : "(1/_s_)",
+"sympy" : "(1/_s_)",
+}
+
+neg_s_power_dict = {
+"n" : 1, 
+"req" : "", 
+"logreq" : "from numpy import log", 
+"moment" : "(1/(_s_**_poly-coeff_))", 
+"logmoment" : "-_poly-coeff_*log(_s_)",
+"logderivative" : "-_poly-coeff_/_s_",
+"logderivativereq" : "",
+"logderivative2" : "_poly-coeff_/(_s_**2)",
+"logderivative2req" : "",
+"terms" : ["_poly-coeff_"],
+"MMA" : "(1/(_s_^_poly-coeff_))",
+"sympy" : "(1/(_s_**_poly-coeff_))",
 }
 
 power_dict = {
@@ -383,6 +451,10 @@ def generate_meijerg_dict(a,b,c,d):
 term_dict = {
 "c" : constant_dict,
 "c^s" : power_dict,
+"s" : s_dict,
+"1/s" : neg_s_dict,
+"s^a" : s_power_dict,
+"1/s^a" : neg_s_power_dict,
 "linear-gamma" : linear_gamma_dict,
 "alt-linear-gamma" : alt_linear_gamma_dict,
 "scale-gamma" : scale_gamma_dict,
@@ -816,8 +888,23 @@ class ExactEstimator:
       print("Normal BFGS not currently supported!")
       exit()
 
-    res = minimize(f1, x0=p0, args = (order), method = "BFGS", tol = 1e-6)
-    res = minimize(f2, x0=res.x, args = (order), method = "BFGS", tol = 1e-8)
+    print("ADDING BFGS CONSTRAINTS MECHANISM")
+    print("Optional callable jac, hess, etc.")
+
+    #boundssequence or Bounds, optional
+    #Bounds on variables for Nelder-Mead, L-BFGS-B, TNC, SLSQP, Powell, and trust-constr methods. There are two ways to specify the bounds:
+    #Instance of Bounds class.
+    #Sequence of (min, max) pairs for each element in x. None is used to specify no bound.
+
+    ## Really easy... generate in fix_dict... ? i.e. both positive?
+    ## Hard if they are just equations? This would be done as a linear constraint? i.e. a + b (s_max) > 0 and a + b (s_min) > 0
+
+    ## switch method to L-BFGS-B
+
+    constraints = [(0,None) for i in p0]
+
+    res = minimize(f1, x0=p0, args = (order), method = "L-BFGS-B", bounds = constraints, tol = 1e-6)
+    res = minimize(f2, x0=res.x, args = (order), method = "L-BFGS-B", bounds = constraints, tol = 1e-8)
     loss = f2(res.x, order)
     self.register(res.x,loss)
     return res.x, loss
@@ -1061,7 +1148,7 @@ class ExactEstimator:
     print(par_nums)
     print(self.best_function)
 
-    order_2_terms = ["shift-gamma","neg-shift-gamma","linear-gamma","neg-linear-gamma","scale-gamma","neg-scale-gamma","neg-P1","P1","alt-linear-gamma"]
+    order_2_terms = ["shift-gamma","neg-shift-gamma","linear-gamma","neg-linear-gamma","scale-gamma","neg-scale-gamma","neg-P1","P1","alt-linear-gamma","alt-neg-linear-gamma"]
     order_1_terms = ["c^s"] + order_2_terms 
 
     positive_terms = ["c","c^s"]
