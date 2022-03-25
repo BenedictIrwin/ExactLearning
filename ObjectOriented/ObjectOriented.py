@@ -268,11 +268,11 @@ P1_dict = {
 "n" : 1, 
 "req" : "", 
 "logreq" : "from numpy import log", 
-"moment" : "(1 + _s_*_poly-coeff_)", 
-"logmoment" : "log(1 + _s_*_poly-coeff_)",
-"logderivative" : "_VAR1_/(1 + _s_*_poly-coeff_)",
+"moment" : "(1.0 + _s_*_poly-coeff_)", 
+"logmoment" : "log(1.0 + _s_*_poly-coeff_)",
+"logderivative" : "_VAR1_/(1.0 + _s_*_poly-coeff_)",
 "logderivativereq" : "",
-"logderivative2" : "-_VAR1_**2/(1+_s_*_poly-coeff_)**2",
+"logderivative2" : "-_VAR1_**2/(1.0 + _s_*_poly-coeff_)**2",
 "logderivative2req" : "",
 "MMA" : "(1 + _s_*_poly-coeff_)",
 "sympy" : "(1 + _s_*_poly-coeff_)",
@@ -283,11 +283,11 @@ neg_P1_dict = {
 "n" : 1, 
 "req" : "", 
 "logreq" : "from numpy import log", 
-"moment" : "(1 + _s_*_poly-coeff_)", 
-"logmoment" : "log(1 + _s_*_poly-coeff_)",
-"logderivative" : "-_VAR1_/(1 + _s_*_poly-coeff_)",
+"moment" : "1.0/(1.0 + _s_*_poly-coeff_)", 
+"logmoment" : "-log(1.0 + _s_*_poly-coeff_)",
+"logderivative" : "-_VAR1_/(1.0 + _s_*_poly-coeff_)",
 "logderivativereq" : "",
-"logderivative2" : "_VAR1_**2/(1+_s_*_poly-coeff_)**2",
+"logderivative2" : "_VAR1_**2/(1.0 + _s_*_poly-coeff_)**2",
 "logderivative2req" : "",
 "MMA" : "(1 + _s_*_poly-coeff_)^(-1)",
 "sympy" : "(1 + _s_*_poly-coeff_)**(-1)",
@@ -409,6 +409,11 @@ for a in range(0,4):
 ## A helper function to assign pk parameter labels to constant spaces and vice versa
 def parse_terms(terms):
   terms = terms.replace("_s_","")
+  terms = terms.replace("_VAR1_","")
+  terms = terms.replace("_VAR2_","")
+  if("_VAR3_" in terms):
+    print("PARSE TERMS ERROR!, Need to upgrade this code")
+    exit()
   term_array = np.array(list(terms))
   underscores = np.argwhere( term_array == "_")
   undercount = len(underscores)
@@ -542,8 +547,11 @@ class ExactEstimator:
         if(self.fit_mode == 'normal'): expression = term_dict[term]['moment']
         for subterm in range(n_):
           expression = expression.replace(keys[iterate+subterm],values[iterate+subterm],1)
+          subterm_var = "_VAR"+str(subterm+1)+"_"
+          expression = expression.replace(subterm_var,values[iterate+subterm])
         iterate+=n_
         f.write("  ret += {}\n".format(expression.replace("_s_","S")))
+        #f.write("  ret = np.add(ret,{},out=ret,casting='unsafe')\n".format(expression.replace("_s_","S")))
       f.write("  return ret\n")
       f.write("fingerprint = frompyfunc(fp,{},1)\n".format(self.N_terms))
 
@@ -570,18 +578,19 @@ class ExactEstimator:
           n_ = term_dict[term]["n"]
           #if(self.fit_mode == 'log'): expression = term_dict[term]['logmoment']
           #if(self.fit_mode == 'normal'): expression = term_dict[term]['moment']
+          print("n",n_)
           expression = term_dict[term]['logderivative']
+          print(expression)
           for subterm in range(n_):
             expression = expression.replace(keys[iterate+subterm],values[iterate+subterm],1)
             ## Add an exception to reference the already used variables using a keyword
-            subterm_var = "_VAR"+str(subterm+1)+"_"
             #print(subterm_var, values[iterate+subterm]) 
             #if(subterm_var in expression): (If it's not there it won't be replaced)
+            subterm_var = "_VAR"+str(subterm+1)+"_"
             expression = expression.replace(subterm_var,values[iterate+subterm])
-            #print(expression)
-            #input()
           iterate+=n_
           f.write("  ret += {}\n".format(expression.replace("_s_","S")))
+          #f.write("  ret = np.add(ret,{},out=ret,casting='unsafe')\n".format(expression.replace("_s_","S")))
         f.write("  return ret\n")
         f.write("logderivative = frompyfunc(fp,{},1)\n".format(self.N_terms))
     
@@ -616,6 +625,7 @@ class ExactEstimator:
             expression = expression.replace(subterm_var,values[iterate+subterm])
           iterate+=n_
           f.write("  ret += {}\n".format(expression.replace("_s_","S")))
+          #f.write("  ret = np.add(ret,{},out=ret,casting='unsafe')\n".format(expression.replace("_s_","S")))
         f.write("  return ret\n")
         f.write("logderivative2 = frompyfunc(fp,{},1)\n".format(self.N_terms))
 
@@ -1051,7 +1061,7 @@ class ExactEstimator:
     print(par_nums)
     print(self.best_function)
 
-    order_2_terms = ["shift-gamma","neg-shift-gamma","linear-gamma","neg-linear-gamma","scale-gamma","neg-scale-gamma"]
+    order_2_terms = ["shift-gamma","neg-shift-gamma","linear-gamma","neg-linear-gamma","scale-gamma","neg-scale-gamma","neg-P1","P1","alt-linear-gamma","alt-neg-linear-gamma"]
     order_1_terms = ["c^s"] + order_2_terms 
 
     positive_terms = ["c","c^s"]
@@ -1193,7 +1203,8 @@ class ExactEstimator:
 
 ## A function that helps
 def gen_fpdict(parlist,N='max',mode='first',name=''):
-  hash_string = ":".join(sorted(parlist))
+  #hash_string = ":".join(sorted(parlist))
+  hash_string = ":".join(parlist)
   #print(kwargs)
   #if("name" not in kwargs.keys()): name = ''
   #else: name = kwargs["name"]
