@@ -17,7 +17,7 @@ from mpl_toolkits import mplot3d
 from scipy.special import gamma
 keyword = "ChiSquare_Distribution"
 
-size = 1000000
+size = 100000
 
 k = 4
 lengths = np.random.chisquare(k, size = size)
@@ -25,7 +25,7 @@ lengths = np.random.chisquare(k, size = size)
 ## Show a histogram
 plt.hist(lengths, bins = 100, density = True)
 
-xx = np.linspace(0,7,100)
+xx = np.linspace(0,20,100)
 ff = (1/2)**(k/2)/gamma(k/2) *xx**(k/2-1) * np.exp(-xx/2)
 plt.plot(xx,ff,'k-')
 
@@ -45,6 +45,10 @@ s_size = 5
 s1 = np.random.uniform(low = 1, high = 7, size = s_size)
 s2 = np.random.uniform(low = -1*np.pi, high = 1*np.pi, size = s_size)
 s = np.expand_dims(s1 + s2*1j, axis = 0)
+
+
+s = 1+1j*np.linspace(-3*np.pi,3*np.pi,300)
+
 print(s)
 
 #s = np.array([1+0j,2+0j,3+0j,4+0j, 1.5+1j, 1.5-1j, 2.5+1.5j, 2.5-1.5j])
@@ -56,9 +60,13 @@ print(s)
 ## For each moment, get the expectation of s-1 for Mellin Transform
 q = np.mean(np.power(np.expand_dims(lengths,1),s-1),axis=0)
 
+power = q
 
-#q_true = 4 * 2**s * gamma(1 + s/2) * gamma(1 + s)/ np.sqrt(np.pi) /gamma(2+s)/gamma(5/2 + s/2)
+def phi(s): return 2**(s-1)*gamma(s+1)
 
+ss = np.imag(s)
+
+#ss = s[0]
 
 #print(q)
 #print(q_true)
@@ -68,7 +76,37 @@ q = np.mean(np.power(np.expand_dims(lengths,1),s-1),axis=0)
 
 dq = np.mean( np.expand_dims(np.log(lengths), axis = 1) * np.power(np.expand_dims(lengths,1),s-1),axis=0)
 ddq = np.mean( np.expand_dims(np.log(lengths)**2, axis = 1) * np.power(np.expand_dims(lengths,1),s-1),axis=0)
-s = s[0]
+#s = s[0]
+
+def maxx_f(s): return np.amax(lengths)**(s-1)/size
+def minn_f(s): return np.amin(lengths)**(s-1)/size
+def example_f(s,x): return x**(s-1)/size
+
+plt.plot(ss,np.abs(phi(s)),'r-',label="Theoretical phi(s)")
+plt.plot(ss,np.abs(power),'k:',label = "Numerical E[x^(s-1)]")
+plt.plot(ss,np.abs(maxx_f(s)),'b:',label = "x_max^(s-1)")
+plt.plot(ss,np.abs(np.exp(np.log(power) - np.amax([np.log(minn_f(s)),np.log(maxx_f(s))],axis = 0))/size),'k-',label = "Error Profile")
+plt.legend()
+plt.show()
+plt.plot(ss,np.real(np.log(np.abs(phi(s)))),'r-',label="Theoretical logphi(s)")
+plt.plot(ss,np.log(np.abs(power)),'k:',label = "Numerical logE[x^(s-1)]")
+plt.plot(ss,np.log(np.abs(maxx_f(s))),'b:',label = "log(x_max^(s-1))")
+plt.plot(ss,np.log(np.abs(minn_f(s))),'b:',label = "log(x_min^(s-1))")
+plt.plot(ss,np.abs(np.log(power) - np.amax([np.log(minn_f(s)),np.log(maxx_f(s))],axis = 0)),'k-',label = "log(Error Profile)")
+
+#for y in np.linspace(np.amin(sample),np.amin(sample)*3,100):
+#  plt.plot(ss,np.log(example_f(ss,y)),'g:')
+plt.legend()
+plt.show()
+plt.plot(ss,np.abs(phi(s)-power),'r-',label="Theoretical - Numerical")
+plt.plot(ss,0.02*np.exp(np.log(power) - np.amax([np.log(minn_f(s)),np.log(maxx_f(s))],axis = 0))/size,'k-',label = "Error Profile")
+plt.plot(ss,[0 for q in ss],'k:')
+plt.legend()
+plt.show()
+
+exit()
+
+
 
 ## Get the ratio...
 def plot_three_dim(q):
