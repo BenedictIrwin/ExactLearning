@@ -1,0 +1,170 @@
+\documentclass[journal=jcisd8,manuscript=article,layout=onecolumn,pdftex,floatfix,amsmath,amssymb,10pt]{achemso}
+\usepackage{hyperref,url,color,upgreek,amssymb,amsmath}
+\usepackage{graphicx}
+\SectionNumbersOn
+\AbstractOn
+
+\title{MGF General Function}
+\author{Benedict W. J.~Irwin}
+\email{ben@.com}
+\affiliation{Cambridge, United Kingdom}
+
+\begin{document}
+\begin{abstract}
+Bilateral Laplace Transform of Hypergeom
+\end{abstract}
+
+\section{Introduction}
+Consider defining a new function 
+$$
+Q(a,b;c;t) = \mathcal{B}_{x\to t}\left[\;_2F_1(a,b;c;-x)\right]
+$$
+this is a fundamental generalised function, but it does not have a compact form
+\begin{align}
+\frac{2 i \pi ^2 (-t)^b \Gamma (c) \csc (\pi  (a-b)) \, _1F_1(b-c+1;-a+b+1;t)}{t \Gamma (a) \Gamma (b) \Gamma (-a+b+1) \Gamma (c-b)} \\ - \frac{2 i \pi ^2 (-t)^a \Gamma (c) \csc (\pi  (a-b)) \,
+    _1F_1(a-c+1;a-b+1;t)}{t \Gamma (a) \Gamma (b) \Gamma (a-b+1) \Gamma (c-a)} 
+\\ \text{ if }\Re(a+b-c)<1\land \Re(t)\leq 0\land (\Re(t)<0\lor (\Re(a)>-2\land \Re(b)>-2))
+\end{align}
+    
+The function represents the moment generating function (MGF), for any distribution that can be represented by the original hypergeometric function.
+
+It is nice to then consider the Mellin transform of the above to get a more regular structure.
+
+
+We can simplify it slightly by expanding the $\csc$ functions.
+
+For $\;_2F_3$ we have:
+\begin{align}
+\frac{\pi \Gamma (\text{b1}) \Gamma (\text{b2}) }{t \Gamma (\text{a1}) \Gamma (\text{a2}) \Gamma (\text{a3})}
+\\ -\frac{ \Gamma (\text{a1}-\text{a3}) \Gamma (\text{a2}-\text{a3}) \left(-t^{\text{a3}} \csc (\pi  \text{a3})-i (-t)^{\text{a3}}+(-t)^{\text{a3}} \cot (\pi
+    \text{a3})\right) \, _2F_2(\text{a3}-\text{b1}+1,\text{a3}-\text{b2}+1;-\text{a1}+\text{a3}+1,-\text{a2}+\text{a3}+1;t)}{ \Gamma (\text{b1}-\text{a3}) \Gamma
+    (\text{b2}-\text{a3})}
+\\ -\frac{ \Gamma (\text{a1}-\text{a2}) \Gamma (\text{a3}-\text{a2}) \left(-t^{\text{a2}} \csc (\pi  \text{a2})-i (-t)^{\text{a2}}+(-t)^{\text{a2}} \cot (\pi
+    \text{a2})\right) \, _2F_2(\text{a2}-\text{b1}+1,\text{a2}-\text{b2}+1;-\text{a1}+\text{a2}+1,\text{a2}-\text{a3}+1;t)}{\Gamma (\text{b1}-\text{a2}) \Gamma
+    (\text{b2}-\text{a2})}
+\\ -\frac{ \Gamma (\text{a2}-\text{a1}) \Gamma (\text{a3}-\text{a1}) \left(-t^{\text{a1}} \csc (\pi  \text{a1})-i (-t)^{\text{a1}}+(-t)^{\text{a1}} \cot (\pi
+    \text{a1})\right) \, _2F_2(\text{a1}-\text{b1}+1,\text{a1}-\text{b2}+1;\text{a1}-\text{a2}+1,\text{a1}-\text{a3}+1;t)}{\Gamma (\text{b1}-\text{a1}) \Gamma
+    (\text{b2}-\text{a1})}    
+\\ \text{ if }\Re(\text{a1})+\Re(\text{a2})+\Re(\text{a3})-\Re(\text{b1})-\Re(\text{b2})<1
+\end{align}
+where $\Gamma\Gamma(i,j,k) = \Gamma(i-k)\Gamma(j-k)$, and $C(i,t) = \left(-t^{\text{i}} \csc (\pi  \text{i})-i (-t)^{\text{i}}+(-t)^{\text{i}} \cot (\pi\text{i})\right)$
+\begin{align}
+\frac{\pi \Gamma (\text{b1}) \Gamma (\text{b2}) }{t \Gamma (\text{a1}) \Gamma (\text{a2}) \Gamma (\text{a3})} \times \bigg(
+\\ -\frac{ \Gamma\Gamma(\text{a1},\text{a2},\text{a3}) C(a3,t) \, _2F_2(\text{a3}-\text{b1}+1,\text{a3}-\text{b2}+1;-\text{a1}+\text{a3}+1,-\text{a2}+\text{a3}+1;t)}{ \Gamma\Gamma(\text{b1},\text{b2},\text{a3})}
+\\ -\frac{ \Gamma\Gamma(\text{a1},\text{a3},\text{a2}) C(a2,t) \, _2F_2(\text{a2}-\text{b1}+1,\text{a2}-\text{b2}+1;-\text{a1}+\text{a2}+1,\text{a2}-\text{a3}+1;t)}{\Gamma\Gamma(\text{b1},\text{b2},\text{a2})}
+\\ -\frac{ \Gamma\Gamma(\text{a2},\text{a3},\text{a1}) C(a1,t) \, _2F_2(\text{a1}-\text{b1}+1,\text{a1}-\text{b2}+1;\text{a1}-\text{a2}+1,\text{a1}-\text{a3}+1;t)}{\Gamma\Gamma(\text{b1},\text{b2},\text{a1})} \bigg)   
+\\ \text{ if }\Re(\text{a1})+\Re(\text{a2})+\Re(\text{a3})-\Re(\text{b1})-\Re(\text{b2})<1
+\end{align}
+define 
+\begin{align}
+f(i;a1,a2;b1,b2,t) = \, _2F_2(i-\text{b1}+1,i-\text{b2}+1;-\text{a1}+i+1,-\text{a2}+i+1;t) \\
+\, _2F_2(\text{a3}-\text{b1}+1,\text{a3}-\text{b2}+1;-\text{a1}+\text{a3}+1,-\text{a2}+\text{a3}+1;t) \\
+\, _2F_2(\text{a2}-\text{b1}+1,\text{a2}-\text{b2}+1;-\text{a1}+\text{a2}+1,\text{a2}-\text{a3}+1;t) \\
+\, _2F_2(\text{a1}-\text{b1}+1,\text{a1}-\text{b2}+1;\text{a1}-\text{a2}+1,\text{a1}-\text{a3}+1;t)
+\end{align}
+
+In general we have 
+$$
+M_X(t) = \sum_{k=0}^\infty \frac{E(X^k)t^k}{k!}
+$$
+by Ramanujan Master theorem we have
+$$
+\mathcal{M}_s[M_X(-t)] = \Gamma(s)E(X^{-s})
+$$
+for our pdf, we had a fingerprint defined as 
+$$
+\mathcal{M}[p(x)](s) = \phi(s) = E[X^{s-1}]
+$$
+$$
+\mathcal{M}[p(x)](s+1) = \phi(s+1) = E[X^{s}]
+$$
+$$
+\mathcal{M}[p(x)](1-s) = \phi(1-s) = E[X^{-s}]
+$$
+so we can say the Mellin transform of the MGF gives
+$$
+\mathcal{M}_s[M_X(-t)] = \Gamma(s)\phi(1-s)
+$$
+moreover 
+$$
+M_X(-t) = \mathcal{M}^{-1}_t [\Gamma(s)\phi(1-s)]
+$$
+This means for very complicated functions such as Meijer-G and others, where we know the form of the fingerprint we can write the expression for the generalised moment generating function.
+This gives $M_X(t)$ for $\;_2F_1(a,b,c,-x)$ as
+$$
+ \frac{(c-1) \, _2F_2(1,2-c;2-a,2-b;-t)}{(a-1) (b-1)}+\frac{\pi ^2 (-t)^{a-1} \csc (\pi  a) \Gamma (c) \csc (\pi  (b-a)) \, _1F_1(a-c+1;a-b+1;-t)}{\Gamma (a) \Gamma (b) \Gamma (a-b+1) \Gamma (c-a)}+\frac{\pi ^2
+    (-t)^{b-1} \csc (\pi  b) \Gamma (c) \csc (\pi  a-\pi  b) \, _1F_1(b-c+1;-a+b+1;-t)}{\Gamma (a) \Gamma (b) \Gamma (-a+b+1) \Gamma (c-b)}
+$$
+which is more similar to the regular Laplace transform...
+    
+For the next order it gives
+    $$
+    \frac{(\text{b1}-1) (\text{b2}-1) \, _3F_3(1,2-\text{b1},2-\text{b2};2-\text{a1},2-\text{a2},2-\text{a3};-t)}{(\text{a1}-1) (\text{a2}-1) (\text{a3}-1)}+\frac{\pi ^3 (-t)^{\text{a1}-1} \csc (\pi  \text{a1}) \Gamma
+    (\text{b1}) \Gamma (\text{b2}) \csc (\pi  (\text{a2}-\text{a1})) \csc (\pi  (\text{a3}-\text{a1})) \, _2F_2(\text{a1}-\text{b1}+1,\text{a1}-\text{b2}+1;\text{a1}-\text{a2}+1,\text{a1}-\text{a3}+1;-t)}{\Gamma (\text{a1}) \Gamma
+    (\text{a2}) \Gamma (\text{a3}) \Gamma (\text{a1}-\text{a2}+1) \Gamma (\text{a1}-\text{a3}+1) \Gamma (\text{b1}-\text{a1}) \Gamma (\text{b2}-\text{a1})}-\frac{\pi ^3 (-t)^{\text{a2}-1} \csc (\pi  \text{a2}) \Gamma (\text{b1}) \Gamma
+    (\text{b2}) \csc (\pi  \text{a1}-\pi  \text{a2}) \csc (\pi  (\text{a2}-\text{a3})) \, _2F_2(\text{a2}-\text{b1}+1,\text{a2}-\text{b2}+1;-\text{a1}+\text{a2}+1,\text{a2}-\text{a3}+1;-t)}{\Gamma (\text{a1}) \Gamma (\text{a2}) \Gamma
+    (\text{a3}) \Gamma (-\text{a1}+\text{a2}+1) \Gamma (\text{a2}-\text{a3}+1) \Gamma (\text{b1}-\text{a2}) \Gamma (\text{b2}-\text{a2})}+\frac{\pi ^3 (-t)^{\text{a3}-1} \csc (\pi  \text{a3}) \Gamma (\text{b1}) \Gamma (\text{b2}) \csc
+    (\pi  \text{a1}-\pi  \text{a3}) \csc (\pi  \text{a2}-\pi  \text{a3}) \, _2F_2(\text{a3}-\text{b1}+1,\text{a3}-\text{b2}+1;-\text{a1}+\text{a3}+1,-\text{a2}+\text{a3}+1;-t)}{\Gamma (\text{a1}) \Gamma (\text{a2}) \Gamma (\text{a3})
+    \Gamma (-\text{a1}+\text{a3}+1) \Gamma (-\text{a2}+\text{a3}+1) \Gamma (\text{b1}-\text{a3}) \Gamma (\text{b2}-\text{a3})}
+    $$
+
+For the next order it gives
+\begin{align}
+ \frac{(\text{b1}-1) (\text{b2}-1) (\text{b3}-1) \, _4F_4(1,2-\text{b1},2-\text{b2},2-\text{b3};2-\text{a1},2-\text{a2},2-\text{a3},2-\text{a4};-t)}{(\text{a1}-1) (\text{a2}-1) (\text{a3}-1) (\text{a4}-1)}
+ \\+\frac{\pi ^4
+    (-t)^{\text{a1}-1} \csc (\pi  \text{a1}) \Gamma (\text{b1}) \Gamma (\text{b2}) \Gamma (\text{b3}) \csc (\pi  (\text{a2}-\text{a1})) \csc (\pi  (\text{a3}-\text{a1})) \csc (\pi  (\text{a4}-\text{a1})) \,
+    _3F_3(\text{a1}-\text{b1}+1,\text{a1}-\text{b2}+1,\text{a1}-\text{b3}+1;\text{a1}-\text{a2}+1,\text{a1}-\text{a3}+1,\text{a1}-\text{a4}+1;-t)}{\Gamma (\text{a1}) \Gamma (\text{a2}) \Gamma (\text{a3}) \Gamma (\text{a4}) \Gamma
+    (\text{a1}-\text{a2}+1) \Gamma (\text{a1}-\text{a3}+1) \Gamma (\text{a1}-\text{a4}+1) \Gamma (\text{b1}-\text{a1}) \Gamma (\text{b2}-\text{a1}) \Gamma (\text{b3}-\text{a1})}
+    \\+\frac{\pi ^4 (-t)^{\text{a2}-1} \csc (\pi  \text{a2})
+    \Gamma (\text{b1}) \Gamma (\text{b2}) \Gamma (\text{b3}) \csc (\pi  \text{a1}-\pi  \text{a2}) \csc (\pi  (\text{a2}-\text{a3})) \csc (\pi  (\text{a2}-\text{a4})) \,
+    _3F_3(\text{a2}-\text{b1}+1,\text{a2}-\text{b2}+1,\text{a2}-\text{b3}+1;-\text{a1}+\text{a2}+1,\text{a2}-\text{a3}+1,\text{a2}-\text{a4}+1;-t)}{\Gamma (\text{a1}) \Gamma (\text{a2}) \Gamma (\text{a3}) \Gamma (\text{a4}) \Gamma
+    (-\text{a1}+\text{a2}+1) \Gamma (\text{a2}-\text{a3}+1) \Gamma (\text{a2}-\text{a4}+1) \Gamma (\text{b1}-\text{a2}) \Gamma (\text{b2}-\text{a2}) \Gamma (\text{b3}-\text{a2})}
+    \\-\frac{\pi ^4 (-t)^{\text{a3}-1} \csc (\pi  \text{a3})
+    \Gamma (\text{b1}) \Gamma (\text{b2}) \Gamma (\text{b3}) \csc (\pi  \text{a1}-\pi  \text{a3}) \csc (\pi  \text{a2}-\pi  \text{a3}) \csc (\pi  (\text{a3}-\text{a4})) \,
+    _3F_3(\text{a3}-\text{b1}+1,\text{a3}-\text{b2}+1,\text{a3}-\text{b3}+1;-\text{a1}+\text{a3}+1,-\text{a2}+\text{a3}+1,\text{a3}-\text{a4}+1;-t)}{\Gamma (\text{a1}) \Gamma (\text{a2}) \Gamma (\text{a3}) \Gamma (\text{a4}) \Gamma
+    (-\text{a1}+\text{a3}+1) \Gamma (-\text{a2}+\text{a3}+1) \Gamma (\text{a3}-\text{a4}+1) \Gamma (\text{b1}-\text{a3}) \Gamma (\text{b2}-\text{a3}) \Gamma (\text{b3}-\text{a3})}
+    \\+\frac{\pi ^4 (-t)^{\text{a4}-1} \csc (\pi  \text{a4})
+    \Gamma (\text{b1}) \Gamma (\text{b2}) \Gamma (\text{b3}) \csc (\pi  \text{a1}-\pi  \text{a4}) \csc (\pi  \text{a2}-\pi  \text{a4}) \csc (\pi  \text{a3}-\pi  \text{a4}) \,
+    _3F_3(\text{a4}-\text{b1}+1,\text{a4}-\text{b2}+1,\text{a4}-\text{b3}+1;-\text{a1}+\text{a4}+1,-\text{a2}+\text{a4}+1,-\text{a3}+\text{a4}+1;-t)}{\Gamma (\text{a1}) \Gamma (\text{a2}) \Gamma (\text{a3}) \Gamma (\text{a4}) \Gamma
+    (-\text{a1}+\text{a4}+1) \Gamma (-\text{a2}+\text{a4}+1) \Gamma (-\text{a3}+\text{a4}+1) \Gamma (\text{b1}-\text{a4}) \Gamma (\text{b2}-\text{a4}) \Gamma (\text{b3}-\text{a4})}
+\end{align}
+
+
+
+Now consider 
+$$
+\phi(s) = \int_0^{\infty} x^{s - 1} \; G_{p,q}^{\,m,n} \!\left( \left. \begin{matrix} \mathbf{a_p} \\ \mathbf{b_q} \end{matrix} \; \right| \, \eta x \right) dx =
+\frac{\eta^{-s} \prod_{j = 1}^{m} \Gamma (b_j + s) \prod_{j = 1}^{n} \Gamma (1 - a_j - s)} {\prod_{j = m + 1}^{q} \Gamma (1 - b_j - s) \prod_{j = n + 1}^{p} \Gamma (a_j + s)}.
+$$
+under the transform to get the MGF...
+
+
+We can define a pair of transforms as 
+$$
+\mathcal{I}[f(x)](t) = \mathcal{M}^{-1}[\Gamma(s)\mathcal{M}[f(x)](1-s)](-t)
+$$
+$$
+\mathcal{I}^{-1}[g(t)](c) = \mathcal{M}^{-1}[\frac{1}{\Gamma(1-s)}\mathcal{M}[g(-t)](1-s)](x)
+$$
+
+Particularly interesting is the action of $I^{-1} \hat{O} I f(x)$ which appears to translate polynomials into linear differential operators and back etc. We might consider how this relates to green functions... 
+
+
+
+
+
+
+Consider 
+$$
+e^{-x} =  \frac{\text{MeijerG}\left(\{\{\},\{\}\},\left\{\left\{0,\frac{1}{2}\right\},\{\}\right\},\frac{x}{2},\frac{1}{2}\right)}{\sqrt{\pi }}
+$$
+
+
+$$
+e^{-x} = \;_0F_0(;;-x)
+$$
+$$
+cos(x) = \;_0F_1\left(;\frac{1}{2};-\frac{x^2}{4}\right)
+$$
+
+\end{document}
