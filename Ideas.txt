@@ -1,0 +1,8 @@
+
+
+Sampling from sparse distributions and comparing moments/cumulants etc. versus
+baseline estimate... 
+
+:x
+
+
