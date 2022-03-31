@@ -1,0 +1,86 @@
+import numpy as np
+
+### Cite the python notebook example
+
+hbar=1
+m=1
+omega=1
+N = 4015
+a = 20.0
+x = np.linspace(-a/2.,a/2.,N)
+h = x[1]-x[0] # Should be equal to 2*np.pi/(N-1)
+V = x**2 
+# V[N/2]=2/h   # This would add a "delta" spike in the center.
+Mdd = 1./(h*h)*(np.diag(np.ones(N-1),-1) -2* np.diag(np.ones(N),0) + np.diag(np.ones(N-1),1))
+H = -(hbar*hbar)/(2.0*m)*Mdd + np.diag(V) 
+En,psiT = np.linalg.eigh(H) # This computes the eigen values and eigenvectors
+psi = np.transpose(psiT) 
+# The psi now contain the wave functions ordered so that psi[n] if the n-th eigen state.
+
+notok=False
+for n in range(len(psi)):
+  # s = np.sum(psi[n]*psi[n])
+  s = np.linalg.norm(psi[n])  # This does the same as the line above.
+  if np.abs(s - 1) > 0.00001: # Check if it is different from one.
+    print("Check")
+    notok=True
+
+from matplotlib import pyplot as plt
+from mpl_toolkits import mplot3d
+from scipy.interpolate import interp1d
+import scipy.integrate as integrate
+
+order = 0
+sign = 1
+
+print("DENSITY")
+psi_inp = interp1d(x,2*(psi[order]/np.sqrt(h))**2, kind="cubic")
+
+plt.plot(x,sign*psi[order]/np.sqrt(h))
+plt.plot(x,0.01*V)
+plt.show()
+
+x_max = 9.9
+
+def real_integrand(x,s): return np.real(x**(s-1)*psi_inp(x))
+def imag_integrand(x,s): return np.imag(x**(s-1)*psi_inp(x))
+def special_int(s):  
+  r = integrate.quad(real_integrand, 0, x_max, args=(s))
+  i = integrate.quad(imag_integrand, 0, x_max, args=(s))
+  return r[0]+ 1j*i[0], r[1], i[1]
+vec_int = np.vectorize(special_int)
+
+print("Normalisation",vec_int(1+0j))
+
+N_s = 100
+
+## Generate complex moments?
+s1 = np.random.uniform(low = 1, high =6, size = N_s)
+s2 = np.random.uniform(low = -1.5*np.pi, high = 1.5*np.pi, size = N_s)
+s = [ t1 + t2*1j for t1,t2 in zip(s1,s2) ]
+q, qre, qie = vec_int(s)
+
+if(True):
+  ax = plt.axes(projection='3d')
+  # Data for three-dimensional scattered points
+  ax.scatter3D(np.real(s), np.imag(s), np.real(q), c=np.real(q), cmap='Reds');
+  ax.scatter3D(np.real(s), np.imag(s), np.imag(q), c=np.imag(q), cmap='Greens');
+  ax.set_xlabel('Re(s)')
+  ax.set_ylabel('Im(s)')
+  ax.set_zlabel('$E[x^{s-1}]$')
+  plt.show()
+  
+  ax = plt.axes(projection='3d')
+  # Data for three-dimensional scattered points
+  ax.scatter3D(np.real(s), np.imag(s), np.real(np.log(q)), c=np.real(np.log(q)), cmap='Reds');
+  ax.scatter3D(np.real(s), np.imag(s), np.imag(np.log(q)), c=np.imag(np.log(q)), cmap='Greens');
+  ax.set_xlabel('Re(s)')
+  ax.set_ylabel('Im(s)')
+  ax.set_zlabel('$\log E[x^{s-1}]$')
+  plt.show()
+
+
+np.save("s_values_ExpTest",s)
+np.save("moments_ExpTest",q)
+np.save("real_error_ExpTest",qre)
+np.save("imag_error_ExpTest",qie)

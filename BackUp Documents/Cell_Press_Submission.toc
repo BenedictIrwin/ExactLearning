@@ -1,0 +1,43 @@
+\contentsline {section}{\numberline {1}Introduction}{4}{section.1}
+\contentsline {section}{\numberline {2}Nature's Language for Analytic Functions}{6}{section.2}
+\contentsline {section}{\numberline {3}Background}{8}{section.3}
+\contentsline {subsection}{\numberline {3.1}Mellin Transform}{8}{subsection.3.1}
+\contentsline {subsection}{\numberline {3.2}Ramanujan Master Theorem (RMT)}{9}{subsection.3.2}
+\contentsline {subsection}{\numberline {3.3}Highly Generalised Functions}{10}{subsection.3.3}
+\contentsline {subsubsection}{\numberline {3.3.1}Hypergeometric Function}{10}{subsubsection.3.3.1}
+\contentsline {subsubsection}{\numberline {3.3.2}Barnes Integrals}{11}{subsubsection.3.3.2}
+\contentsline {subsection}{\numberline {3.4}Table of Functions Using $\Xi $ Notation}{11}{subsection.3.4}
+\contentsline {section}{\numberline {4}Mellin Transforms of Hierarchy of Functions}{12}{section.4}
+\contentsline {subsection}{\numberline {4.1}Conclusions from Generalised functions}{14}{subsection.4.1}
+\contentsline {section}{\numberline {5}Multiple Dimensions}{14}{section.5}
+\contentsline {subsubsection}{\numberline {5.0.1}Multivariate Moment Functional}{14}{subsubsection.5.0.1}
+\contentsline {subsection}{\numberline {5.1}Multivariate Mellin Transform}{15}{subsection.5.1}
+\contentsline {subsection}{\numberline {5.2}Generalised RMT (GRMT)}{15}{subsection.5.2}
+\contentsline {section}{\numberline {6}Multidimensional Hypergeometric Series}{16}{section.6}
+\contentsline {section}{\numberline {7}Extracting the Moments from a Generalised Probability Distribution}{17}{section.7}
+\contentsline {subsubsection}{\numberline {7.0.1}Generalised Distribution}{17}{subsubsection.7.0.1}
+\contentsline {subsection}{\numberline {7.1}A Form for $\varphi $}{19}{subsection.7.1}
+\contentsline {section}{\numberline {8}Comparison to a Neural Network}{20}{section.8}
+\contentsline {subsection}{\numberline {8.1}Rationale}{21}{subsection.8.1}
+\contentsline {section}{\numberline {9}An Example}{22}{section.9}
+\contentsline {section}{\numberline {10}Multidimensional Generalised Hypergeometric Function}{23}{section.10}
+\contentsline {section}{\numberline {11}Multi-Dimensional Meijer G Function}{23}{section.11}
+\contentsline {section}{\numberline {12}Conclusions}{24}{section.12}
+\contentsline {section}{\numberline {13}Acknowledgements}{24}{section.13}
+\contentsline {section}{\numberline {14}References}{25}{section.14}
+\contentsline {section}{\numberline {15}Appendix 1: Examples of the Mellin Transform and RMT}{25}{section.15}
+\contentsline {subsubsection}{\numberline {15.0.1}Negative Exponential}{25}{subsubsection.15.0.1}
+\contentsline {subsubsection}{\numberline {15.0.2}Binomial $(1+x)^{-1}$}{26}{subsubsection.15.0.2}
+\contentsline {subsubsection}{\numberline {15.0.3}Binomial $(1+x)^{-a}$}{26}{subsubsection.15.0.3}
+\contentsline {section}{\numberline {16}Appendix 2: Miscellaneous}{26}{section.16}
+\contentsline {subsection}{\numberline {16.1}Multivariate Functions}{26}{subsection.16.1}
+\contentsline {subsubsection}{\numberline {16.1.1}Appell $F_1$ Function}{27}{subsubsection.16.1.1}
+\contentsline {subsubsection}{\numberline {16.1.2}Gauss Hypergeometric to Lauricella Function in N-D}{27}{subsubsection.16.1.2}
+\contentsline {subsection}{\numberline {16.2}Some Numeric Tests}{29}{subsection.16.2}
+\contentsline {subsubsection}{\numberline {16.2.1}1D- Exponential}{29}{subsubsection.16.2.1}
+\contentsline {subsubsection}{\numberline {16.2.2}Replacement Rules}{29}{subsubsection.16.2.2}
+\contentsline {subsubsection}{\numberline {16.2.3}Note:}{29}{subsubsection.16.2.3}
+\contentsline {subsubsection}{\numberline {16.2.4}Example: Multivariate Hypergeometric Function}{30}{subsubsection.16.2.4}
+\contentsline {subsection}{\numberline {16.3}Appendix: List of Representable Functions}{31}{subsection.16.3}
+\contentsline {subsection}{\numberline {16.4}Citations To Include}{32}{subsection.16.4}
+\contentsline {section}{\numberline {17}Introduction}{33}{section.17}

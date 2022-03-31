@@ -1,0 +1,142 @@
+\documentclass[journal=jcisd8,manuscript=article,layout=onecolumn,pdftex,floatfix,amsmath,amssymb,10pt]{achemso}
+\usepackage{hyperref,url,color,upgreek,amssymb,amsmath}
+\usepackage{graphicx}
+\SectionNumbersOn
+\AbstractOn
+
+\title{Notes on TSNE}
+\author{Benedict W. J.~Irwin}
+\email{ben.irwin@optibrium.com}
+\affiliation{Optibrium, F5-6 Blenheim House, Cambridge Innovation Park,
+Denny End Road, Cambridge, CB25 9PB, United Kingdom}
+
+\begin{document}
+\begin{abstract}
+Integral Schrödinger Equation
+\end{abstract}
+
+\section{Introduction}
+
+$$
+\psi(\mathbf{r}) = \frac{m}{2\pi \hbar^2} \int \frac{e^{ik|r-r_0|}}{|r-r_0|} V(r_0)\psi(r_0)d^3r_0
+$$
+$$
+\psi(\mathbf{r}) = \sum_{j=0}^\infty \frac{(ik)^j}{j!} \frac{m}{2\pi \hbar^2} \int |r-r_0|^{j-1} V(r_0)\psi(r_0)d^3r_0
+$$
+
+We can restrict to potentials which are infinite everywhere except the positive quadrant.
+$$
+\psi(x,y,z) =  \frac{m}{2\pi \hbar^2} \sum_{j=0}^\infty \frac{(ik)^j}{j!} \int_0^\infty \int_0^\infty \int_0^\infty \sqrt{(x-x_0)^2+(y-y_0)^2+(z-z_0)^2}^{j-1} V(x_0,y_0,z_0)\psi(x_0,y_0,z_0)dx_0 dy_0 dz_0
+$$
+
+Here we see a very funky alternative to the multi dimensional Mellin-transform.
+In 1-D they might be equivalent.
+
+Through this new "Mellin transform", the wavefunction is function, which is the sum of the Mellin transform of the potential times itself.
+
+The integral looks like the expectation of the distance between the point $(x,y,z)$ and the point $(x_0,y_0,z_0)$, raised to some power.
+
+If we expected similar behaviour to the Ramanujan Master theorem in this case, for the potential multipled by the wavefunction, we could posit
+$$
+V(x_0,y_0,z_0)\psi(x_0,y_0,z_0) = \sum_{\mathbf{k}=0}^\infty \chi(\mathbf{k})\Phi_{V\psi}(\mathbf{k})\mathbf{r}^{\mathbf{Ak+b}}
+$$
+We might then posit that
+$$
+\int_0^\infty \sqrt{(x-x_0)^2+(y-y_0)^2+(z-z_0)^2}^{j-1} V(x_0,y_0,z_0)\psi(x_0,y_0,z_0)\mathcal{D}\mathbf{r} \approx \frac{\Phi_{V\psi}(\mathbf{k}^*)}{\mathrm{det(\mathbf{A})}}\prod_{i=1}^3 \Gamma(-k_i^*)
+$$
+for the solution $\mathbf{Ak^{*}+b} = \mathbf{j}$, then the wave-function itself is of the form 
+\begin{equation}
+\frac{m}{2\pi \hbar^2} \sum_{j=0}^\infty \frac{(ik)^j}{j\Gamma(j+1)} \frac{\Phi_{V\psi}(\mathbf{A}^{-1}(\mathbf{j-b}))}{\mathrm{det(\mathbf{A})}}\prod_{i=1}^3 \Gamma(-k_i^*)
+\end{equation}
+
+Of course, for spherically symmetric potentials:
+$$
+\psi(r) =  \frac{m}{2\pi \hbar^2} \sum_{j=0}^\infty \frac{(ik)^j}{j!} \int_0^\infty \int_0^\pi \int_0^{2\pi} |r-r_0|^{j-1} V(r_0)\psi(r_0) \sin \theta r_0^2 d\phi d\theta dr_0
+$$
+
+$$
+\int_0^\infty \sqrt{(x-x_0)^2+(y-y_0)^2+(z-z_0)^2}^{j-1} Q(x_0,y_0,z_0)\mathcal{D}\mathbf{r} \approx \frac{\Phi_{V\psi}(\mathbf{k}^*)}{\mathrm{det(\mathbf{A})}}\prod_{i=1}^3 \Gamma(-k_i^*)
+$$
+
+Essentially interested in the transform
+
+
+\section{Reverse Engineering QM}
+What we know from real wavefunctions.
+
+From Griffiths
+
+
+$$
+\frac{1}{\sqrt{\pi a^3}} e^{-r/a} = - \frac{m}{2\pi \hbar^2}\int \frac{e^{-|r-r_0|/a}}{|r-r_0|}(\frac{-\hbar^2}{m a r})\frac{1}{\sqrt{\pi a^3}} e^{-r/a} d\tau
+$$
+
+$$
+ e^{-r/a} = \frac{1}{2\pi }\int \frac{e^{-|r-r_0|/a}}{|r-r_0|}(\frac{1}{a r}) e^{-r/a} d\tau
+$$
+
+We expand into our bracket symbol
+$$
+ e^{-r/a} = \sum_{k=0}^\infty \frac{(-1)^k}{k!} \frac{1}{2\pi }\int \left(\frac{|r-r_0|}{a}\right)^{k-1}\frac{1}{r} e^{-r/a} d\tau
+$$
+
+$$
+ e^{-r/a} = \sum_{k=0}^\infty \frac{(-1)^k}{k!} \frac{1}{2\pi }\int \left(\frac{|r-r_0|}{a}\right)^{k-1}\frac{e^{-r/a}}{r}  d\tau
+$$
+then 
+
+
+So we have 
+
+$$
+\int_0^\infty \int_0^\infty \sqrt{(x-x_0)^2+(y-y_0)^2}^{j-1} dx dy
+$$
+this can be assigned the series
+
+$$
+\int_0^\infty \int_0^\infty \sum_{n_1 \ge 0} \sum_{n_2 \ge 0} \phi_{n_1,n_2}(x-x_0)^{2n_1}(y-y_0)^{2n_2}\frac{1}{\Gamma(\frac{1-j}{2})} \langle \frac{1-j}{2} + n_1 + n_2 \rangle dx dy
+$$
+
+then we again apply the multinomial power rule
+$$
+\int_0^\infty \int_0^\infty \sum_{t_1\ge 0} \sum_{t_2 \ge 0}\sum_{s_1 \ge 0} \sum_{s_2 \ge 0} \sum_{n_1 \ge 0} \sum_{n_2 \ge 0} \phi_{s_1,s_2} \phi_{t_1,t_2} \phi_{n_1,n_2} \frac{\langle -2n_1 + s_1 + s_2 \rangle \langle -2n_2 + t_1 + t_2 \rangle}{\Gamma(-2n_1)\Gamma(-2n_2)}  x^{s_1} (-x_0)^{s_2} y^{t_1} (-y_0)^{t_2} \frac{\langle \frac{1-j}{2} + n_1 + n_2 \rangle}{\Gamma(\frac{1-j}{2})}  dx dy
+$$
+
+The integrals also evaluate to terms in the bracket series
+$$
+\sum_{\mathbf{t}\ge 0}\sum_{\mathbf{s} \ge 0} \sum_{\mathbf{n} \ge 0}  \phi_{s_1,s_2} \phi_{t_1,t_2} \phi_{n_1,n_2} \frac{\langle -2n_1 + s_1 + s_2 \rangle \langle -2n_2 + t_1 + t_2 \rangle}{\Gamma(-2n_1)\Gamma(-2n_2)\Gamma(\frac{1-j}{2})} \langle s_1 + 1\rangle \langle t_1 + 1\rangle  \langle \frac{1-j}{2} + n_1 + n_2 \rangle (-x_0)^{s_2}  (-y_0)^{t_2}
+$$
+Then we have 5 brackets and 6 sums so we will requite an additional series in terms of the free parameters?
+
+We know that we can write this series in terms of the solutions to the equations
+\begin{equation}
+\begin{bmatrix}
+-2 & 0 & 1 & 1 & 0 & 0 \\
+0 & -2 & 0 & 0 & 1 & 1 \\
+0 & 0 & 1 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 1 & 0 \\
+1 & 1 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 \\
+\end{bmatrix}
+\begin{bmatrix}
+n_1 \\ n_2 \\ s_1 \\ s_2 \\ t_1 \\ t_2
+\end{bmatrix}
+=
+\begin{bmatrix}
+0 \\ 0 \\ -1 \\ -1 \\ (j-1)/2 \\ ?
+\end{bmatrix}
+\end{equation}
+
+We need to contribute all maximal rank possibilities and sum them, together.
+
+
+\section{Moments of Wavefunction}
+We can attempt to bring more variables in by closing each side with another triple Mellin transform, this will liberate the moments
+$$
+\iiint_0^\infty \mathbf{r}^{\mathbf{s-1}}\psi(\mathbf{r})\mathcal{D}\mathbf{r} =  \frac{m}{2\pi \hbar^2} \iiint_0^\infty \mathbf{r}^{\mathbf{s-1}} \sum_{j=0}^\infty \frac{(ik)^j}{j!} \int_0^\infty \int_0^\infty \int_0^\infty \sqrt{(x-x_0)^2+(y-y_0)^2+(z-z_0)^2}^{j-1} V(x_0,y_0,z_0)\psi(x_0,y_0,z_0)\mathcal{D}\mathbf{r_0}\mathcal{D}\mathbf{r}
+$$
+
+Then we should find $6$ brackets, and we perform one expansion for the exponential (Green's function), two for the multinomial, three for each of the binomials inside. But then we need another 3 or 6 for the expansion of $V\psi$, or both $V$ and $\psi$.
+
+
+\end{document}

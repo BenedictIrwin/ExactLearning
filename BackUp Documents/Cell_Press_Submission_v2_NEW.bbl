@@ -1,0 +1,274 @@
+\begin{thebibliography}{10}
+
+\bibitem{Carvalho2019}
+Diogo~V. Carvalho, Eduardo~M. Pereira, and Jaime~S. Cardoso.
+\newblock {Machine learning interpretability: A survey on methods and metrics}.
+\newblock {\em Electronics (Switzerland)}, 8(8):1--34, 2019.
+
+\bibitem{Lecun2015}
+Yann Lecun, Yoshua Bengio, and Geoffrey Hinton.
+\newblock {Deep learning}.
+\newblock 2015.
+
+\bibitem{Belisle2015}
+Eve B{\'{e}}lisle, Zi~Huang, S{\'{e}}bastien {Le Digabel}, and A{\"{i}}men~E
+  Gheribi.
+\newblock {Evaluation of machine learning interpolation techniques for
+  prediction of physical properties}.
+\newblock {\em Computational Materials Science}, 98:170--177, 2015.
+
+\bibitem{Plouffe1986}
+Simon Plouffe.
+\newblock {Inverse Symbolic Calculator}, 1986.
+
+\bibitem{Munafo}
+Robert Munafo.
+\newblock {RIES}, 1996.
+
+\bibitem{Gonzalez2015}
+Ivan Gonzalez, Victor~H. Moll, and Ivan Schmidt.
+\newblock {Ramanujan's Master Theorem applied to the evaluation of Feynman
+  diagrams}.
+\newblock {\em Advances in Applied Mathematics}, 63:214--230, 2015.
+
+\bibitem{Rosasco2004}
+Lorenzo Rosasco, Ernesto~De Vito, Andrea Caponnetto, Michele Piana, and
+  Alessandro Verri.
+\newblock {Are Loss Functions All the Same?}
+\newblock {\em Neural Computation}, 16(5):1063--1076, may 2004.
+
+\bibitem{Ruder2016}
+Sebastian Ruder.
+\newblock {An overview of gradient descent optimization algorithms}.
+\newblock pages 1--14, sep 2016.
+
+\bibitem{Wang2017}
+Haohan Wang and Bhiksha Raj.
+\newblock {On the Origin of Deep Learning}.
+\newblock pages 1--72, feb 2017.
+
+\bibitem{Abadi2016}
+Mart{\'{i}}n Abadi, Paul Barham, Jianmin Chen, Zhifeng Chen, Andy Davis,
+  Jeffrey Dean, Matthieu Devin, Sanjay Ghemawat, Geoffrey Irving, Michael
+  Isard, Manjunath Kudlur, Josh Levenberg, Rajat Monga, Sherry Moore, Derek~G
+  Murray, Benoit Steiner, Paul Tucker, Vijay Vasudevan, Pete Warden, Martin
+  Wicke, Yuan Yu, Xiaoqiang Zheng, Google Brain, Implementation Osdi, Paul
+  Barham, Jianmin Chen, Zhifeng Chen, Andy Davis, Jeffrey Dean, Matthieu Devin,
+  Sanjay Ghemawat, Geoffrey Irving, Michael Isard, Manjunath Kudlur, Josh
+  Levenberg, Rajat Monga, Sherry Moore, Derek~G Murray, Benoit Steiner, Paul
+  Tucker, Vijay Vasudevan, Pete Warden, Martin Wicke, Yuan Yu, and Xiaoqiang
+  Zheng.
+\newblock {TensorFlow : A System for Large-Scale Machine Learning This paper is
+  included in the Proceedings of the TensorFlow : A system for large-scale
+  machine learning}.
+\newblock 2016.
+
+\bibitem{Paszke2019}
+Adam Paszke, Sam Gross, Francisco Massa, Adam Lerer, James Bradbury, Gregory
+  Chanan, Trevor Killeen, Zeming Lin, Natalia Gimelshein, Luca Antiga, Alban
+  Desmaison, Andreas Kopf, Edward Yang, Zachary DeVito, Martin Raison, Alykhan
+  Tejani, Sasank Chilamkurthy, Benoit Steiner, Lu~Fang, Junjie Bai, and Soumith
+  Chintala.
+\newblock {PyTorch: An Imperative Style, High-Performance Deep Learning
+  Library}.
+\newblock In H~Wallach, H~Larochelle, A~Beygelzimer,
+  F~d$\backslash$textquotesingle Alch{\'{e}}-Buc, E~Fox, and R~Garnett,
+  editors, {\em Advances in Neural Information Processing Systems 32}, pages
+  8024--8035. Curran Associates, Inc., 2019.
+
+\bibitem{Greenfeld2019}
+Daniel Greenfeld and Uri Shalit.
+\newblock {Robust Learning with the Hilbert-Schmidt Independence Criterion}.
+\newblock (1):1--25, oct 2019.
+
+\bibitem{Fikioris2006}
+George Fikioris.
+\newblock {Integral evaluation using the mellin transform and generalized
+  hypergeometric functions: Tutorial and applications to antenna problems}.
+\newblock {\em IEEE Transactions on Antennas and Propagation},
+  54(12):3895--3907, 2006.
+
+\bibitem{Kolbig1995}
+K.~S. Kolbig, I.~S. Gradshteyn, I.~M. Ryzhik, Alan Jeffrey, and Inc. {Scripta
+  Technica}.
+\newblock {\em {Table of Integrals, Series, and Products.}}, volume~64.
+\newblock 1995.
+
+\bibitem{Rathie1997}
+Arjun~K Rathie.
+\newblock {A New Generalization of Generalized Hypergeometric Functions}.
+\newblock {\em Le Matematiche}, 52(2):297--310, 1997.
+
+\bibitem{Wright1935}
+E~Maitland Wright.
+\newblock {The Asymptotic Expansion of the Generalized Hypergeometric
+  Function}.
+\newblock {\em Journal of the London Mathematical Society}, s1-10(4):286--293,
+  oct 1935.
+
+\bibitem{Fox1961}
+Charles Fox.
+\newblock {The G and H Functions as Symmetrical Fourier Kernels}.
+\newblock {\em Transactions of the American Mathematical Society}, 98(3):395,
+  1961.
+
+\bibitem{Inayat-Hussain1987}
+A.~A. Inayat-Hussain.
+\newblock {New properties of hypergeometric series derivable from Feynman
+  integrals II. A generalisation of the H function}.
+\newblock {\em Journal of Physics A: General Physics}, 20(13):4119--4128, 1987.
+
+\bibitem{Mainardi2003}
+Francesco Mainardi and Gianni Pagnini.
+\newblock {Salvatore Pincherle: The pioneer of the Mellin-Barnes integrals}.
+\newblock {\em Journal of Computational and Applied Mathematics},
+  153(1-2):331--342, 2003.
+
+\bibitem{Rathie2013}
+Pushpa~N. Rathie, Arjun~K. Rathie, and Luan C. de S.~M. Ozelim.
+\newblock {On the Distribution of the Product and the Sum of Generalized
+  Shifted Gamma Random Variables}.
+\newblock pages 1--9, 2013.
+
+\bibitem{Rathie2018}
+Arjun~Kumar Rathie, Luan Carlos de Sena~Monteiro Ozelim, and Pushpa~Narayan
+  Rathie.
+\newblock {On a new identity for the H-function with applications to the
+  summation of hypergeometric series}.
+\newblock {\em Turkish Journal of Mathematics}, 42(3):924--935, 2018.
+
+\bibitem{Sleight2020}
+Charlotte Sleight.
+\newblock {A Mellin space approach to cosmological correlators}.
+\newblock {\em Journal of High Energy Physics}, 2020(1), 2020.
+
+\bibitem{Passare1996}
+M.~Passare, A.~K. Tsikh, and A.~A. Cheshel.
+\newblock {Multiple Mellin-Barnes integrals as periods of Calabi-Yau manifolds
+  with several moduli}.
+\newblock {\em Theoretical and Mathematical Physics}, 109(3):1544--1555, 1996.
+
+\bibitem{Sameshima2019}
+Ray~Daniel Sameshima.
+\newblock {On Different Parametrizations of Feynman Integrals How does access
+  to this work benefit you ? Let us know ! On Different Parametrizations of
+  Feynman Integrals}.
+\newblock 2019.
+
+\bibitem{Fitzpatrick2011}
+A.~Liam Fitzpatrick, Jared Kaplan, Joao Penedones, Suvrat Raju, and Balt~C.
+  {Van Rees}.
+\newblock {A natural language for AdS/CFT correlators}.
+\newblock {\em Journal of High Energy Physics}, 2011(11), 2011.
+
+\bibitem{Twamley2006}
+J.~Twamley and G.~J. Milburn.
+\newblock {The quantum Mellin transform}.
+\newblock {\em New Journal of Physics}, 8, 2006.
+
+\bibitem{Woon1997}
+S.~C. Woon.
+\newblock {Analytic Continuation of Bernoulli Numbers, a New Formula for the
+  Riemann Zeta Function, and the Phenonmenon of Scattering of Zeros}.
+\newblock 70(1), 1997.
+
+\bibitem{Waller1995}
+Lance~A Waller, Bruce~W Turnbull, and J~Michael Hardin.
+\newblock {Obtaining Distribution Functions by Numerical Inversion of
+  Characteristic Functions with Applications}.
+\newblock {\em The American Statistician}, 49(4):346--350, apr 1995.
+
+\bibitem{Spataru2007}
+Silvia Spataru, Taru Academy, and Economic Studies.
+\newblock {Applying the Moment Generating Functions to the Study of Probability
+  Distributions}.
+\newblock {\em Informatica Economica Journal}, 11(2):132--137, 2007.
+
+\bibitem{Bateman1953}
+A.~Erdelyi and H.~Bateman.
+\newblock {\em {Tables of Integral Transforms I}}.
+\newblock 1953.
+
+\bibitem{Zsohar2012}
+Peter Zsohar.
+\newblock {Short introduction to the generalized method of moments}.
+\newblock {\em Hungarian Statistical Review}, Special(16):150--170, 2012.
+
+\bibitem{Wahba2003}
+Grace Wahba.
+\newblock {An introduction to reproducing kernel hilbert spaces and why they
+  are so useful}.
+\newblock {\em IFAC Proceedings Volumes}, 36(16):525--528, 2003.
+
+\bibitem{Thakur1991}
+Dinesh~S Thakur.
+\newblock {Gamma Functions for Function Fields and Drinfeld Modules}.
+\newblock {\em Annals of Mathematics}, 134(1):25--64, 1991.
+
+\bibitem{MacRobert1962}
+T.~M. MacRobert.
+\newblock {Barnes Integrals as a Sum of E-Functions}.
+\newblock {\em Math Annalen.}, 1962.
+
+\bibitem{Geenens2017}
+Gery Geenens.
+\newblock {Mellin-Meijer-kernel density estimation on R+}.
+\newblock jul 2017.
+
+\bibitem{Peasgood2009}
+Richard~Jason Peasgood.
+\newblock {\em {A Method to Symbolically Compute Convolution Integrals by}}.
+\newblock PhD thesis, 2009.
+
+\bibitem{Kingma2015}
+Diederik~P. Kingma and Jimmy~Lei Ba.
+\newblock {Adam: A method for stochastic optimization}.
+\newblock {\em 3rd International Conference on Learning Representations, ICLR
+  2015 - Conference Track Proceedings}, pages 1--15, 2015.
+
+\bibitem{Amdeberhan2012}
+Tewodros Amdeberhan, Olivier Espinosa, Ivan Gonzalez, Marshall Harrison,
+  Victor~H Moll, and Armin Straub.
+\newblock {Ramanujan's Master Theorem}.
+\newblock {\em The Ramanujan Journal}, 29(1-3):103--120, dec 2012.
+
+\bibitem{Antipova2007}
+I~A Antipova.
+\newblock {Inversion of multidimensional Mellin transforms}.
+\newblock {\em Russian Mathematical Surveys}, 62(5):977--979, 2007.
+
+\bibitem{Gonzalez2010}
+Ivan Gonzalez and Victor~H. Moll.
+\newblock {Definite integrals by the method of brackets. Part 1}.
+\newblock {\em Advances in Applied Mathematics}, 45(1):50--73, 2010.
+
+\bibitem{Gonzalez2015a}
+Ivan Gonzalez, Victor~H. Moll, and Ivan Schmidt.
+\newblock {Ramanujan's Master Theorem applied to the evaluation of Feynman
+  diagrams}.
+\newblock {\em Advances in Applied Mathematics}, 63:214--230, 2015.
+
+\bibitem{Gonzalez2015b}
+Ivan Gonzalez, Karen~T Kohl, and Victor~H Moll.
+\newblock {Evaluation of entries in Gradshteyn and Ryzhik employing the method
+  of brackets}.
+\newblock Number January 2014, pages 195--214. oct 2015.
+
+\bibitem{Bytev2020}
+Vladimir~V. Bytev and Bernd~A. Kniehl.
+\newblock {Derivatives of any Horn-type hypergeometric functions with respect
+  to their parameters}.
+\newblock {\em Nuclear Physics B}, 952:114911, 2020.
+
+\bibitem{Carlson1963}
+B.~C. Carlson.
+\newblock {Lauricella's hypergeometric function FD}.
+\newblock {\em Journal of Mathematical Analysis and Applications},
+  7(3):452--470, 1963.
+
+\bibitem{KdF}
+J~{Kamp{\'{e}} de F{\'{e}}riet}.
+\newblock {La fonction hyperg{\'{e}}om{\'{e}}trique.}
+\newblock 85 p. M{\'{e}}m. Sci. math. 85 (1937)., 1937.
+
+\end{thebibliography}

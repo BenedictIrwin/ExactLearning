@@ -1,0 +1,49 @@
+\BOOKMARK [1][-]{section.1}{Introduction}{}% 1
+\BOOKMARK [2][-]{subsection.1.1}{Citations To Include}{section.1}% 2
+\BOOKMARK [1][-]{section.2}{Introduction}{}% 3
+\BOOKMARK [1][-]{section.3}{Background}{}% 4
+\BOOKMARK [2][-]{subsection.3.1}{Mellin Transform}{section.3}% 5
+\BOOKMARK [2][-]{subsection.3.2}{Ramanujan Master Theorem \(RMT\)}{section.3}% 6
+\BOOKMARK [2][-]{subsection.3.3}{Some Examples}{section.3}% 7
+\BOOKMARK [2][-]{subsection.3.4}{Highly Generalised Functions}{section.3}% 8
+\BOOKMARK [3][-]{subsubsection.3.4.1}{red Euler Hypergeometric Function}{subsection.3.4}% 9
+\BOOKMARK [3][-]{subsubsection.3.4.2}{Barnes Integrals}{subsection.3.4}% 10
+\BOOKMARK [2][-]{subsection.3.5}{Table of Functions Using \040Notation}{section.3}% 11
+\BOOKMARK [1][-]{section.4}{Mellin Transforms of Hierarchy of Functions}{}% 12
+\BOOKMARK [2][-]{subsection.4.1}{Conclusions from Generalised functions}{section.4}% 13
+\BOOKMARK [1][-]{section.5}{Multiple Dimensions}{}% 14
+\BOOKMARK [2][-]{subsubsection.5.0.1}{Multivariate Moment Functional}{section.5}% 15
+\BOOKMARK [2][-]{subsection.5.1}{Multivariate Mellin Transform}{section.5}% 16
+\BOOKMARK [2][-]{subsection.5.2}{Generalised RMT \(GRMT\)}{section.5}% 17
+\BOOKMARK [1][-]{section.6}{Multidimensional Hypergeometric Series}{}% 18
+\BOOKMARK [1][-]{section.7}{Extracting the Moments from a Generalised Probability Distribution}{}% 19
+\BOOKMARK [2][-]{subsubsection.7.0.1}{Generalised Distribution}{section.7}% 20
+\BOOKMARK [2][-]{subsection.7.1}{A Form for }{section.7}% 21
+\BOOKMARK [1][-]{section.8}{Training}{}% 22
+\BOOKMARK [2][-]{subsection.8.1}{Extracting Moments}{section.8}% 23
+\BOOKMARK [2][-]{subsection.8.2}{Extracting Variances}{section.8}% 24
+\BOOKMARK [3][-]{subsubsection.8.2.1}{Many Variables}{subsection.8.2}% 25
+\BOOKMARK [2][-]{subsection.8.3}{Upsilon Mapping}{section.8}% 26
+\BOOKMARK [2][-]{subsection.8.4}{Extracting Functions}{section.8}% 27
+\BOOKMARK [2][-]{subsection.8.5}{Re-predicting Variables}{section.8}% 28
+\BOOKMARK [2][-]{subsection.8.6}{A prediction Example}{section.8}% 29
+\BOOKMARK [2][-]{subsection.8.7}{Rationale}{section.8}% 30
+\BOOKMARK [1][-]{section.9}{Generalisation}{}% 31
+\BOOKMARK [1][-]{section.10}{An Example}{}% 32
+\BOOKMARK [1][-]{section.11}{Multidimensional Generalised Hypergeometric Function}{}% 33
+\BOOKMARK [1][-]{section.12}{Multi-Dimensional Meijer G Function}{}% 34
+\BOOKMARK [1][-]{section.13}{Appendix 1: Examples of the Mellin Transform and RMT}{}% 35
+\BOOKMARK [2][-]{subsubsection.13.0.1}{Negative Exponential}{section.13}% 36
+\BOOKMARK [3][-]{subsubsection.13.0.2}{Binomial \(1+x\)-1}{subsubsection.13.0.1}% 37
+\BOOKMARK [3][-]{subsubsection.13.0.3}{Binomial \(1+x\)-a}{subsubsection.13.0.1}% 38
+\BOOKMARK [1][-]{section.14}{Appendix 2: Miscellaneous}{}% 39
+\BOOKMARK [2][-]{subsection.14.1}{Multivariate Functions}{section.14}% 40
+\BOOKMARK [3][-]{subsubsection.14.1.1}{Appell F1 Function}{subsection.14.1}% 41
+\BOOKMARK [3][-]{subsubsection.14.1.2}{Gauss Hypergeometric to Lauricella Function in N-D}{subsection.14.1}% 42
+\BOOKMARK [2][-]{subsection.14.2}{Test}{section.14}% 43
+\BOOKMARK [3][-]{subsubsection.14.2.1}{1D- Exponential}{subsection.14.2}% 44
+\BOOKMARK [3][-]{subsubsection.14.2.2}{Replacement Rules}{subsection.14.2}% 45
+\BOOKMARK [3][-]{subsubsection.14.2.3}{Note:}{subsection.14.2}% 46
+\BOOKMARK [3][-]{subsubsection.14.2.4}{Example: Multivariate Hypergeometric Function}{subsection.14.2}% 47
+\BOOKMARK [2][-]{subsection.14.3}{Multivariate Generalisations of Functions}{section.14}% 48
+\BOOKMARK [1][-]{section.15}{References}{}% 49

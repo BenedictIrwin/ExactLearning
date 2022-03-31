@@ -1,0 +1,199 @@
+\documentclass{article}
+
+\usepackage{authblk}
+\usepackage{url}
+\usepackage[square,numbers]{natbib}
+\usepackage{color,amssymb,amsmath}
+\usepackage{graphicx}
+\usepackage[margin=1in]{geometry}
+%\usepackage{graphicx}
+%\SectionNumbersOn
+%\AbstractOn
+
+\title{Further Examples for: A Natural Representation of Functions that Facilitates 'Exact Learning'}
+%\author{Benedict W. J.~Irwin}
+
+
+\date{\today}
+\begin{document}
+
+%\email{ben.irwin@optibrium.com}
+%\affiliation{Optibrium, F5-6 Blenheim House, Cambridge Innovation Park, Denny End Road, Cambridge, CB25 9PB, United Kingdom}
+%\alsoaffiliation{Theory of Condensed Matter, Cavendish Laboratories, University of Cambridge, Cambridge, United Kingdom}
+
+\author[1,2]{Benedict W. J.~Irwin}
+\affil[1]{Theory of Condensed Matter, Cavendish Laboratories, University of Cambridge, Cambridge, United Kingdom}
+\affil[2]{Optibrium, F5-6 Blenheim House, Cambridge Innovation Park, Denny End Road, Cambridge, CB25 9PB, United Kingdom}
+\affil[ ]{\textit {ben.irwin@optibrium.com}}
+
+
+\maketitle
+
+\begin{abstract}
+Equations can often be hard to solve analytically, but numeric solutions are relatively easy to get, or advanced methods have been developed to ... . Exact learning is a method that attempts to find analytic solutions without solving equations, but only by looking at the data. 
+\end{abstract}
+
+\section{Introduction}
+Exact learning as introduced by Irwin \cite{IrwinCell} is a method for attempting to fit the analytic structure of a function by taking a Mellin transform. The Mellin space is ideal because many functions in $[0,\infty)$ are expressed in terms of gamma functions  and simple powers. 
+
+In this work we apply exact learning to a number of interesting problems. 
+
+
+\section{Further Examples}
+
+BesselK functions, and powers of Bessel K functions 
+
+\section{RDF Type functions}
+Consider $1-BesselJ[x]$ and the same with argument $\sqrt{x}$ for an analogy to a function that extends to infinity
+
+
+\section{Training/Test Set}
+We should hold out set of points which are in a different space completely. 
+
+Line and combination searches. 
+For some parameters, we might want to try rational numbers.
+For others ...
+This might ease the combinatorics a little.
+Otherwised advanced solvers will be good.
+
+
+\section{Exact Learning}
+Coefficients are rationals or algebraic numbers? (Or Pi)
+Algebraic numbers are sums of hypergeometrics with rational arguments? (Deep learning).
+
+Take a point cloud of common terms in N dimensions.
+Use KNN type approach to find the solution vectors with lowest loss?
+
+
+
+
+\section{Advanced Fitting Techniques}
+If we have exact data to fit to, then we can exploit known properties of the gamma function. Presume we have a solution as 
+$$
+\phi(s) = \Gamma(a s + b)
+$$
+for $Re[\Gamma(ix)]$ the first root is $x \approx \pm 1.80554707160510691987636662... = r_0 $. If we solve the point where $\phi(s)=0$, starting for $s=0$, we may get a root $\kappa$. Then we could posit that $\kappa = I r_0$. If we assume $a$ and $b$ are real because they will likely exist as coefficients in the expansion. 
+
+If we keep a large list of close zeroes for the complex gamma function, we can attempt to use this information to match up the zeroes in our fingerprint/expression. If we add in a series expansion in terms of powers of $s$, and or a series of $s^k \log \Gamma(s)$ terms, we may be able to partition the fingerprint.
+
+This will give a set of linear equations to fit the gamma functions.
+
+Because the moments are in a product format, a zero in one function will make the whole moment zero (unless there is an infinity).
+
+In this sense we can drop a load of markers randomly, get each of them to approach the nearest zero, mark out the locations, look for a lattice type structure by finding a scale and shift.
+
+We can equally do this for the reciprocal of the fingerprint, which converts the poles to zeroes and lets us solve for lower gamma functions.
+
+For simple powers, we can use autocorrelation to detect oscillation in $Re[\phi(it)] and Im[\phi(it)]$.
+
+Each time we detect a strong coefficient, we can remove it and note down the factor.
+
+
+Assuming $N$ gamma functions on top we 
+
+
+FFT
+
+
+\section{Schrodinger Equation}
+We set up the following numerical routines:
+
+\begin{enumerate}
+\item A 1-D time independent Schr\"odinger equation solver.
+\item Interpolation
+\item Numeric integration
+\item Exact learning
+\end{enumerate}
+
+For exact learning we choose a 7-coefficient fingerprint as:
+$$
+\phi(s,\boldsymbol \alpha) = \alpha_0 \alpha_1^s P_2(s)\Gamma(\alpha_2 s + \alpha_3)
+$$
+where
+$$
+P_2(s) = \alpha_4 + \alpha_5 s + \alpha_6 s^2
+$$
+we run the BFGS routine fitting the complex log-moments obtained from the numeric integration to the fingerprint for all samples $s \in S$ and receive the coefficient vector
+$$
+\boldsymbol \alpha = [ 0.34648851,  1.18917214,  0.50001699,  0.50004459,  3.99839001, -2.28486871, 2.28477497]
+$$  
+with a remarkably small loss $L = 4.415494070864413e-10$. This can be mapped by eye onto the following rules
+\begin{align}
+\alpha_2 = \alpha_3 = \frac{1}{2} \\
+\alpha_4 = 4 \\
+\alpha_5 = -\alpha_6 \equiv \pm \beta
+\end{align}
+in addition to this $\alpha_1^2 \approx \sqrt{2}$, guessing
+$$
+\phi(s,\boldsymbol \alpha) = \alpha_0 2^{s/2} (4 - \beta s + \beta s^2)\Gamma\left(\frac{s}{2} + \frac{1}{2}\right)
+$$
+By the Ramanujan Master theorem we can write 
+$$
+\psi_{HO4}(x) = \sum_{s=0}^\infty \frac{(-1)^s}{s!} \frac{\phi(-s)}{\Gamma(-s)} x^s = 
+$$
+
+
+Situation Report
+p[1]^4 ~ 2
+p[3] ~ 1/2
+p[3]^2 ~ 1/4
+p[0] ~ prod(1/4rt(3),1/3rt(4)) : i.e. 0.4796026931977069 ~ 0.4786664874068727
+p[1] ~ prod(2,1/4rt(8)) : i.e. 1.1891426549696542 ~ 1.189207115002721
+p[2] ~ 0 : i.e. 0.00021397989446107635 ~ 0.0
+p[3] ~ 1/2 : i.e. 0.5000366282274676 ~ 0.5
+p[5] ~ prod(1/3,4) : i.e. 1.333397201041356 ~ 1.3333333333333333
+
+
+*** Assembling Dictionary ***
+[]
+*** Loading Data ***
+*** Initial Guess ***
+Params:  [ 4.79593526e-01  1.18914819e+00  1.95630284e-04  5.00033813e-01
+ -1.33307505e+00  1.33342100e+00]
+Loss:  0.0439870044004525
+*** Refined Guess ***
+Params:  [ 4.79593396e-01  1.18914822e+00  1.95813609e-04  5.00033765e-01
+ -1.33307513e+00  1.33342095e+00]
+Loss:  4.604286890498946e-06
+Final Loss: 4.604286890498946e-06
+Situation Report
+p[1]^4 ~ 2
+p[3] ~ 1/2
+p[3]^2 ~ 1/4
+p[0] ~ diff(quot(e,4),recip(5)) : i.e. 0.47959339594500594 ~ 0.47957045711476126
+p[1] ~ 4rt(2) : i.e. 1.1891482240441165 ~ 1.189207115002721
+p[2] ~ 0 : i.e. 0.00019581360916189755 ~ 0.0
+p[3] ~ recip(2) : i.e. 0.5000337654908391 ~ 0.5
+p[4] ~ diff(0,quot(4,3)) : i.e. -1.3330751254138067 ~ -1.3333333333333333
+p[5] ~ diff(2,quot(2,3)) : i.e. 1.3334209495203304 ~ 1.3333333333333335
+
+
+
+
+
+\section{Hydrogen Wavefunction}
+
+Mellin Transforms
+$$
+\mathcal{M}[\psi_{100}(r,\theta,\phi)](s) = \frac{\sqrt{\frac{1}{a^3}} 2^{-s} \left(\frac{1}{a}\right)^{-s} \Gamma
+    (s)}{\sqrt{\pi }}
+$$
+$$
+\lambda_{nlm}(s,\theta,\phi)= \mathcal{M}[\psi_{nlm}(r,\theta,\phi)](s,\theta,\phi) = \frac{2^{1-s} \left(a n\right)^{s} \Gamma (l+n+1) \Gamma (l+s)}{a^{3/2} n^2 \Gamma (l-s+2) \Gamma (n+s)} \sqrt{\frac{\Gamma (n-l)}{\Gamma (l+n+1)}} \,
+    _2F_1(-l+s-1,l+s;n+s;1) Y_l^m(t,p)
+$$
+
+Harmonic Oscillator double Mellin transform:
+
+$$
+   -\frac{a^{\frac{1}{4}-\frac{s}{2}} \sin (\pi  n) \sqrt{2^n \Gamma (n+1)}
+    \Gamma (4 t) 2^{-\frac{3 n}{2}+s-10 t-2} \Gamma
+    \left(-\frac{n}{4}-t+\frac{1}{2}\right) \Gamma (-s-t+1) \Gamma
+    \left(\frac{s}{4}-t\right)}{\pi ^{9/4}}
+$$
+
+\bibliography{bibliography}{}
+\bibliographystyle{plain}
+
+
+\end{document}

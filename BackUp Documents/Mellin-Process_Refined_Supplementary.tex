@@ -1,0 +1,350 @@
+\documentclass[journal=jcisd8,manuscript=article,layout=onecolumn,pdftex,floatfix,amsmath,amssymb,10pt]{achemso}
+\usepackage{hyperref,url,color,upgreek,amssymb,amsmath}
+\usepackage{graphicx}
+\SectionNumbersOn
+\AbstractOn
+
+\title{Ramanujan Master Process: Part-1 \\ \large Theory, Supplementary Materials}
+\author{Benedict W. J.~Irwin}
+\email{ben.irwin@optibrium.com}
+\affiliation{Optibrium, F5-6 Blenheim House, Cambridge Innovation Park,
+Denny End Road, Cambridge, CB25 9PB, United Kingdom}
+\alsoaffiliation{Theory of Condensed Matter, Cavendish Laboratories, University of Cambridge, Cambridge, United Kingdom}
+
+\date{\today}
+
+%\usepackage{biblatex}
+%\addbibresource{bibliography.bib}
+
+\begin{document}
+\begin{abstract}
+
+\end{abstract}
+
+\tableofcontents
+
+\section{Perplexity}
+We can attempt to use perplexity to model how well the proposed distribution fits the sampled data. The perplexity is defined as 
+\begin{equation}
+\mathrm{perp}[p] = b^{H[p]}
+\end{equation}
+for some base $b$ where $H$ is the (Shannon) entropy of a distribution $p$, using the same base $b$. We shall take $b$ to be $e$ in this work. If we have a set of $N$ samples $\{\mathbf{x}\}_{i=1}^N=\mathbf{X}$ drawn from the true distribution $P(\mathbf{x})$, and we have a trial distribution $Q(\mathbf{x})$ we can measure the sampling perplexity
+\begin{equation}
+\mathrm{perp}[{\mathbf{X}}] = \exp\left(- \frac{1}{N}\sum_{i=1}^N \log Q(\mathbf{x}_i)\right)
+\end{equation}
+if this quantity is small, then we are not surprised to have drawn the samples, and $Q$ is likely to be closer to $P$. The exponent can be seen as a cross entropy 
+\begin{equation}
+H(\tilde{p},q) = - \sum_{x} \tilde{p}(x) \log q(x)
+\end{equation}
+with sampling number distribution counting the number of occurrences of the sample
+\begin{equation}
+\tilde{p}(x) = \frac{\#x}{N}
+\end{equation}
+where $\#x$ is the number of times the sample $x$ is seen in the $N$ samples.
+
+\subsection{Kullback-Leibler Divergence}
+We can consider the application of KLD, which can also be seen in terms of the cross entropy
+\begin{equation}
+D_{KL}(p||q) = - \sum p(x) \log q(x)  + \sum_{x} p(x) \log p(x) = H(P,Q)- H(P)
+\end{equation}
+again taking $p$ to be implied by sample observations, we have
+\begin{equation}
+D_{KL}(\tilde{p}||q) = - \sum_x \tilde{p}(x) \log q(x)  + \sum_{x} \tilde{p}(x) \log \tilde{p}(x)
+\end{equation}
+\begin{equation}
+D_{KL}(\tilde{p}||q) = - \frac{1}{N}\sum_{i=1}^N \log q(x_i)  + \frac{1}{N} \sum_{i=1}^N \log \frac{1}{N}
+\end{equation}
+\begin{equation}
+D_{KL}(\tilde{p}||q) = - \frac{1}{N}\sum_{i=1}^N \log q(x_i)  -\log N
+\end{equation}
+which is only a constant away from the exponent of the perplexity. If the summation over samples were extended to an integral, this can relate to a product integral in the form
+\begin{equation}
+\prod_a^b f(x) ^{dx} = \exp\left(\int_a^b \log f(x) \right)
+\end{equation}
+such that 
+\begin{equation}
+\mathrm{perp}[p] = \prod_{\mathcal{S}} \frac{1}{p(x)} ^{dx}
+\end{equation}
+the important point is that for a probability distribution which is normalised, the first term in the moment expansion is $1$ by definition. This means the first term in the series expansion is $1$? [{\color{red} Check this}].
+
+\section{Marginalization}
+If the data are incomplete we can extract a marginal distribution. The main goal is to predict missing variables given the present data. If we take the multivariate distribution and insert values for the known arguments, then we are left with the relevant distribution for the remaining terms. Given
+\begin{equation}
+P(\mathbf{x}) = \sum_{\mathbf{k}} \Pi_\chi(\mathbf{k}) \varphi(\mathbf{k}) \Upsilon(\mathbf{x},\mathbf{k})
+\end{equation}
+if we know the values for some of the $x$ variables, let us call the values $\tau$. We can always relabel to bring these variables to the front or back of the sum without loss of generality, split the $\mathbf{x}$ in to $\mathbf{x}_1$ and $\mathbf{x}_2$. This leaves us with the conditional distribution 
+\begin{equation}
+P(\mathbf{x}_2| \mathbf{x}_1 = \boldsymbol\tau)= \sum_{\mathbf{k}} \Pi_\chi(\mathbf{k}) \varphi(\mathbf{k}) \Upsilon(\boldsymbol\tau,\mathbf{k}_1)\Upsilon(\mathbf{x}_2,\mathbf{k}_2)
+\end{equation}
+\begin{equation}
+P(\mathbf{x}_2| \mathbf{x}_1 = \boldsymbol\tau)= \sum_{\mathbf{k}_1}\sum_{\mathbf{k}_2} \Pi_\chi(\mathbf{k}_1)\Pi_\chi(\mathbf{k}_2) \varphi(\mathbf{k}_1 \oplus \mathbf{k}_2) \Upsilon(\boldsymbol\tau,\mathbf{k}_1)\Upsilon(\mathbf{x}_2,\mathbf{k}_2)
+\end{equation}
+\begin{equation}
+P(\mathbf{x}_2| \mathbf{x}_1 = \boldsymbol\tau)= \sum_{\mathbf{k}_1}\Pi_\chi(\mathbf{k}_1)\Upsilon(\boldsymbol\tau,\mathbf{k}_1)\sum_{\mathbf{k}_2} \Pi_\chi(\mathbf{k}_2) \varphi(\mathbf{k}_1 \oplus \mathbf{k}_2) \Upsilon(\mathbf{x}_2,\mathbf{k}_2)
+\end{equation}
+with $\mathbf{k}_1 \oplus \mathbf{k}_2 = \mathbf{k}$. At this point, the expectation value of the moments of unknown variables is
+\begin{equation}
+\mathbb{E}[\Upsilon(\mathbf{x}_2,\mathbf{s}_2 - \mathbf{1})] = \int_0^\infty \Upsilon(\mathbf{x}_2,\mathbf{s}_2 - \mathbf{1})\sum_{\mathbf{k}_1}\Pi_\chi(\mathbf{k}_1)\Upsilon(\boldsymbol\tau,\mathbf{k}_1)\sum_{\mathbf{k}_2} \Pi_\chi(\mathbf{k}_2) \varphi(\mathbf{k}_1 \oplus \mathbf{k}_2) \Upsilon(\mathbf{x}_2,\mathbf{k}_2) d\mathbf{x}_2
+\end{equation}
+as before moving the linear operators
+\begin{equation}
+\mathbb{E}[\Upsilon(\mathbf{x}_2,\mathbf{s}_2 - \mathbf{1})] =  \sum_{\mathbf{k}_1}\Pi_\chi(\mathbf{k}_1)\Upsilon(\boldsymbol\tau,\mathbf{k}_1)\sum_{\mathbf{k}_2} \Pi_\chi(\mathbf{k}_2) \varphi(\mathbf{k}_1 \oplus \mathbf{k}_2) \int_0^\infty\Upsilon(\mathbf{x}_2,\mathbf{k}_2 + \mathbf{s}_2 - \mathbf{1}) d\mathbf{x}_2
+\end{equation}
+which is a product of divergent bracket symbols
+\begin{equation}
+\mathbb{E}[\Upsilon(\mathbf{x}_2,\mathbf{s}_2 - \mathbf{1})] =  \sum_{\mathbf{k}_1}\Pi_\chi(\mathbf{k}_1)\Upsilon(\boldsymbol\tau,\mathbf{k}_1)\sum_{\mathbf{k}_2} \Pi_\chi(\mathbf{k}_2) \varphi(\mathbf{k}_1 \oplus \mathbf{k}_2) \prod_{l=1}^{n^*} \langle \mathbf{k}_{2l} + \mathbf{s}_{2l} \rangle
+\end{equation}
+then the Ramanujan Master theorem is applied to the sum over $\mathbf{k}_2$ leaving a function of $\boldsymbol\tau$
+\begin{equation}
+\mathbb{E}[\Upsilon(\mathbf{x}_2,\mathbf{s}_2 - \mathbf{1})] =  \sum_{\mathbf{k}_1}\Pi_\chi(\mathbf{k}_1)\Upsilon(\boldsymbol\tau,\mathbf{k}_1)\varphi(\mathbf{k}_1 \oplus -\mathbf{s}_2)\Xi[\mathbf{s}_2] = Q(\boldsymbol \tau,\mathbf{s}_2)
+\end{equation}
+the evaluation of this series may be hard.
+
+\section{Marginalising the Functions}
+If we use a function $P(x,y)$ we may want to know the distribution of $y$ given a certain $x$. This is easy, as the known value for $x=x_0$ can be inserted into the distribution, and the series will give the distribution $P(y|x=x_0)$. In some cases, we may have missing data. In this case, we may write $P(y,x_1,x_2)$, if we know $x_1$, but do not know $x_2$ we may want to marginalise over $x_2$ by writing
+\begin{equation}
+P(y,x_1) = \int_0^\infty P(y,x_1,x_2) \; dx_2
+\end{equation} 
+if multiple values are missing, we will want to marginalize over multiple variables. This will be another use case for the Ramanujan master theorem. For a trained probability distribution, we already know all of the coefficients. Then for a single variable we write
+\begin{equation}
+\int_0^\infty \; dx_r P(\mathbf{x}) = \int_0^\infty \; dx_r 
+\end{equation}
+The hard case comes when the function is filled with $k^*$ values which are naturally functions of the $\alpha$ and $s$. As a result the derivative is different: $k^*$ is the solution to
+$$
+\mathbf{k} = -\mathbf{A}^{-1}\mathbf{s}
+$$
+it might be worth doing this for a few dimensionalities of $A$ to start with... To be clever about this, we know that the elements of the inverse matrix will be of the form
+\begin{equation}
+(\mathbf{A}^{-1})_{ji} = \frac{\partial}{\partial \alpha_{ij}} \log \det \mathbf{A}
+\end{equation}
+this means that \begin{equation}
+k_i^* = -\sum_{j=1}^n (\mathbf{A}^{-1})_{ij} s_j = -\sum_{j=1}^n s_j \frac{\partial}{\partial \alpha_{ji}} \log \det \mathbf{A}
+\end{equation}
+which could be though of the action of the operator 
+$$
+-\sum_{j=1}^n s_j \frac{\partial}{\partial \alpha_{ji}} \log
+$$
+onto the determinant of $A$ or with the log elsewhere. Then the critical term is
+$$
+\frac{\partial k_i^*}{\partial \alpha_{lm}} = - \frac{\partial}{\partial \alpha_{lm}} \sum_{j=1}^n s_j \frac{\partial}{\partial \alpha_{ji}} \log \det \mathbf{A}
+$$
+due to linearity we can write
+$$
+\frac{\partial k_i^*}{\partial \alpha_{lm}} = - \sum_{j=1}^n s_j \frac{\partial}{\partial \alpha_{ji}} \frac{\partial}{\partial \alpha_{lm}} \log \det \mathbf{A}
+$$
+$$
+\frac{\partial k_i^*}{\partial \alpha_{lm}} = - \sum_{j=1}^n s_j \frac{\partial}{\partial \alpha_{ji}} (\mathbf{A}^{-1})_{ml} = - \sum_{j=1}^n s_j \frac{\partial}{\partial \alpha_{lm}} (\mathbf{A}^{-1})_{ij}
+$$
+this indicates that
+$$
+\frac{\partial}{\partial \alpha_{ji}} (\mathbf{A}^{-1})_{ml} = \frac{\partial}{\partial \alpha_{lm}} (\mathbf{A}^{-1})_{ij} = \epsilon_{ijlm}
+$$
+Consider $B=sI-A$, $adj(B)=\Delta p(B+A,sI-B)$ see wikipedia page for adjugate matrix.
+We can try the method if
+$$
+\mathbf{A}\mathbf{x} = \mathbf{b}
+$$
+then
+$$
+x_i = \frac{\det(\mathbf{A} \mathrm{rep}_i \mathbf{b})}{\det(\mathbf{A})}
+$$
+where $\mathbf{A} \mathrm{rep}_i \mathbf{b}$ is the matrix $A$ replacing the column $i$ with the vector $b$. Then we may write \begin{equation}
+\frac{\partial k^*_i}{\partial \alpha_{l^* m^*}} = \frac{\partial}{\partial \alpha_{l^* m^*}} \frac{\det(\mathbf{A}\mathrm{rep}_i[-\mathbf{s}])}{\det(\mathbf{A})} = \frac{\det'(\mathbf{A}\mathrm{rep}_i[-\mathbf{s}])\det(\mathbf{A}) - \det(\mathbf{A}\mathrm{rep}_i[-\mathbf{s}])\det'(\mathbf{A})}{\det(\mathbf{A})^2}
+\end{equation}
+\begin{equation}
+\frac{\partial k^*_i}{\partial \alpha_{l^* m^*}} = \frac{\mathrm{adj}^\top(\mathbf{A}\mathrm{rep}_i[-\mathbf{s}])_{l^*m^*}\det(\mathbf{A}) - \det(\mathbf{A}\mathrm{rep}_i[-\mathbf{s}])\mathrm{adj}^\top(\mathbf{A})_{l^*m^*}}{\det(\mathbf{A})^2}
+\end{equation}
+\begin{equation}
+\frac{\partial k^*_i}{\partial \alpha_{l^* m^*}} = \frac{\mathrm{adj}(\mathbf{A}\mathrm{rep}_i[-\mathbf{s}])_{m^*l^*}\det(\mathbf{A}) - \det(\mathbf{A}\mathrm{rep}_i[-\mathbf{s}])\mathrm{adj}(\mathbf{A})_{m^*l^*}}{\det(\mathbf{A})^2}
+\end{equation}
+\begin{equation}
+\frac{\partial k^*_i}{\partial \alpha_{l^* m^*}} = \frac{\det(\mathbf{A}\mathrm{rep}_i[-\mathbf{s}])(\mathbf{A}\mathrm{rep}_i[-\mathbf{s}])^{-1}_{m^*l^*}\det(\mathbf{A}) - \det(\mathbf{A})\det(\mathbf{A}\mathrm{rep}_i[-\mathbf{s}])\mathbf{A}^{-1}_{m^*l^*}}{\det(\mathbf{A})^2}
+\end{equation}
+\begin{equation}
+\frac{\partial k^*_i}{\partial \alpha_{l^* m^*}} = \frac{\det(\mathbf{A}\mathrm{rep}_i[-\mathbf{s}])(\mathbf{A}\mathrm{rep}_i[-\mathbf{s}])^{-1}_{m^*l^*} - \det(\mathbf{A}\mathrm{rep}_i[-\mathbf{s}])\mathbf{A}^{-1}_{m^*l^*}}{\det(\mathbf{A})}
+\end{equation}
+\begin{equation}
+\frac{\partial k^*_i}{\partial \alpha_{l^* m^*}} = \frac{\det(\mathbf{A}\mathrm{rep}_i[-\mathbf{s}])}{\det(\mathbf{A})}((\mathbf{A}\mathrm{rep}_i[-\mathbf{s}])^{-1}_{m^*l^*} - \mathbf{A}^{-1}_{m^*l^*})
+\end{equation}
+\begin{equation}
+\frac{\partial k^*_i}{\partial \alpha_{l^* m^*}} = k_i^*((\mathbf{A}\mathrm{rep}_i[-\mathbf{s}])^{-1}_{m^*l^*} - \mathbf{A}^{-1}_{m^*l^*})
+\end{equation}
+this is not ideal for high dimensional problems because we need to invert $n$ matrices. The real problem comes for a term like
+\begin{equation}
+\frac{\partial}{\partial \alpha_{l^*m^*}} \Gamma(a_{l^*m} + \alpha_{l^*} \cdot \mathbf{k}^*)
+\end{equation}
+for this we need \begin{equation}
+\frac{\partial}{\partial \alpha_{l^*m^*}} \alpha_{l^*} \cdot \mathbf{k}^* = \frac{\partial}{\partial \alpha_{l^*m^*}} \sum_{q=1}^n \alpha_{l^* q}k^*_q =  \sum_{q=1}^n \frac{\partial}{\partial \alpha_{l^*m^*}}\alpha_{l^* q}k^*_q
+\end{equation}
+then 
+\begin{equation}
+\frac{\partial}{\partial \alpha_{l^*m^*}} \alpha_{l^*} \cdot \mathbf{k}^* = \sum_{q=1}^n k^*_q\frac{\partial \alpha_{l^* q}}{\partial \alpha_{l^*m^*}} + \alpha_{l^* q}\frac{\partial k^*_q}{\partial \alpha_{l^*m^*}}
+\end{equation}
+\begin{equation}
+\frac{\partial}{\partial \alpha_{l^*m^*}} \alpha_{l^*} \cdot \mathbf{k}^* = \sum_{q=1}^n k^*_q\delta_{q m^*} + \alpha_{l^* q}k_q^*((\mathbf{A}\mathrm{rep}_q[-\mathbf{s}])^{-1}_{m^*l^*} - \mathbf{A}^{-1}_{m^*l^*})
+\end{equation}
+\begin{equation}
+\frac{\partial}{\partial \alpha_{l^*m^*}} \alpha_{l^*} \cdot \mathbf{k}^* = k^*_{m^*} + \sum_{q=1}^n \alpha_{l^* q}k_q^*((\mathbf{A}\mathrm{rep}_q[-\mathbf{s}])^{-1}_{m^*l^*} - \mathbf{A}^{-1}_{m^*l^*})
+\end{equation}
+
+\section{General Training}
+For training, the derivatives are useful. Assuming we are interested in the log of the Mellin transform which will later represent the moments:
+\begin{equation}
+\log \mathcal{M}[_pF_q(\mathbf{a};\mathbf{b};-\mathbf{x})](\mathbf{k}^*) = \log\left(\frac{f(k_1^*,\cdots,k_n^*)}{|\det(\mathbf{A})|}\prod_{l=1}^n \Gamma(-k_l^*)\right)
+\end{equation}
+
+Nice properties which are reminiscent of operators in QM
+\begin{align}
+\frac{\partial}{\partial a_{l^*m^*}} \prod_{m=1}^p \Gamma(a_{l^* m}) = \psi(a_{l^*m^*})\prod_{m=1}^p \Gamma(a_{l^* m}) \\
+\frac{\partial}{\partial a_{l^*m^*}} \prod_{m=1}^p \Gamma(a_{l^* m} + \alpha_{l^*} \cdot \mathbf{k}) = \psi(a_{l^*m^*} + \alpha_{l^*}\cdot \mathbf{k})\prod_{m=1}^p \Gamma(a_{l^* m} + \alpha_{l^*}\cdot \mathbf{k})
+\end{align}
+using the quotient rule we then have
+\begin{equation}
+\frac{\partial}{\partial a_{l^*m^*}} \frac{\prod_{m=1}^p \Gamma(a_{l^* m} + \alpha_{l^*} \cdot \mathbf{k})}{\prod_{m=1}^p \Gamma(a_{l^* m})} =(\psi(a_{l^*m^*}+\alpha_{l^*} \cdot \mathbf{k})-\psi(a_{l^*m^*}))\frac{\prod_{m=1}^p \Gamma(a_{l^* m} + \alpha_{l^*} \cdot \mathbf{k})}{\prod_{m=1}^p \Gamma(a_{l^* m})}
+\end{equation}
+which is the same as
+\begin{equation}
+\frac{\partial}{\partial a_{l^*m^*}} \log\left( \frac{\prod_{m=1}^p \Gamma(a_{l^* m} + \alpha_{l^*} \cdot \mathbf{k})}{\prod_{m=1}^p \Gamma(a_{l^* m})}\right) =(\psi(a_{l^*m^*}+\alpha_{l^*} \cdot \mathbf{k})-\psi(a_{l^*m^*}))
+\end{equation}
+similarly
+\begin{equation}
+\frac{\partial}{\partial b_{l^*m^*}} \log\left( \frac{\prod_{m=1}^p \Gamma(b_{l^* m})}{\prod_{m=1}^p \Gamma(b_{l^* m} + \alpha_l \cdot \mathbf{k})}\right) =(\psi(b_{l^*m^*})-\psi(b_{l^*m^*}+\alpha_{l^*} \cdot \mathbf{k}))
+\end{equation}
+the slightly harder term to evaluate is the derivative with respect to $\alpha$: We note that 
+\begin{equation}
+\frac{\partial (\alpha_{l^*} \cdot \mathbf{k}) }{\partial \alpha_{l^*m^*}}= k_{m^*}
+\end{equation}
+and \begin{equation}
+\frac{\partial}{\partial \alpha_{l^*m^*}} \log \left(\frac{\prod_{m=1}^p \Gamma(a_{l^* m} + \alpha_{l^*} \cdot \mathbf{k})}{\prod_{m=1}^q \Gamma(b_{l^*m} + \alpha_{l^*} \cdot \mathbf{k})} \right) = k_{m^*}\left(\sum_{m=1}^p \psi(a_{l^*m} + \alpha_{l*}\cdot \mathbf{k}) - \sum_{m=1}^q \psi(b_{l^*m}+\alpha_{l^*}\cdot \mathbf{k})\right)
+\end{equation}
+
+\section{Interval Training}
+We have that
+\begin{equation}
+\int_a^b x^{s-1} = \frac{x^b-x^a}{x \log(x)}
+\end{equation}
+can we train blocks of moments simultaneously? We might be able to approximate the hard function for a few values, and extrapolate the curve in between to fit the whole integral? This seems like a convergence trick which might be best left till later on. We will at least want to try batches of exponents to speed up the descent. Especially if the gradients are more expensive than function evaluations.
+
+
+\section{Cumulative Distribution Function}
+If the probability distribution is
+\begin{equation}
+P(\mathbf{x})  = \sum_{\mathbf{k}} \Pi \chi(\mathbf{k}) \varphi(\mathbf{k}) \Upsilon(\mathbf{x},\mathbf{k})
+\end{equation}
+then the cumulative density function is 
+\begin{equation}
+F(\mathbf{t}) = \int_0^\mathbf{t} P(\mathbf{x})d \mathbf{x}
+\end{equation}
+then we have
+\begin{equation}
+F(\mathbf{t})  = \sum_{\mathbf{k}} \Pi \chi(\mathbf{k}) \varphi(\mathbf{k}) \int_0^\mathbf{t} \Upsilon(\mathbf{x},\mathbf{k}) \; d\mathbf{x}
+\end{equation}
+we can show that
+\begin{equation}
+\int_0^\mathbf{t} \Upsilon(\mathbf{x},\mathbf{k}) \; d\mathbf{x} = \frac{\Upsilon(\mathbf{t},\mathbf{k}+\mathbf{1})}{\Upsilon(\mathbf{k}+\mathbf{1},\mathbf{1})}
+\end{equation}
+if the elements of $\mathbf{k}$ are positive. Then 
+\begin{equation}
+F(\mathbf{t})  = \sum_{\mathbf{k}} \Pi \chi(\mathbf{k}) \varphi(\mathbf{k}) \frac{\Upsilon(\mathbf{t},\mathbf{k}+\mathbf{1})}{\Upsilon(\mathbf{k}+\mathbf{1},\mathbf{1})}
+\end{equation}
+where we could choose to absorb the new term into the function $\varphi(\mathbf{k})$.
+
+
+
+\section{Appendix A : Details of Functions}
+
+\subsubsection{Generalised Hypergeometric Function}
+The generalised hypergeometric function extends the simpler $_2F_1$ hypergeometric function from three parameters to $p+q$ parameters where $p$ is the number of parameters on the top and $q$ is the number of parameters on the bottom. This function is defined using gamma functions by
+\begin{equation}
+_pF_q(\mathbf{a};\mathbf{b};-x) = \sum_{s=0}^\infty \frac{(-1)^s}{s!} \frac{\prod_{l=1}^q \Gamma(b_l)}{\prod_{l=1}^p \Gamma(a_l)}\frac{\prod_{l=1}^p \Gamma(a_l+s)}{\prod_{l=1}^q \Gamma(b_l+s)} x^s = f_{\rm G-hyp}(x)
+\end{equation}
+with $\mathbf{a}=(a_1,\cdots,a_p)$ and $\mathbf{b} = (b_1,\cdots,b_q)$. Through the RMT the Mellin transform is written as
+\begin{equation}
+\mathcal{M}[_pF_q(\mathbf{a};\mathbf{b};-x)](s) = \frac{\prod_{l=1}^q \Gamma(b_l)}{\prod_{l=1}^p \Gamma(a_l)}\frac{\prod_{l=1}^p \Gamma(a_l-s)}{\prod_{l=1}^q \Gamma(b_l-s)} \Gamma(s) = \varphi_{\rm G-hyp}(s)
+\end{equation}
+Which is now seen to be a product of arbitrarily many gamma functions. By adding more parameters the generalised hypergeometric function holds many more special functions as limiting cases. Special cases for the arguments exist including {\color{red} well-poised, k-balanced, nearly-poised and Saalsch\"utzian} conditions which are defined and discussed in the supplementary material \cite{}.
+
+\subsubsection{Meijer-G function}
+The Meijer-G function is usually defined by a Barnes integral over a special contour $L$ \cite{}. The definition can be seen to combine a flexible number of gamma functions on the top and bottom
+\begin{equation}
+G_{p,q}^{\,m,n} \!\left( \left. \begin{matrix} \mathbf{a_p} \\ \mathbf{b_q} \end{matrix} \; \right| \, x \right) = \frac{1}{2 \pi i} \int_L \frac{\prod_{j=1}^m \Gamma(b_j - s) \prod_{j=1}^n \Gamma(1 - a_j +s)} {\prod_{j=m+1}^q \Gamma(1 - b_j + s) \prod_{j=n+1}^p \Gamma(a_j - s)} \,x^s \,ds
+\end{equation}
+where unlike the generalised hypergeometric function the arguments contain both terms of the form $c+s$ and $c-s$ for constant parameter $c$ and the additional indices $m<q$ and $n<p$ control the number of gamma functions of this type. The Mellin transform of the Meijer-G function (including a scale parameter $\eta$ is given by
+\begin{equation}
+\int_0^{\infty} x^{s - 1} \; G_{p,q}^{\,m,n} \!\left( \left. \begin{matrix} \mathbf{a_p} \\ \mathbf{b_q} \end{matrix} \; \right| \, \eta x \right) dx =
+\frac{\eta^{-s} \prod_{j = 1}^{m} \Gamma (b_j + s) \prod_{j = 1}^{n} \Gamma (1 - a_j - s)} {\prod_{j = m + 1}^{q} \Gamma (1 - b_j - s) \prod_{j = n + 1}^{p} \Gamma (a_j + s)}
+\end{equation}
+
+%This function adds nothing new to the table
+%\subsubsection{MacRobert E Function}
+%The so called MacRobert E function can be defined through the Meijer-G function.
+%\begin{equation}
+%E \!\left( \left. \begin{matrix} \mathbf{a_p} \\ \mathbf{b_q} \end{matrix} \; \right| \, x \right)  = 
+%G_{q+1,\,p}^{\,p,\,1} \!\left( \left. \begin{matrix} 1, \mathbf{b_q} \\ \mathbf{a_p} \end{matrix} \; \right| \, x \right)
+%\end{equation}
+
+\subsubsection{Fox-Wright Psi Function}
+The Fox-Wright-$\Psi$ function includes scale factors $A_j$ and $B_j$ in a generalised hypergeometric function.
+\begin{equation}
+{}_p\Psi_q \left[\begin{matrix} 
+\mathbf{a},\mathbf{A} \\ 
+\mathbf{b},\mathbf{B} \end{matrix} 
+; -z \right]
+=
+\sum_{n=0}^\infty \frac{\Gamma( a_1 + A_1 n )\cdots\Gamma( a_p + A_p n )}{\Gamma( b_1 + B_1 n )\cdots\Gamma( b_q + B_q n )} \, \frac {(-z)^n} {n!}
+\end{equation}
+
+\subsubsection{Fox H Function}
+The Fox-H function is a further generalisation of the Meijer-G function which includes scale parameters $A_j$ and $B_j$ to the $s$ in the arguments of the gamma functions \cite{}. The mixed signs of $s$ terms in the arguments are also clear in the definition of the function 
+\begin{equation}
+H_{p,q}^{\,m,n} \!\left[ z \left| \begin{matrix}
+\mathbf{a},\mathbf{A} \\
+\mathbf{b},\mathbf{B} \end{matrix} \right. \right]
+= \frac{1}{2\pi i}\int_L
+\frac
+{(\prod_{j=1}^m\Gamma(b_j+B_js))(\prod_{j=1}^n\Gamma(1-a_j-A_js))}
+{(\prod_{j=m+1}^q\Gamma(1-b_j-B_js))(\prod_{j=n+1}^p\Gamma(a_j+A_js))}
+z^{-s} \, ds
+\end{equation}
+% https://www.sciencedirect.com/science/article/pii/S0377042704003826
+% Braaksma has shown that, independently of the choice of  the Mellin–Barnes integral makes sense and defines an analytic function of z in the following two cases: [Find cases]
+% Symmetries in z -> 1/z in argument may help learn complicated functions?
+
+
+\subsubsection{Inayat-Hussain $\mathrm{\bar{H}}$ Function}
+Inayat-Hussain generalised the Fox-H function further by including \emph{positive powers} of gamma functions \cite{Agarwal2012}.
+\begin{equation}
+\bar{H}_{p,q}^{\,m,n} = \!\left[ z \left| \begin{matrix}
+\mathbf{a},\mathbf{A},\mathbf{\alpha} \\
+\mathbf{b},\mathbf{B},\mathbf{\beta} \end{matrix} \right. \right]
+= \frac{1}{2\pi i}\int_L z^s \bar{\phi}(s)\;ds
+\end{equation}
+where
+\begin{equation}
+\bar{\phi}(s) = \frac{\prod_{j=1}^m \Gamma(b_j - B_j s)}{\prod_{j=n+1}^p \Gamma(a_j - A_j s)}   \frac{\prod_{j=1}^n \Gamma^{\alpha_j}(1-a_j + A_j s)}{\prod_{j=m+1}^q \Gamma^{\beta_j}(1- b_j + B_j s)}
+\end{equation}
+where we now see powers on some of the gamma functions, $\alpha_j$ and $\beta_j$.
+
+%https://www.researchgate.net/publication/230806093_New_Finite_Integrals_of_Generalized_Meliin-Barnes_Type_of_Contour_Integrals [For many citations to this]
+
+\subsubsection{Rathie-I Function}
+A further natural generalisation was given by Rathie et al. which employs real powers on all gamma functions \cite{Rathie1997}. This extension can represent polylogarithms and "the exact partition from the Gaussian model in statistical mechanics" \cite{Joycee1972}. These functions would be useful in number theory and physics. 
+
+The Mellin transform of the Rathie-$I$ function is given by \begin{equation}
+\varphi(s) = \frac{\prod_{j=1}^m \Gamma^{\beta_j}(b_j+B_j s) \prod_{j=1}^n \Gamma^{\alpha_j}(1-a_j-A_j s)}{\prod_{j=m+1}^q \Gamma^{\beta_j}(1-b_j-B_j s) \prod_{j=n+1}^p \Gamma^{\alpha_j}(a_j + A_j s)}
+\end{equation}
+which has generalised to powers on all of the gamma functions. Note that the notation for scale and exponent parameters has been changed for consistency.
+
+\subsubsection{Rathie-$\hat{I}$ Function}
+
+Rathie I function: Extreme generalisation \cite{On the Distribution of the Product and the Sum of Generalized
+Shifted Gamma Random Variables}
+
+%https://arxiv.org/pdf/1302.2954.pdf
+
+As a special case holds the so called $Y$-function which although defined through a Mellin transform replaces the Gamma functions with Tricomi hypergeometric functions.
+%https://arxiv.org/pdf/1302.2954.pdf
+
+\subsubsection{Rathie-$\hat{\hat{I}}$ Function}
+
+\end{document}

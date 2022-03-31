@@ -1,0 +1,787 @@
+\documentclass[journal=jcisd8,manuscript=article,layout=onecolumn,pdftex,floatfix,amsmath,amssymb,10pt]{achemso}
+\usepackage{hyperref,url,color,upgreek,amssymb,amsmath}
+\usepackage{graphicx}
+\SectionNumbersOn
+\AbstractOn
+
+\title{A Strategy for Exact Learning in a Natural Space of Functions}
+\author{Benedict W. J.~Irwin}
+\email{ben.irwin@optibrium.com}
+\affiliation{Optibrium, F5-6 Blenheim House, Cambridge Innovation Park,
+Denny End Road, Cambridge, CB25 9PB, United Kingdom}
+\alsoaffiliation{Theory of Condensed Matter, Cavendish Laboratories, University of Cambridge, Cambridge, United Kingdom}
+
+\date{\today}
+
+%\usepackage{biblatex}
+%\addbibresource{bibliography.bib}
+
+\begin{document}
+\begin{abstract}
+In order to 
+
+
+
+Machine learning often approximates.
+
+This document introduces a strategy for exactly learning functional forms or distributions from a very large class of functions given enough sampled data. This converts the seemingly infinite dimensional problem of fitting a function to a finite number of coefficients by making broad but reasonable assumptions about the moments of the sampling distribution. 
+
+
+
+
+This document introduces the Ramanujan master process (RMP) as a new form of machine learning. The RMP method exploits the duality between the data points in a sample and the moments of the distribution the data points are drawn from. The full correlated probability distribution for inputs and outputs of a multivariate function is learned by assuming a highly generalised analytic expansion in many variables which is assumed to be described by a highly generalised Meijer-G function, or analogous function which admits definition through a Barnes integral. A hierarchy of such functions is investigated to justify a set of parameters for the machine learning model. A multivariate definition is made for each of the functions in the hierarchy by following a simple set of rules. The moments of the distribution of choice are extracted using the generalised Ramanujan master theorem and training is directly applied to the coefficients of the full probability distribution. The duality is manipulated through a multivariate Mellin transform which handles the constraint of normalisation.
+\end{abstract}
+
+\tableofcontents
+
+
+\section{Introduction}
+Machine learning methods often try to recreate a set of observations by fitting to or learning from example data points. The exact method used depends on the application, but great success has been seen using this methodology. The fundamental problem with this method is that any functional form that fits to the data, is an approximation or interpolation of a sample. Any learning that happens is temporary, or limited to the domain of the training set. 
+
+In order to reach these high precision approximations, many parameters are required. Sometimes millions of parameters.
+
+True learning is timeless. If an exact solution to a problem existed, for example a solution to a differential equation, this form is always a solution. If a machine learning algorithm was set to learn such a solution it might approximate to high precision a broad domain of the solution, but the understanding would be limited.
+
+To begin to phrase a machine learning problem in terms of exact functions, large changes need to be made to the underlying representation of the functions. In this work we introduce a mathematical scheme to attempt to do this: 
+
+\begin{enumerate}
+\item Don't learn from individual data points, but ensembles of points. This is achieved through a duality provided by the so-called Mellin transform.
+\item Search for the solution in a natural hierarchy of functions that conservatively uses parameters. These functions are hypergeometric type functions and extensions thereof. 
+\item Fit/train using the 'moments' of these functions using a prescription called the Ramanujan Master Theorem.
+\end{enumerate}
+
+We will introduce the necessary fundamentals with a high level description. We suggest the name Ramanujan Master Process (RMP) for the prescription.
+
+
+
+
+
+
+
+
+\subsection{Citations To Include}
+\begin{enumerate}
+\item Generalised Beta distributions show ratios of gamma functions. Make it possible to represent (elliptic?) or generalisations of the Dirchlet eta function? Alog with generalisations of the zeta function \cite{ostrovsky2013theory}.
+\item This seems to show ratios of extended gamma functions etc. can have powerful expressions \cite{Luo2013}.
+\item Rathie: %A.K. Rathie, A new generalization of generalized hypergeometric functions, Le Matematiche
+%52 (1997), no. 2, 297 – 310.
+\end{enumerate}
+The convenient relationship with the Mellin transform is that scale parameters for the primary inputs can easily be added.
+
+
+\section{Introduction}
+{\color{red} Merge with above, start to add citations.}
+
+\begin{enumerate}
+\item Most modern machine learning methods are incapable of learning exactly. The model has a domain of applicability. The types of functions that are learned are naturally restrictive.
+\item Geenens \cite{Geenens2017} showed a method recently to learn generalised kernel density functions which can adapt to a number of standard statistical distributions
+\item The RMP can give exact results by crawling the space of analytic functions. This is achieved by observing the moments of highly generalisable functions are expressed through products of scale functions and ratios of gamma functions.
+\item Higher heirarchies of such generalised functions defined through Barnes integrals are capable of learning even partition functions from statistical mechanics [\cite{I function}].
+\item The hierarchy of special functions presents an efficient way to spend parameters to capture more functions. This is a more economic use of parameters than methods such as deep neural networks and the resulting functions are directly interpretable analytically, albeit through their moments.
+\end{enumerate}
+
+The so-called Ramanujan Master Process (RMP) we present here relies on an assumed analytic multivariate series expansion of a function or distribution, which can be defined by its coefficients. 
+
+In this method the representation of the coefficients is trained, however, coefficients are not trained individually but the whole set of coefficients are trained simultaneously. This will be achieved by exploiting a duality facilitated by the Mellin transform. Analogous to the way the Fourier transform links a periodic signal in time with a signal in the frequency domain, or a probability density function (p.d.f) with its characteristic function, the Mellin transform can be thought of as a transform from a p.d.f to its generalised moment function (distinct from the moment generating function). \par
+
+\begin{equation}
+\begin{matrix}
+\hline
+\mathrm{Waveform}(\mathrm{time}) & \underbrace{\longrightarrow}_{\mathrm{Fourier Transform}} & \mathrm{Spectrum}(\mathrm{frequency})\\
+\hline
+\mathrm{Distribution}(\mathrm{variable}) & \underbrace{\longrightarrow}_{\mathrm{Mellin Transform}} & \mathrm{Moments}(\mathrm{exponents}) \\
+\hline
+\end{matrix}
+\end{equation}
+
+Figure 1 is a schematic showing the analogy between these concepts. Just as the frequency is a continuous variable, the moment is a continuous variable. 
+
+
+\section{Background}
+The method begins with an observation that a large number of functions can be defined through a Mellin-Barnes integral over a product of Euler gamma functions and their reciprocals. Functions defined in this manner have become increasingly generalised as time has passed to capture more and more special functions as limiting cases [Review article on Hypergeom]. We review some necessary mathematical tools to describe the RMP method along with some generalised special functions and their Mellin transforms, which for suitably normalised distribution functions represent the moments of the distribution function:
+
+\subsection{Mellin Transform}
+Mellin transforms depend strongly on the so called 'strip of holomorphy' for a given function. This is covered in detail by [{\color{red}.. et al.}] \cite{Geerens}. A comprehensive table of Mellin transforms is given by [Caltech Integral Transforms] \cite{}. We define the Mellin transform as an integral transform of a function $f(x)$ as
+\begin{equation}
+\mathcal{M}[f(x)](s) = \int_0^\infty x^{s-1}f(x) dx = \varphi(s)
+\end{equation}
+which will obviously only converge for certain choices of functions $f(x)$ and certain exponents $s$. The set of complex values $s$ that converge for a function $f$ is the so called strip of holomorphy. It should be noted that if $f(x)$ is a probability distribution with positive semi-infinite support, through the definition of the Mellin transform we must have $\varphi(1)=1$ due to the normalisation constraint \cite{Geerens}. This concept will be used later to automatically train functions which can act as probability distributions. The inverse Mellin transform is given by
+\begin{equation}
+\mathcal{M}^{-1}[\varphi(s)](x) = \frac{1}{2 \pi i}\int_{c- i \infty}^{c + i \infty} x^{-s} \varphi(s) \; ds = f(x)
+\label{eqn:InverseMT}
+\end{equation}
+where $i$ is the imaginary unit and the limits on the integral are to be interpreted as a line in the imaginary axis passing through a real constant $c$ which must lie in the strip of holomorphy and to the {\color{red}(left?)} of all poles in the function $\varphi(s)$. To avoid the complexity of such inverse transforms we use the Ramanujan master theorem (RMT) as a bridge to convert between a function $f(x)$ and its Mellin transform $\varphi(s)$.
+
+\subsection{Ramanujan Master Theorem (RMT)}
+The Mellin transform acts as a method of extracting the coefficients which define a particular series expansion of a function. The Ramanujan master theorem details how this extraction is achieved for suitably convergent functions and choices of exponent \cite{}. For suitable functions that admit a series expansion of the form
+\begin{equation}
+f(x) = \sum_{k=0}^\infty \chi_k \phi(k)x^k, \;\;\;\;\; \chi_k = \frac{(-1)^k}{k!}
+\label{eqn:RMTSum}
+\end{equation}
+where $\chi_k$ is the alternating exponential symbol \footnote{If $\sum_i a_ix^i$ is a generating function and $\sum_i \frac{a_ix^i}{i!}$ is an \emph{exponential} generating function and if $\sum_{i} a_i$ is a sum and $\sum_i (-1)^i a_i$ is an \emph{alternating sum} it makes sense to call $\frac{(-1)^i}{i!}$ the alternating, exponential symbol.} the RMT states that the Mellin transform of the function is given by
+\begin{equation}
+\mathcal{M}[f(x)](s) = \Gamma(s)\phi(-s)
+\end{equation}
+where $\Gamma(s)$ is the Euler gamma function. This relationship sometimes relies on the analytic continuation of the coefficient function $\phi(s)$ to accept negative (and potentially complex) quantities. Functions whose $\phi(k)$ functions are ratios of Euler gamma functions are generally well behaved under continuation due to $\Gamma(s)$ being an almost entire function. This relationship holds very successfully for functions which admit definition through a so-called Barnes integral which is covered in section \ref{sec:BarnesIntegral}. In order to use the RMT as a bridge to avoid contour integrals of the type in equation \ref{eqn:InverseMT}, we should be able to work backwards. For a suitable \emph{unknown} function $f(x)$, if the Mellin transform $\varphi(s)$ is known, the function may admit reconstruction through equation \ref{eqn:RMTSum} which acts as an implicit inverse Mellin transform. Specifically
+\begin{equation}
+\mathcal{M}^{-1}[\varphi(s)](x) = \sum_{k=0}^\infty \frac{(-1)^k}{k!}\frac{\varphi(-k)}{\Gamma(-k)}x^k = f(x)
+\label{eqn:ImplicitInverseMellin}
+\end{equation}
+where often the $\Gamma(-k)$ term will directly cancel if the Mellin transform $\varphi(s)$ contains a simple factor of $\Gamma(s)$.
+
+\subsection{Some Examples}
+At this point it might be helpful to see some tangible examples of this in action. We direct the reader to {\color{red} Appendix 1} for such examples.
+
+
+\subsection{Highly Generalised Functions}
+Here we will walk through some of the previously mentioned 'highly generalised functions', observe thier similarities and differences and see how such differences change the kinds of functions that can be expressed. These functions assume an analytic series expansion and allow the coefficients of the series expansion to be altered through a minimal set of input parameters, usually denoted $a,b,c$ and so on. For certain sets of parameters, the series expansions for many common functions can arise. A list of early examples of these highly generalised functions can be found in well known texts \cite{Erdelyi,Gradstein}. Many of these functions have constraints on the combinations of arguments that can be used. For the sake of focus and scope in this text we will not mention any regions of convergence or the necessary analytic continuations in the following sections, but these should be considered carefully when such equations are implemented numerically. A careful treatment is given by ... et al. \cite{}.
+
+\subsubsection{{\color{red} Euler} Hypergeometric Function}
+One of the simplest generalised functions is the (Gauss) hypergeometric function which can be written in terms of ratios of gamma functions (often reduced further to Pochhammer symbols). If we write the definition of the hypergeometric function (with a negative argument)
+\begin{equation}
+_2F_1(a,b;c;-x) = \sum_{s=0}^\infty \frac{(-1)^s}{s!} \frac{\Gamma(c)\Gamma(a+s)\Gamma(b+s)}{\Gamma(a)\Gamma(b)\Gamma(c+s)} x^s = f_{\rm hyp}(-x)
+\label{eqn:hypergeom}
+\end{equation}
+using the RMT (equation \ref{eqn:RMTSum}) and recognising the form of the coefficient function $\phi(k)$ for this this function has Mellin transform
+\begin{equation}
+\mathcal{M}\left[_2F_1(a,b;c;-x)\right](s) = \frac{\Gamma(c)\Gamma(a-s)\Gamma(b-s)\Gamma(s)}{\Gamma(a)\Gamma(b)\Gamma(c-s)} = \varphi_{\rm hyp}(s)
+\end{equation}
+which is a ratio of gamma functions and their reciprocals.
+
+\subsubsection{Barnes Integrals}
+\label{sec:BarnesIntegral}
+The definition of the Barnes integral is closely related to the inverse Mellin transform. These integrals are convenient ways to define the generalised functions. For the hypergeometric function (equation \ref{eqn:hypergeom}) the corresponding definition through a Barnes integral is
+\begin{equation}
+_2F_1(a,b;c;-x) =\frac{\Gamma(c)}{\Gamma(a)\Gamma(b)} \frac{1}{2\pi i} \int_{-i\infty}^{i\infty} \frac{\Gamma(a+s)\Gamma(b+s)\Gamma(-s)}{\Gamma(c+s)}x^s\,ds
+\end{equation}
+by comparing with the definition of the inverse Mellin transform (equation \ref{eqn:InverseMellin}) this is simply $\mathcal{M}^{-1}[\varphi_{\rm hyp}(s)]$, but with the sign of $s$ changed in all places. The following schematic shows the relationships between the concepts:
+\begin{equation}
+\begin{matrix}
+\sum_{k=0}^\infty \frac{(-1)^k}{k!}\frac{\varphi(-k)}{\Gamma(-k)}x^k & \underbrace{\longleftrightarrow}_{RMT} & \frac{1}{2\pi i}\int_{c-i\infty}^{c+i\infty} \varphi(s) x^{-s} d s\\
+\updownarrow & & \updownarrow{(s \to -s)} \\
+{\color{red} ???}& \longleftrightarrow & \frac{1}{2\pi i}\int_{c-i\infty}^{c+i\infty} \varphi(-s) x^{s} d s
+\end{matrix}
+\end{equation}
+here the inverse Mellin transform is in the top right, the Barnes integral in the bottom right, the implicit inverse Mellin transform in the top left and the {\color{red}???} in the bottom right.
+
+\subsection{Table of Functions Using $\Xi$ Notation}
+For the hierarchy of special functions considered in this work is convenient to define an operation $\Xi[\cdot]$ which flattens a vector or matrix and takes a product of the Gamma function over the elements. Table \ref{tab:Xi} shows how the operation works for vector and matrix arguments and with an optional exponent vector to realise products of powers of gamma functions. This can be easily extended for any array of higher dimensions. Define for a vector $\mathbf{v}$ or matrix $\mathbf{V}$ of exponents of equal size.
+\begin{table}
+\begin{tabular}{|c||c|c|}
+\hline
+Input & Vectors $\mathbf{a,v} \in \mathbb{R}^D$ & Matrices $\mathbf{A,V} \in \mathbb{R}^D\times \mathbb{R}^D$ \\
+\hline
+No Exponent & $\Xi[\mathrm{a}] = \prod_{k=1}^D \Gamma(a_k)$ & $\Xi[\mathrm{A}] = \prod_{k=1}^D\prod_{l=1}^D \Gamma(A_{kl})$ \\
+Exponent & $\Xi^\mathbf{v}[\mathbf{a}] = \prod_{k=1}^D \Gamma^{v_k}(a_k)$ & $\Xi^\mathbf{V}[\mathbf{A}] = \prod_{k=1}^D\prod_{l=1}^D \Gamma^{V_{kl}}(A_{kl})$\\
+\hline
+\end{tabular}
+\caption{Table explaining the $\Xi$ operation on different inputs with and without vector exponents.}
+\label{tab:Xi}
+\end{table}
+
+\section{Mellin Transforms of Hierarchy of Functions}
+
+All of the functions can be expressed in the form
+\begin{equation}
+f(x) = \frac{1}{2\pi i}\int_L z^s \bar{\phi}(s)\;ds
+\end{equation}
+for a suitable definition of $\bar{\phi}$. Here we include a scale factor $\eta$ on the variable for extra generalisation. We can convert $\bar{\phi}$ to the Mellin transform to connect the function definition and the Mellin transform. The Meijer-G function suffers from an unfortunate notation where the vectors of parameters are split. It is convenient to rewrite the 2 vectors as 4 vectors for our purposes. We note that the sign of the argument is revered in the Meijer-G function definition.
+
+%Mellin transform of the H-function: https://arxiv.org/pdf/1302.2954.pdf
+\begin{table}
+\begin{tabular}{|c|c|c|c|}
+\hline
+Function Name & $f(x)$ & $\varphi(s)=\mathcal{M}[f(x)](s)$ & Reference \\
+\hline
+Hypergeometric & $_2 F_1 \!\left( \left. \begin{matrix} a,b \\ c \end{matrix} \; \right| \, -\eta x \right)$ & $\eta^{-s}\frac{\Gamma(c)\Gamma(a-s)\Gamma(b-s)}{\Gamma(a)\Gamma(b)\Gamma(c-s)}\Gamma(s)$ & \\
+Generalised Hypergeometric &  $_p F_q \!\left( \left. \begin{matrix} \mathbf{a} \\ \mathbf{b} \end{matrix} \; \right| \, -\eta x \right)$ & $\eta^{-s}\frac{\Xi[\mathbf{b}]\Xi[\mathbf{a}-s\mathbf{1}]}{\Xi[\mathbf{a}]\Xi[\mathbf{b}-s\mathbf{1}]}\Gamma(s)$ &  \\
+Fox-Wright-$\Psi$ & $_p\Psi_q \!\left[\left.\begin{matrix}
+\mathbf{a},\mathbf{e} \\
+\mathbf{b},\mathbf{f} \end{matrix} \;\right| -\eta x  \right]$ & $\eta^{-s}\frac{\Xi[\mathbf{a}-s\mathbf{e}]}{\Xi[\mathbf{b}-s\mathbf{f}]}\Gamma(s)$ & \\
+Fox-Wright-$\Psi^*$ & $_p\Psi_q \!\left[\left.\begin{matrix}
+\mathbf{a},\mathbf{e} \\
+\mathbf{b},\mathbf{f} \end{matrix} \;\right| -\eta x  \right]$ & $\eta^{-s}\frac{\Xi[\mathbf{b}]\Xi[\mathbf{a}-s\mathbf{e}]}{\Xi[\mathbf{a}]\Xi[\mathbf{b}-s\mathbf{f}]}\Gamma(s)$ & \\
+\hline
+Meijer-G & $G_{p,q}^{\,m,n} \!\left( \left. \begin{matrix} \mathbf{a,b} \\ \mathbf{c,d} \end{matrix} \; \right| \, \eta x \right)$ & $\eta^{-s}\frac{ \Xi[\mathbf{1}-\mathbf{a}-s\mathbf{1}]\Xi[\mathbf{c}+s\mathbf{1}]} {\Xi[\mathbf{1}-\mathbf{d}-s\mathbf{1}]\Xi[\mathbf{b}+s\mathbf{1}]}$& \\
+Fox-H & $H_{p,q}^{\,m,n} \!\left[\left. \begin{matrix}
+\mathbf{a},\mathbf{b},\mathbf{e,f} \\
+\mathbf{c},\mathbf{d},\mathbf{g,h} \end{matrix} \right| \eta x \right]$ & $\eta^{-s}\frac{\Xi[\mathbf{1-a}-s\mathbf{e}]\Xi[\mathbf{c}+s\mathbf{g}]}{\Xi[\mathbf{1-d}-s\mathbf{h}] \Xi[\mathbf{b} + s \mathbf{f}]}$ &\\
+Inayat-Hussain-$\bar{H}$  & $\bar{H}_{p,q}^{\,m,n} \!\left[\left. \begin{matrix}
+\mathbf{a},\mathbf{b},\mathbf{e,f,i} \\
+\mathbf{c},\mathbf{d},\mathbf{g,h,l} \end{matrix} \right| \eta x \right]$ & $\eta^{-s}\frac{\Xi^{\mathbf{i}}[\mathbf{1-a}-s\mathbf{e}]\Xi[\mathbf{c}+s\mathbf{g}]}{\Xi^{\mathbf{l}}[\mathbf{1-d}-s\mathbf{h}] \Xi[\mathbf{b} + s \mathbf{f}]}$ &\\
+Rathie-I & $I_{p,q}^{\,m,n} \!\left[\left. \begin{matrix}
+\mathbf{a},\mathbf{b},\mathbf{e,f,i,j} \\
+\mathbf{c},\mathbf{d},\mathbf{g,h,k,l} \end{matrix} \right| \eta x \right]$ & $\eta^{-s}\frac{\Xi^{\mathbf{i}}[\mathbf{1-a}-s\mathbf{e}]\Xi^{k}[\mathbf{c}+s\mathbf{g}]}{\Xi^{\mathbf{l}}[\mathbf{1-d}-s\mathbf{h}] \Xi^{\mathbf{j}}[\mathbf{b} + s \mathbf{f}]}$ &\\
+\hline
+\end{tabular}
+\caption{A table of generalised special functions and their Mellin transforms. Small bold letters are vectors of parameters where $\mathbf{a,b,c,d}$ are shift factors, $\mathbf{e,f,g,h}$ are scale factors and $\mathbf{i,j,k,l}$ are exponents for the gamma functions. Complexity increases down the table which is split into an upper part for hypergeometric functions and a lower part for Meijer-G like functions.}
+\end{table}
+
+
+\subsection{Conclusions from Generalised functions}
+\begin{enumerate}
+\item We have seen that the most generalised functions in mathematics already employ the Mellin duality for their definition.
+\item These functions have grown interest in the evaulation of Feynman integrals from QED and QFT.
+\item The core component is products of Euler gamma functions and their reciprocals.
+\item Scale parameters on the moments inside the gamma functions are justified.
+\item Powers of gamma functions are justified in some of the more advanced definitions.
+\item Scale terms for the arguments of functions are expressed as very simple terms in the moment function.
+\end{enumerate}
+
+
+\section{Multiple Dimensions}
+Most machine learning problems require learning a function in more than one dimension. The previous section dealt with increasingly generalised definition of functions in one dimension. A similar set of tools can be developed for functions in $D$ dimensions. 
+
+\subsubsection{Multivariate Moment Functional}
+Firstly, for convenience of notation define the a \emph{multivariate moment functional} $\Upsilon$ that acts on two vectors $a,b \in \mathbb{R}^D$ as
+\begin{equation}
+\Upsilon[\mathbf{a},\mathbf{b}] = \prod_{l=1}^D {a_l}^{b_l}
+\end{equation}
+which can be seen to map to a scalar value. This operation will conveniently vectorise the ensuing equations. It is clear to see by the fundamental rules of exponentiation that $\Upsilon[\mathbf{a},\mathbf{b}]\Upsilon[\mathbf{a},\mathbf{c}] = \Upsilon[\mathbf{a},\mathbf{b+c}]$.  In this notation the multivariate moment of a vector of quantities $x$ and a vector of exponents $s$ is simply $\Upsilon[\mathbf{x},\mathbf{s}]$
+
+\subsection{Multivariate Mellin Transform}
+In analogy to the multivariate Fourier and Laplace transforms one can define a multivariate Mellin transform \cite{Laplace, Fourier, Mellin, Multivaraite Mellin}. For $\mathbf{x} \in \mathbb{R}^D$ we define the multivariate Mellin transform as the integral transform
+\begin{equation}
+\mathcal{M}_D[f(\mathbf{x})](\mathbf{s}) = \int_{[0,\infty)^D} \Upsilon[\mathbf{x},\mathbf{s-1}] f(\mathbf{x}) d \mathbf{x} = \varphi(\mathbf{s})
+\end{equation}
+where $d\mathbf{x} = dx_1 \cdots dx_D$. The inverse transform is likely to have a complex contour integral structure but an exact form will not be needed due to the generalised Ramanujan master theorem (GRMT).
+
+\subsection{Generalised RMT (GRMT)}
+The GRMT takes the analogous problem of solving the \emph{multivariate} Mellin transform of a multivariate function which is expressed through an analytic series expansion. The GRMT has been covered in a series of work from {\color{red}Gonzales} which covers the definition and historical developments \cite{}, application of the GRMT to special functions from G\&R \cite{...,..,...} and solving laborious and complicated integrals from quantum field theory \cite{}. If a function $f(\mathbf{x})$ admits a series expansion \begin{equation}
+f(\mathbf{x}) = \sum_{\mathbf{k}=0}^\infty \Pi\chi(\mathbf{k}) \phi(\mathbf{k}) \Upsilon[\mathbf{x},\mathbf{A}\mathbf{k} + \mathbf{b}]
+\end{equation}
+with multivariate coefficient function $\phi(\mathbf{k})$, a $D\times D$ matrix of exponent weights $\mathbf{A}$ and a vector of exponents $\mathbf{b} \in \mathbb{R}^D$, and with multivariate alternating exponential symbol
+\begin{equation}
+\Pi\chi(\mathbf{k}) = \left(\prod_{l=0}^D \chi_{k_l}\right),\;\;\;\;\; \chi_k = \frac{(-1)^k}{\Gamma(k+1)}
+\end{equation}
+then the multivariate Mellin transform of $f(\mathbf{x})$ is given by the expression \begin{equation}
+\mathcal{M}_D[f(\mathbf{x})](\mathbf{k}^*) = \frac{\phi(\mathbf{k}^*)}{|\det(\mathbf{A})|} \prod_{l=1}^D \Gamma(-k_l^*) = \frac{\phi(\mathbf{k}^*)\Xi[-\mathbf{k}^*]}{|\det(\mathbf{A})|}
+\end{equation}
+where $\mathbf{k}^*$ is the solution to $\mathbf{A}\mathbf{k^*}+\mathbf{s}=\mathbf{0}$ \cite{}.
+
+\section{Multidimensional Hypergeometric Series}
+Here we define a hypergeometric series analogue which extends into multiple dimensions. Many such functions have been investigated for two dimensions including the Horn, Appell ... \cite{}, for three dimensions inclduing Lauricella \cite{} and further \cite{}. For the purposes of this work we will generalise in the following way:
+
+\begin{enumerate}
+\item Write the one dimensional series of choice in terms of gamma functions using the alternating exponential character.
+\item Replace the variable term $x^k$ with $\Upsilon(\mathbf{x},\mathbf{A}\mathbf{k})$ for a variables fully coupled with all indices.
+\item Replace the alternating exponential character $\chi_k$ with the multivariate character $\Pi\chi(\mathbf{k})$.
+\item Replace the products of ratios of gamma functions with the following:
+\begin{enumerate}
+\item $\Gamma(a) \to \Xi[\mathbf{a}]$.
+\item $\Gamma(s) \to \Xi[\mathbf{s}^*]$.
+\item $\Gamma(a+s) \to \Xi[\mathbf{a}+\mathbf{A}\mathbf{s}]$.
+\end{enumerate}
+\end{enumerate}
+
+Define the product of gamma functions over a vector of arguments operator
+\begin{equation}
+\Xi[\mathbf{x}] = \prod_{l=1}^D \Gamma(x_l)
+\end{equation}
+
+
+\section{Extracting the Moments from a Generalised Probability Distribution}
+Here we show how the application of the GRMT to a general analytic probability distribution. This motivates the choice of a product of gamma functions and shows that the arguments of those functions contain the solutions to a matrix equation which relates to the [{\color{red} Jacobian of the variables}, proof].
+
+\subsubsection{Generalised Distribution}
+Suppose we have a distribution $P(\mathbf{x})$ where both input variables and output variables are treated equally as terms in $\mathbf{x}$. Suppose these inputs and outputs are all in the positive real numbers. The fundamental assumption behind the RMP is to assume a multivariate analytic expansion of this distribution in terms of a set of coefficients $\varphi$. Assume a form for the multivariate distribution, using a vector index notation $\mathbf{k} = (k_1, \cdots, k_n)$ where the sum extends from $0$ to $\infty$ for each index
+\begin{equation}
+P(\mathbf{x}) = \sum_{\mathbf{k}=0}^\infty  \Pi\chi(\mathbf{k})\varphi(\mathbf{k})\Upsilon(\mathbf{x},\mathbf{A}\mathbf{k}+\mathbf{b})
+\end{equation}
+where the $\mathbf{a}_l$ are row vectors of a matrix $\mathbf{A}$ whose coefficients describe the relationship between the variables $\mathbf{x}$ and the summation indices $\mathbf{k}$, the $b_l \in \mathbf{b}$ are constant terms in the exponents of the variables, $f(\mathbf{k})$ is a multivariate coefficient function which defines the moments of the probability distribution. We may write the expectation of a given multivariate moment as a function of the vector of exponents of the variables $\mathbf{s}$
+$$
+\mathcal{E}_P(\mathbf{s}) = \mathbb{E}\left[\prod_{k=0}^n X_k^{s_k-1}\right] = \mathbb{E}\left[\Upsilon(\mathbf{X},\mathbf{s}-\mathbf{1})\right] =\int_{[0,\infty)^{n}} \Upsilon(\mathbf{x},\mathbf{s}-\mathbf{1}) P(\mathbf{x}) \; d \mathbf{x}
+$$
+where the $\mathbf{s}-\mathbf{1}$ has been included to make the expression match the definition of a multivariate Mellin transform. As a consequence by the GRMT this is representable in terms of the divergent bracket symbols of [Gonzalez et. al] \cite{}, which they define as
+\begin{equation}
+\langle s \rangle = \int_0^\infty x^{a-1} \; dx
+\end{equation}
+which are used to \emph{formally} manipulate the series expansion according to their rules. Note that due to separability the integral of a product of variables to exponents is simply a product of bracket symbols
+\begin{equation}
+\int_{[0,\infty)^n} \Upsilon(\mathbf{x},\mathbf{s-1})\;d \mathbf{x} = \prod_{l=1}^n \int_0^\infty x_l^{s_l-1} \; dx_l = \prod_{l=1}^n \langle s_l \rangle
+\label{eqn:bracket}
+\end{equation} 
+
+
+We may write explicitly using vector arguments for brevity
+\begin{equation}
+\mathcal{M}_P(\mathbf{s}) = \int_{[0,\infty)^{n}} \Upsilon(\mathbf{x},\mathbf{s-1}) \sum_{\mathbf{k}=0}^\infty  \Pi\chi(\mathbf{k})\varphi(\mathbf{k}) \Upsilon(\mathbf{x},\mathbf{A}\mathbf{k}+\mathbf{b}) \; d \mathbf{x}
+\end{equation}
+under linearity bring the product of variables under the summation sign and combine it with the variables being summed over
+\begin{equation}
+\mathcal{M}_P(\mathbf{s}) = \int_{[0,\infty)^{n}} \sum_{\mathbf{k}=0}^\infty  \Pi\chi(\mathbf{k})\varphi(\mathbf{k}) \Upsilon(\mathbf{x},\mathbf{s-1}) \Upsilon(\mathbf{x},\mathbf{A}\mathbf{k}+\mathbf{b}) \; d \mathbf{x}
+\end{equation}
+\begin{equation}
+\mathcal{M}_P(\mathbf{s}) = \int_{[0,\infty)^{n}} \sum_{\mathbf{k}=0}^\infty  \Pi\chi(\mathbf{k})\varphi(\mathbf{k})\Upsilon(\mathbf{x},\mathbf{A}\mathbf{k}+\mathbf{b}+\mathbf{s-1}) \; d \mathbf{x}
+\end{equation}
+swapping the sum and the integral under linearity would give
+\begin{equation}
+\mathcal{M}_P(\mathbf{s}) = \sum_{\mathbf{k}=0}^\infty  \Pi\chi(\mathbf{k})\varphi(\mathbf{k})\int_{[0,\infty)^{n}} \Upsilon(\mathbf{x},\mathbf{A}\mathbf{k}+\mathbf{b}+\mathbf{s-1}) \; d \mathbf{x}
+\end{equation}
+using equation \ref{eqn:bracket} we can convert these to divergent bracket symbols
+\begin{equation}
+\mathcal{M}_P(\mathbf{s}) = \sum_{\mathbf{k}=0}^\infty  \Pi\chi(\mathbf{k})\varphi(\mathbf{k}) \prod_{l=1}^n \langle \mathbf{a}_l \cdot \mathbf{k} + \mathbf{b} + \mathbf{s} \rangle
+\end{equation}
+according to rule 2[{\color{red} verify the number}] of Gonzalez et al. \cite{} this summation can be written by the GRMT as 
+\begin{equation}
+\mathcal{M}_P(\mathbf{s}) = \frac{\varphi(\mathbf{k}^*) \prod_{l=0}^n \Gamma(-k_l^*)}{|\det(\mathbf{A})|}
+\end{equation}
+
+for $k^*_m$ as the values that satisfy the linear system of equations by vanishing the set of $\langle \cdot \rangle$ brackets. That is the solution to \begin{equation}
+\mathbf{A}\mathbf{k}^*+\mathbf{b}+\mathbf{s} = \mathbf{0}
+\end{equation} 
+
+This means under a suitable definition of $\varphi$ we have an expression for all of the moments of the probability distribution.
+\subsection{A Form for $\varphi$}
+By observations in the literature and the discussion in sections \ref{} and \ref{} that show families of highly generalised functions can be characterised by moments which are expressed purely as rations of gamma functions and their reciprocals, we are motivated to select a form for $\varphi$ that is comprised of gamma functions. As shown in section \ref{}, scale factor terms on variables are separable under the Mellin transform. We can observe the following classes of choices of $\varphi$ \begin{enumerate}
+\item $\varphi$ with a product of ratios of gamma functions whose arguments are simple shift equations of linear sums of unscaled indices. These are likely to describe probability distributions drawn from the family of generalised hypergeometric functions and Meijer-G functions.
+\item $\varphi$ with a product of ratios of gamma functions whose arguments are simple shift equations of linear sums of \emph{scaled} indices. These are likely to be drawn from a family of functions resembling the Fox-H function.
+\item $\varphi$ with a product of ratios of gamma functions \emph{raised to real powers} whose arguments are simple shift equations of linear sums of \emph{scaled} indices. This are likely to express probability distributions that are selected from the [{\color{red} I-function and H-bar function}] family of functions.
+\end{enumerate}
+
+\section{Training}
+
+\subsection{Extracting Moments}
+For a vector of exponents $s$ and a vector of variables $x$ we can write the expectation of the variables to the exponents as \begin{equation}
+\mathbb{E}[\Upsilon(\mathbf{x},\mathbf{s})] = \mu_{\mathbf{s}} = \int_0^\infty \Upsilon(\mathbf{x},\mathbf{s})P(\mathbf{x})d\mathbf{x}
+\end{equation}
+we can consider the quantity \begin{equation}
+\mathbb{E}[(\Upsilon(\mathbf{x},\mathbf{s}) - \mu_{\mathbf{s}})^2] = v_{\mathbf{s}} = \mu_{2\mathbf{s}} - \mu_{\mathbf{s}}^2
+\end{equation}
+for some variance like quantity, and the positive square root of this quantity might resemble a standard deviation. If we measure $\Upsilon(\mathbf{x},\mathbf{s})$ for all of the data points $\mathbf{x}$ in the set for a given $s$, we can compare this to the model estimate  which will resemble $\mu_{\mathbf{s}}$. We would expect the average of the measurements to equal $\mu_{\mathbf{s}}$ and we would expect data points to be reasonably close to the mean within a few standard deviations. Thus the loss function can be adapted over individual samples to not incur any loss in the first two standard deviations of the mean. We can involve the standard error of the mean using \begin{equation}
+se = \frac{\sigma}{\sqrt{n}}
+\end{equation}
+this should allow us to put error bounds on the loss function. If the prediction is within the standard error, then there is should be no penalty. If it is very far outside the penalty will have to be greater as this is significant. By careful application of Chebyshev's inequality we can control the number of points that are officially too far away from the mean. This will require the multivariate case known as the Birnbaum–Raymond–Zuckerman theorem:
+
+In practice the standard error can be used in the following way: If we have $N$ samples in the dataset, then we set the acceptable error bounds to be \begin{equation}
+\frac{\sqrt{(\mu_{2s} - \mu_{s}^2)}}{\sqrt{N}}
+\end{equation}
+
+
+\subsection{Extracting Variances}
+Consider if variables are drawn from the distribution $P(x)$, then for the power of a variable which is a monotonic function we have $g(X)=X^\tau$ for some exponent $\tau$. Then $g^{-1}(X)=X^{1/\tau}$ and we can write the transformed distribution as a function of the previous distribution 
+\begin{equation}
+f_Y(y) = \left | \frac{d}{dy} g^{-1}(y) \right | P(g^{-1}(y))
+\end{equation}
+\subsubsection{Many Variables}
+If we have a function $\mathbf{y} = H(\mathbf{x})$ and we know the inverses for each variable, then the density function over the variable $\mathbf{y}$ denoted $g(\mathbf{y})$ is given by
+\begin{equation}
+g(\mathbf{y}) = f_{\mathbf{x}}(\mathbf{H}^{-1}(\mathbf{y})) \left| \det \frac{d \mathbf{H}^{-1}(\mathbf{y})}{d \mathbf{y}} \right|
+\end{equation}
+where $\mathbf{H}^{-1}(\mathbf{y})$ is a vector of functions $(H_1(\mathbf{y}),\cdots,H_n(\mathbf{y}))$ such that $x_k = H_k(\mathbf{y})$
+
+This function can be written as follows
+\begin{align*}
+y_1 = x_1^{s_1} x_2^{s_2} \cdots x_n^{s_n} \\
+y_2 = x_2^{s_2} x_3^{s_3} \cdots x_n^{s_n} \\
+\cdots\\
+y_n = x_n^{s_n}
+\end{align*}
+Then the inverses are simply
+\begin{align*}
+x_1 = \sqrt[s_1]{\frac{y_1}{y_2}}  = H_1^{-1}(\mathbf{y})\\
+x_2 = \sqrt[s_2]{\frac{y_2}{y_3}} = H_2^{-1}(\mathbf{y})
+\end{align*}
+Then the Jacobian can be written like
+\begin{equation}
+\frac{d \mathbf{H}^{-1}(\mathbf{y})}{d \mathbf{y}} = \begin{bmatrix}
+\frac{\partial H_1^{-1}(\mathbf{y})}{\partial y_1} & \frac{\partial H_1^{-1}(\mathbf{y})}{\partial y_2} & \cdots & \frac{\partial H_1^{-1}(\mathbf{y})}{\partial y_n} \\
+\frac{\partial H_2^{-1}(\mathbf{y})}{\partial y_1} & \cdots & \cdots & \frac{\partial H_2^{-1}(\mathbf{y})}{\partial y_n} \\
+\vdots & & \vdots \\
+\frac{\partial H_n^{-1}(\mathbf{y})}{\partial y_1} & \cdots & \cdots & \frac{\partial H_n^{-1}(\mathbf{y})}{\partial y_n} \\
+\end{bmatrix}
+\end{equation}
+which will have a nice structure
+\begin{equation}
+\frac{d \mathbf{H}^{-1}(\mathbf{y})}{d \mathbf{y}} = \begin{bmatrix}
+\frac{H_1^{-1}}{s_1 y_1} & -\frac{H_1^{-1}}{s_1 y_2} & 0 & 0 & \cdots & 0 \\
+0 & \frac{H_2^{-1}}{s_2 y_2} & -\frac{H_2^{-1}}{s_2 y_3} & 0 & \cdots &0 \\
+\vdots & & \vdots \\
+0 & 0 & \cdots & \cdots & \frac{H_{n-1}^{-1}}{s_{n-1} y_{n-1}} & -\frac{H_{n-1}^{-1}}{s_{n-1} y_{n}} \\
+0 & 0 & \cdots & \cdots & 0 & \frac{H_n^{-1}}{ s_n y_n} \\
+\end{bmatrix}
+\end{equation}
+the determinant of this matrix is the product of its trace elements, which in this case is
+\begin{equation}
+\det J = \prod_{k=1}^n \frac{H_k^{-1}}{s_k y_k} = \left(\frac{y_1^{1/s_1}}{y_2^{1/s_1}}\frac{y_2^{1/s_2}}{y_3^{1/s_2}}\cdots\frac{y_{n-1}^{1/s_{n-1}}}{y_n^{1/s_{n-1}}}y_{n}^{1/s_n}\right) \prod_{k=1}^n \frac{1}{s_k y_k}
+\end{equation}
+\begin{equation}
+\det J = \left(\frac{y_1^{1/s_1}}{y_2^{1+1/s_1}}\frac{y_2^{1/s_2}}{y_3^{1+1/s_2}}\cdots\frac{y_{n-1}^{1/s_{n-1}}}{y_n^{1+1/s_{n-1}}}y_{n}^{1/s_n-1}\right) \prod_{k=1}^n \frac{1}{s_k}
+\end{equation}
+\begin{equation}
+\det J = \left(y_1^{1/s_1} y_2^{1/s_2-1/s_1-1}y_3^{1/s_3-1/s_2-1} \cdots y_{n-1}^{1/s_{n-1}-1/s_{n-2}-1} y_n^{1/s_n - 1/s_{n-1}}\right) \prod_{k=1}^n \frac{1}{s_k}
+\end{equation}
+to get the distribution of the desired term, we can marginalise out the partial terms. This means finding the distribution of $y_1$ only, which is given by
+\begin{equation}
+p(y_1) = \int_0^\infty \cdots \int_0^\infty P_x(\mathbf{H}^{-1}(\mathbf{y}))\left | \det J \right | \; dy_2 \cdots dy_n
+\end{equation}
+this integral in its own right can be handled by another application of the Generalised Ramanujan Master Theorem with some caveats. In the case of two varaibles independantly drawn for exponential distributions we are faced with the integral \begin{equation}
+\frac{1}{s_1s_2}\int_0^\infty y_1^{1/s_1 -1} y_2^{1/s_2 - 1/s_1 -1}\exp\left(-\frac{y_1^{1/s_1}}{y_2^{1/s_1}}\right)\exp(-y_2^{1/s_2})\; d y_2
+\end{equation}
+which when expanded is
+\begin{equation}
+\frac{1}{s_1s_2}\int_0^\infty y_1^{1/s_1 -1} y_2^{1/s_2 - 1/s_1 -1} \sum_{k_1=0}^\infty \sum_{k_2=0}^\infty \frac{(-1)^{k_1}}{k_1!} \frac{(-1)^{k_2}}{k_2!}(\frac{y_1^{1/s_1}}{y_2^{1/s_1}})^{k_1}(y_2^{1/s_2})^{k_2} \; d y_2
+\end{equation}
+\begin{equation}
+\frac{1}{s_1s_2} \sum_{k_1=0}^\infty \frac{(-1)^{k_1}}{k_1!} y_1^{(k_1+1)/s_1 - 1} \sum_{k_2=0}^\infty  \frac{(-1)^{k_2}}{k_2!} \int_0^\infty y_2^{(k_2+1)/s_2 -(k_1+1)/s_1 -1}\; d y_2
+\end{equation}
+\begin{equation}
+\frac{1}{s_1s_2} \sum_{k_1=0}^\infty \frac{(-1)^{k_1}}{k_1!} y_1^{(k_1+1)/s_1 - 1} \sum_{k_2=0}^\infty  \frac{(-1)^{k_2}}{k_2!} \left\langle \frac{k_2+1}{s_2} - \frac{k_1+1}{s_1}\right\rangle
+\end{equation}
+the value of $k_2$ which vanishes the bracket is $k_2^* = \frac{s_2}{s_1}(k_1+1)-1$ which gives
+\begin{equation}
+\frac{1}{s_1s_2} \sum_{k_1=0}^\infty \frac{(-1)^{k_1}}{k_1!} y_1^{(k_1+1)/s_1 - 1} \Gamma\left(1 - \frac{s_2}{s_1}(k_1+1)\right)
+\end{equation}
+
+\subsection{Upsilon Mapping}
+We then ask the question, given $P(\mathbf{x})$ what is the distribution $P(\Upsilon(\mathbf{x},\mathbf{s}))$ for some $\mathbf{s}$?
+
+
+\subsection{Extracting Functions}
+If we have a function which maps a vector to a scalar which has a series expansion \begin{equation}
+f(\mathbf{x}) = \sum_{\mathbf{k}} c(\mathbf{k}) \Upsilon(\mathbf{x},\mathbf{Zk+d})
+\end{equation}
+then the expectation value of this function under the distribution is
+\begin{equation}
+\mathbb{E}[f(\mathbf{x})] = \sum_{\mathbf{k}} c(\mathbf{k})\mathbb{E}[\Upsilon(\mathbf{x},\mathbf{Zk+d})] = \sum_{\mathbf{k}} c(\mathbf{k})\mu_{\mathbf{Zk+d}}
+\end{equation}
+
+\subsection{Re-predicting Variables}
+If a moment function has real predictive power, it should be true that for unit input vectors (adjusted for the Mellin transform) $\mathbf{1}+\mathbf{\hat{e}}_k$, the outcome should be an estimate of $x_k$.
+
+\subsection{A prediction Example}
+If we have two variables $x_1$ and $x_2$ which we believe to be correlated, we can train a model that predicts $\mathbb{E}[x_1^{s_1-1}x_2^{s_2-1}]$. If this model is successful, say we are given the value of $x_2=3$ and we would like to know what the value of $x_1$ might be, we know that 
+\begin{equation}
+\mathbb{E}[x_1^{s_1} x_2^{s_2}] = f(s_1,s_2)
+\end{equation}
+and we have learned the parametrization of $f$ through the training process. Then we set the value as required and divide through by the necessary terms that we have information about
+\begin{equation}
+\frac{\mathbb{E}[x_1^{s_1} x_2^{s_2}]}{x_2^{s_2}} = \frac{f(s_1,s_2)}{x_2^{s_2}} \approx x_1^{s_1}
+\end{equation}
+now we set the power of the terms we want to predict, i.e. $s_1=1$
+\begin{equation}
+x_1 \approx \frac{f(1,s_2)}{x_2^{s_2}}
+\end{equation}
+and we have many estimates for the quantity as a function of $s_2$. We can then take the average of these values over the $s_2$ values we are most confident about predicting from, or take the distribution of predictions. We could attempt to integrate the expression. We could attempt the ratios of expectation values and try to get the functions to cancel.
+
+
+
+\subsection{Rationale}
+With a large enough dataset which is representative of random variables drawn from a multivariate distribution we could attempt to learn the mathematical form for the underlying distribution using the moments expression in equation \ref{}. The data will have moments randomly generated for sample vectors $\mathbf{s} \in \mathbb{R}^n$ within a practical range. These sample vectors could be drawn from a uniform distribution up to some cut-off value or from a more advanced distribution. A practical problem will be that the arbitrary moments for high dimensional data with large exponents will become very large quickly. To mitigate against this logs can be taken with suitable awareness of the reduction in penalisation of training on large discrepancies for large exponents.
+
+One can imagine a loss function that should be \emph{minimised} between the predicted moments of the current analytical expression with variable parameters and the \emph{sampled} moments from the dataset which represents the true mathematical distribution. The loss function $L$  could be written as the squared difference of the predicted and observed moments with additional regularisation terms
+\begin{equation}
+L = \left(\mathcal{E}_P(\mathbf{s}) - \frac{\varphi(\mathbf{k}^*) \prod_{l=0}^n \Gamma(-k_l^*)}{|\det(\mathbf{A})|}\right) \pm \lambda\;\mathrm{Regulariser}
+\end{equation}
+
+The moments are expected to be positive quantities due to the initial restriction on the input variables, we can then look at the difference in the logs of the quantities
+\begin{equation}
+L = \left(\log (\mathcal{E}_P(\mathbf{s})) + \log(|\det(\mathbf{A})|) - \log(\varphi(\mathbf{k}^*)) - \sum_{l=0}^n \log(\Gamma(-k_l^*)) \right) \pm \lambda\;\mathrm{Regulariser} \pm \mathrm{Probability Constraint}
+\end{equation}
+
+
+
+
+%if all of the $k^*$ are positive this could be a little simpler to implement. If the $s$ are chosen to be complex numbers, this is unlikely. Recall that $\log \det \mathbf{X} = \mathrm{tr} \log(\mathbf{X})$.
+
+%Solving for $k^*$, the solutions are for the set of equations
+%$$
+%1 + s_l + \sum_{m=0}^n \alpha_{lm}k_m = 0
+%$$
+%which is 
+%$$
+%\mathrm{1} + \mathbf{s} + \mathbf{A}\mathbf{k}^* = \mathbf{0}
+%$$
+%$$
+%\mathbf{A}\mathbf{k}^* = -\mathbf{s}-\mathbf{1}
+%$$
+%$$
+%\mathbf{k}^* = -\mathbf{A}^{-1}(\mathbf{s}+\mathbf{1})
+%$$
+%for which we have $s$ and we will already calculate $\det A$ and essentially get the inverse. This means the adjunct will be simple to calculate for gradients later.
+
+\section{Generalisation}
+The GRMT shows a useful bridge between a multivariate distribution and its moment function. In light of our observations on forms to choose for $\varphi$ we can simplify the training procedure to a form which is somewhat reminiscent of a standard neural network using the Euler gamma function as an \emph{activation function}. Assume that, in general, moments in $n$ dimensions can be written as a product of scale factors and gamma functions {\color{red} [Change the variable notation is it terrible for bold text]}
+\begin{equation}
+M(\mathbf{s}) =\left(\prod_{l=1}^N \eta_l^{ \vec{q}_l \cdot \vec{s} + \beta_l} \right)\left( \prod_{m=1}^G \Gamma^{a_m}(\vec{w}_m \cdot \vec{s} + \alpha_m) \right)
+\end{equation}
+which using $\Upsilon$ notation is
+\begin{equation}
+M(\mathbf{s}) =\Upsilon(\mathbf{\eta},\mathbf{Q}\mathbf{s} + \mathbf{b})\prod_{m=1}^G \Gamma^{a_m}(\vec{w}_m \cdot \mathbf{s} + \alpha_m) 
+\end{equation}
+
+where $g$ is the number of gamma functions to try. The log of this is then given by 
+$$
+\log M = \sum
+$$
+we can fit the absolute values of the moments? To ignore the minus sign for now.
+
+Gradient descent on some of the parameters then gives
+\begin{align}
+\frac{\partial \log M }{\partial \eta_l} = \frac{\vec{q}_l \cdot \vec{s} + \beta_l}{\eta_l}\\
+\frac{\partial \log M }{\partial q_{lm}} = s_m \log \eta_l\\
+\frac{\partial \log M }{\partial \beta_l} = \log \eta_l\\
+\frac{\partial \log M }{\partial a_m} = \log(\Gamma(\vec{w}_m \cdot \vec{s} + \alpha_m))\\
+\frac{\partial \log M }{\partial w_{mn}} = a_m s_n \psi(\vec{w}_m \cdot \vec{s} + \alpha_m)\\
+\frac{\partial \log M }{\partial \alpha_m} = a_m \psi(\vec{w}_m \cdot \vec{s} + \alpha_m)
+\end{align}
+
+where $\psi(\cdot)$ is the digamma function.
+
+
+\section{An Example}
+%https://arxiv.org/pdf/1103.0588.pdf
+
+Wishing to calculate the massless bubble Feynman diagram
+$$
+G = \int_0^\infty \int_0^\infty dx dy \frac{(-1)^\frac{-D}{2}}{\Gamma(a_1)\Gamma(a_2)} x^{a_1-1}y^{a_2-1} \frac{\exp(-\frac{x y}{x+y} p^2)}{(x+y)^\frac{D}{2}}
+$$
+now assuming we don't know the form of the distribution part. But we can sample it. The end result of $G$ is
+$$
+G = (-1)^\frac{D}{2}(p^2)^{\frac{D}{2}-a_1-a_2}\frac{\Gamma(\frac{D}{2}-a_2)\Gamma(\frac{D}{2}-a_1)\Gamma(a_1+a_2-\frac{D}{2})}{\Gamma(a_1)\Gamma(a_2)\Gamma(D-a_1-a_2)}
+$$
+to simplify this set $D=4$ and $p=1$
+$$
+G = \frac{\Gamma(2-a_2)\Gamma(2-a_1)\Gamma(a_1+a_2-2)}{\Gamma(a_1)\Gamma(a_2)\Gamma(4-a_1-a_2)}
+$$
+
+
+
+but from the GRMT we knew that $G$ is of the form
+$$
+G = \frac{\varphi(k_0^*,\cdots, k_n^*) \prod_{l=0}^n \Gamma(-k_l^*)}{|\det(\mathbf{A})|}
+$$
+it seems a strong representation for the function is for an $n$ dimensional form is
+
+$$
+f(k_0,\cdots,k_n)=(-1)^\xi \frac{t^{k_0}\prod_{k=0}^n \Gamma^\lambda\left(\gamma + \sum_{l=0}^n \beta_{kl}k_k\right)}{\prod_{k=0}^n \Gamma(s_k+1)}
+$$
+where $\lambda_k$ are either $1$ or $-1$ (top or bottom). So we solve for these coefficients $\beta$ which are the elements of a matrix $\mathbf{B}$. In this way the form of $f$ is given by $B$. Here $\gamma$ is an outside parameter, which seems to be involved when the original expression depend on a parameter.
+
+We know the whole expression should equal $1$ when all of the $s$ are set to $1$. This implies the constraint of probability.
+
+Other functions exist whose $\varphi$ functions are not ratios of gamma functions, but hypergeometric expressions. These are then sums of ratios of gamma functions, but the orders are predictable.
+
+
+\section{Multidimensional Generalised Hypergeometric Function}
+For the 1D generalised hypergeometric function we have $\mathbf{a} \in \mathbb{R}^p$, $\mathbf{b} \in \mathbb{R}^q$ and $\mathbf{x} \in \mathbb{R}^n$. In the $\Xi$ and $\Upsilon$ notation
+\begin{equation}
+_pF_q(\mathbf{a};\mathbf{b};-\mathbf{x}) = \sum_{\mathbf{k}} \Pi\chi(\mathbf{k})     \left(\prod_{l=1}^n \frac{\prod_{m=1}^q \Gamma(b_{lm})}{\prod_{m=1}^p \Gamma(a_{lm})} \frac{\prod_{m=1}^p \Gamma(a_{lm} + \alpha_l \cdot \mathbf{k})}{\prod_{m=1}^q \Gamma(b_{lm} + \alpha_l \cdot \mathbf{k})} x_l^{\alpha_l \cdot \mathbf{k}}\right)
+\end{equation}
+here we notice the $\mathbf{a}$ and $\mathbf{b}$ are essentially matrices. The corresponding choice of $f$ is
+\begin{equation}
+f(\mathbf{k},\cdots) = \prod_{l=1}^n \frac{\prod_{m=1}^q \Gamma(b_{lm})}{\prod_{m=1}^p \Gamma(a_{lm})} \frac{\prod_{m=1}^p \Gamma(a_{lm} + \alpha_l \cdot \mathbf{k})}{\prod_{m=1}^q \Gamma(b_{lm} + \alpha_l \cdot \mathbf{k})}
+\end{equation}
+this form is potentially more useful. We now have two parameters we can control, $p$ and $q$. These parameters control the complexity of the fitted function given a number of dimensions. It is usually the case that $p=q+1$ for the one dimensional hypergeometric functions. This then gives the generalised Mellin transform:
+$$
+...
+$$
+
+\section{Multi-Dimensional Meijer G Function}
+Likewise we may consider defining a multi-dimensional variant of the Meijer-G function. Consider the Mellin transform of a Meijer-G function with a scale parameter $\eta$:
+
+\begin{equation}
+\int_0^{\infty} x^{s - 1} \; G_{p,q}^{\,m,n} \!\left( \left. \begin{matrix} \mathbf{a_p} \\ \mathbf{b_q} \end{matrix} \; \right| \, \eta x \right) dx =
+\frac{\eta^{-s} \prod_{j = 1}^{m} \Gamma (b_j + s) \prod_{j = 1}^{n} \Gamma (1 - a_j - s)} {\prod_{j = m + 1}^{q} \Gamma (1 - b_j - s) \prod_{j = n + 1}^{p} \Gamma (a_j + s)}
+\end{equation}
+this means
+\begin{equation}
+G_{p,q}^{\,m,n} \!\left( \left. \begin{matrix} \mathbf{a_p} \\ \mathbf{b_q} \end{matrix} \; \right| \, \eta x \right) = \sum_{s=0}^\infty \frac{(-1)^s}{s!} \frac{1}{\Gamma(s)} \frac{\prod_{j = 1}^{m} \Gamma (b_j - s) \prod_{j = 1}^{n} \Gamma (1 - a_j + s)} {\prod_{j = m + 1}^{q} \Gamma (1 - b_j + s) \prod_{j = n + 1}^{p} \Gamma (a_j - s)} (\eta x)^s
+\end{equation}
+
+
+
+\section{Appendix 1: Examples of the Mellin Transform and RMT}
+\subsubsection{Negative Exponential}
+One of the simplest functions to use as an example is $f(x)=e^{-x}$, the Mellin transform of this is
+\begin{equation}
+\mathcal{M}[e^{-x}](s) = \int_0^\infty x^{s-1}e^{-x} \; dx = \Gamma(s)
+\end{equation}
+which can be seen to be an integral definition of the Euler gamma function. If we look at the series expansion of $e^{-x}$ we have
+\begin{equation}
+e^{-x} = \sum_{k=0}^\infty \frac{(-1)^k}{k!} x^k = \sum_{k=0}^\infty \chi_k \phi(k) x^k
+\end{equation}
+here we see that the coefficient function $\phi(k)$ is always $1$. Which by the RMT predicts the Mellin transform of $e^{-x}$ to be
+\begin{equation}
+\mathcal{M}[e^{-x}](s) = \Gamma(s)\phi(-s) = \Gamma(s)\cdot 1 = \Gamma(s)
+\end{equation}
+which is in agreement with the integral definition.
+\subsubsection{Binomial $(1+x)^{-1}$}
+We can consider the function $f(x) = \frac{1}{1+x}$ with expansion
+\begin{equation}
+\frac{1}{1+x} = \sum_{k=0}^\infty \frac{(-1)^k}{k!} k! x^k = \sum_{k=0}^\infty \chi_k \Gamma(k+1) x^k
+\end{equation}
+here the continuation of the coefficient function $\phi(k) = \Gamma(k+1)$. We can use the RMT to predict that the Mellin transform is
+\begin{equation}
+\mathcal{M}\left[\frac{1}{1+x}\right](s) = \Gamma(s)\phi(-s) = \Gamma(s)\Gamma(1-s)
+\end{equation}
+if we evaluate the integral directly this is the case.
+\subsubsection{Binomial $(1+x)^{-a}$}
+As before we write the series expansion
+\begin{equation}
+\frac{1}{(1+x)^a} = \sum_{k=0}^\infty \binom{-a}{k} x^k = \sum_{k=0}^\infty \chi_k \frac{\Gamma(k+a)}{\Gamma(a)} x^k
+\end{equation}
+Then the Mellin transform by the RMT is 
+\begin{equation}
+\mathcal{M}\left[\frac{1}{(1+x)^a}\right](s) = \frac{\Gamma(s)\Gamma(a-s)}{\Gamma(a)}
+\end{equation}
+
+\section{Appendix 2: Miscellaneous}
+\subsection{Multivariate Functions}
+To train on datasets with more than one column we will require multivariate analogues of the special functions. Huge collections of multivariate definitions have been collected by Horn, Lauricella, Appell \cite{}. Undoubtedly many more have been considered in recent times. For the purposes of defining a clear rule for this work we directly transform the expressions in table \ref{} using a collection of simple rules using the $\Xi$ and $\Upsilon$ notation.
+
+\subsubsection{Appell $F_1$ Function}
+This can be written as a double contour integral
+\begin{equation}
+F_1(a;b_1,b_2;c;z_1,z_2) = \frac{1}{(2\pi i)^2}\int_{L^*} \int_L  \bar{\phi}(s,t) (-z_1)^{-s_1}(-z_2)^{-s_2} ds_1 ds_2
+\end{equation}
+with \begin{equation}
+\bar{\phi}(s_1,s_2) = \frac{\Gamma(c)\Gamma(a-s_1-s_2)\Gamma(b_1-s_1)\Gamma(b_2-s_2)\Gamma(s_1)\Gamma(s_2)}{\Gamma(a)\Gamma(b_1)\Gamma(b_2)\Gamma(c-s_1-s_2)}
+\end{equation}
+Which some parts can be rewritten as 
+\begin{equation}
+\bar{\phi}(s_1,s_2) = \frac{\Xi[c])\Xi[a-\mathbf{1}\cdot\mathbf{s}]\Xi[\mathbf{b}-\mathbf{s}]\Xi[\mathbf{s}]}{\Xi[a]\Xi[\mathbf{b}]\Xi[c-\mathbf{1}\cdot\mathbf{s}]}
+\end{equation}
+the function is defined with $\mathbf{M}=\mathbf{I}_2$ which has determinant $1$. Because of this we know that $\mathbf{k}^* = -\mathbf{s}$, this explains the $\Xi[\mathbf{s}]$ term.
+
+If this is to bee seen as a conversions from a 1-D function to a 2D function we will start from a hypergeometric function. To cover the general case, a few matrices might be needed:
+\begin{table}
+\begin{tabular}{|c|c|}
+\hline
+Before & After \\
+\hline
+$a$ & $a$ \\
+$b$ & $\mathbf{b}=(b_1,b_2)$ \\
+$c$ & $c$ \\
+$s$ & $\mathbf{s} = (s_1,s_2)$ \\
+\hline
+$\Gamma(a)$ & $\Gamma(a)$\\
+$\Gamma(b)$ & $\Xi[\mathrm{b}]$ \\
+$\Gamma(c)$ & $\Gamma(c)$\\
+\hline
+$\Gamma(a-s)$ & $\Gamma(a - \mathbf{1}\cdot\mathbf{s})$\\
+$\Gamma(b-s)$ & $\Xi[\mathbf{b-s}]$ \\
+$\Gamma(x-s)$ & $\Gamma(c - \mathbf{1}\cdot\mathbf{s})$\\
+\hline
+\end{tabular}
+\caption{Table showing transforms from a 1-D hypergeometric function with $3$ parameters to a 2-D Appell hypergeometric with $4$ parameters. }
+\label{tab:1dto2d}
+\end{table}
+
+From table \ref{tab:1dto2d} we can see that there is a delicate balance between parameter vectors with changing numbers of parameters and the change in dimensionality.
+
+\subsubsection{Gauss Hypergeometric to Lauricella Function in N-D}
+There are four Lauricella functions in $D$ dimensions \cite{}. The function of type-A for example is
+\begin{equation}
+F_A^{(n)}(a, b_1,\ldots,b_n, c_1,\ldots,c_n; x_1,\ldots,x_n) = 
+\sum_{i_1,\ldots,i_n=0}^{\infty} \frac{(a)_{i_1+\ldots+i_n} (b_1)_{i_1} \cdots (b_n)_{i_n}} {(c_1)_{i_1} \cdots (c_n)_{i_n} \,i_1! \cdots \,i_n!} \,x_1^{i_1} \cdots x_n^{i_n}
+\end{equation}
+One can conceive a higher generalisation of this which should be one of the most general (at the expense of additional parameters). Define
+\begin{equation}
+\tilde{F}^{D}(\mathbf{a};\mathbf{b};\mathbf{V,W};-\boldsymbol\eta \cdot\mathbf{x}) = \sum_{\mathbf{k}} \Pi\chi(\mathbf{k})\frac{\prod_{j=1}^D (a_j)_{\mathbf{v}_j \cdot \mathbf{k}}}{\prod_{j=1}^D (b_j)_{\mathbf{w}_j \cdot \mathbf{k}}} \Upsilon(\boldsymbol\eta,\mathbf{k})\Upsilon(\mathbf{x},\mathbf{k})
+\end{equation}
+which in terms of gamma functions is 
+\begin{equation}
+\tilde{F}^{D}(\mathbf{a};\mathbf{b};\mathbf{V,W};-\boldsymbol\eta \cdot\mathbf{x}) = \sum_{\mathbf{k}} \Pi\chi(\mathbf{k})\frac{\prod_{j=1}^D \Gamma(b_j)\Gamma(a_j + \mathbf{v}_j\cdot \mathbf{k})}{\prod_{j=1}^D \Gamma(a_j)\Gamma(b_j+\mathbf{w}_j\cdot \mathbf{k})} \Upsilon(\boldsymbol\eta,\mathbf{k})\Upsilon(\mathbf{x},\mathbf{k})
+\end{equation}
+which in terms of $\Xi$ is
+\begin{equation}
+\tilde{F}^{D}(\mathbf{a};\mathbf{b};\mathbf{V,W};-\boldsymbol\eta \cdot\mathbf{x}) = \sum_{\mathbf{k}} \Pi\chi(\mathbf{k})\frac{\Xi[\mathbf{b}]\Xi[\mathbf{a}+\mathbf{Vk}]}{\Xi[\mathbf{a}]\Xi[\mathbf{b+Wk}]} \Upsilon(\boldsymbol\eta,\mathbf{k})\Upsilon(\mathbf{x},\mathbf{k})
+\end{equation}
+because $\mathbf{M}=\mathbf{I}_D$ by the GRMT the Mellin transform is equal to \begin{equation}
+\mathcal{M}[\tilde{F}^{D}(\mathbf{a};\mathbf{b};\mathbf{V,W};-\boldsymbol\eta \cdot\mathbf{x})](s) = \frac{\Xi[\mathbf{b}]\Xi[\mathbf{a}-\mathbf{Vs}]}{\Xi[\mathbf{a}]\Xi[\mathbf{b-Ws}]}\Xi[\mathbf{s}]\Upsilon(\boldsymbol\eta,-\mathbf{s})
+\end{equation}
+in this way there is no need for a determinant which is an obstruction to training. From this standpoint the original series is reclaimable. One question is whether is is necessary to add an additional matrix $\mathbf{M}$ at all.
+
+\subsection{Test}
+\subsubsection{1D- Exponential}
+We generated $1000$ samples from the distribution $x_1 \sim \exp(-x)$. The algorithm was run for $1000$ epochs which went beyond convergence. The final parameters were $V = [0.00132615]$ and $a=[1.0014696]$. In 1-D we write \begin{equation}
+\tilde{F}^{(1)}(1;;0,;x) = \sum_{k=0}^\infty \frac{(-1)^k}{k!} \frac{\Gamma(1+0k)}{\Gamma(1)} x^k = e^{-x}
+\end{equation}
+the original distribution is recreated.
+
+\subsubsection{Replacement Rules}
+
+\begin{enumerate}
+\item For scalar constants, $\Gamma(a) \to \Xi[\mathbf{a}]$, where $a$ becomes a vector $\mathbf{a}$ which is indexed over dimensions.
+\item For vectors indexed over parameters, $\Xi[\mathbf{a}] \to \Xi[\mathbf{A}]$, where $\mathbf{a}$ becomes a matrix $\mathbf{A}$ which is indexed over parameters and dimensions.
+\item For scale constants, $\eta^{-s} \to \Upsilon[\mathbf{\boldsymbol\eta},-\mathbf{s}]$.
+\item For variables in integrands $x^k \to \Upsilon[\mathbf{x}, \mathbf{Ak}]$
+\item In series the alternating exponential character becomes the multivariate alternating exponential character: $\chi_k \to \Pi\chi(\mathbf{k})$
+\end{enumerate}
+
+\begin{table}
+\begin{tabular}{|c|c|c|}
+\hline
+Before & After & Notes \\
+\hline
+$\Gamma(a)$ & $\Xi[\mathbf{a}]$ & $a \in \mathbb{R} \to \mathbf{a} \in \mathbb{R}^D$\\
+$\Gamma(a \pm k)$ & $\Xi[\mathbf{a}\pm \mathbf{k}]$ & $a,k \in \mathbb{R} \to \mathbf{a},\mathbf{k} \in \mathbb{R}^D$\\
+$\Xi[\mathbf{a}]$ & $\Xi[\mathbf{A}]$ & \\
+$\Xi[\mathbf{a}\pm s \mathbf{1}]$ & $\Xi[\mathbf{A} ??]$ & \\
+\hline
+$x^k$ & $\Upsilon[\mathbf{x},\mathbf{Mk}]$ & \\
+$(\eta x)^k$ & $\Upsilon[\boldsymbol\eta,\mathbf{Mk}]\Upsilon[\mathbf{x},\mathbf{Mk}]$ & \\
+\hline
+$\chi_k$ & $\Pi\chi(\mathbf{k})$ & \\
+$k$ & $\mathbf{k}$ & \\
+$\sum_{k=0}^\infty$ & $\sum_{k_1=0}^\infty \cdots \sum_{k_D=0}^\infty$ & \\
+\hline
+\end{tabular}
+\caption{Table for transformation rules from a function in one variables to a function in multiple variables.}
+\end{table}
+
+\subsubsection{Note:}
+We do not apply the transformation rule $\Gamma(a+k) \to \Xi[\mathbf{a} + \mathbf{Mk}]$ because upon solving the GMRT we find the Mellin transform contains terms such as $\Xi[\mathbf{a} + \mathbf{Mk^*}]$ which is equal to $\Xi[\mathbf{a} - \mathbf{s}]$ by the definition of $\mathbf{k}^*$. The resulting Mellin transform is separable in terms of the elements of $\mathbf{s}$ which shows the resulting distribution is a product of marginal distributions i.e. uncorrelated random variables, which is not ideal for machine learning. If $\mathbf{M}=\mathbf{I}_D$ then the distribution is separable which could be learned for distributions with that property.
+
+\subsubsection{Example: Multivariate Hypergeometric Function}
+Here we perform the above prescription to convert the hypergeometric function to the multivariate hypergeometric function. We have the one dimensional hypergeometric function.
+\begin{equation}
+_2F_1(a,b;c;-\eta x) = \sum_{k=0}^\infty \chi_k \frac{\Gamma(c)\Gamma(a+k)\Gamma(b+k)}{\Gamma(a)\Gamma(b)\Gamma(c+k)} (\eta x)^k
+\end{equation}
+For the higher dimensional versions we write the equivalent definition
+\begin{equation}
+_2\mathbf{F}_1(\mathbf{a},\mathbf{b};\mathbf{c};-\mathbf{x}) = \sum_{\mathbf{k}}\Pi\chi(\mathbf{k})\frac{\Xi[\mathbf{c}]\Xi[\mathbf{a}+\mathbf{k}]\Xi[\mathbf{b}+\mathbf{k}]}{\Xi[\mathbf{a}]\Xi[\mathbf{b}]\Xi[\mathbf{c}+\mathbf{k}]}\Upsilon(\boldsymbol\eta,\mathbf{M}\mathbf{k})\Upsilon(\mathbf{x},\mathbf{M}\mathbf{k})
+\end{equation}
+from the GRMT we know the generalised Mellin transform of the multidimensional Gauss hypergeometric function is equal to
+\begin{equation}
+\int_{[0,\infty)^n}\Upsilon[\mathrm{x},\mathbf{s-1}]\;_2\mathbf{F}_1(\mathbf{a},\mathbf{b};\mathbf{c};-\mathbf{x})\; d\mathbf{x} = \frac{\phi(\mathbf{k}^*)\Xi[-\mathbf{k}^*]}{|\det(\mathbf{M})|}
+\end{equation}
+which based on equation \ref{} is \begin{equation}
+\mathcal{M}_D[_2\mathbf{F}_1(\mathbf{a},\mathbf{b};\mathbf{c};-\mathbf{x})] = \frac{\Xi[\mathbf{c}]\Xi[\mathbf{a}+\mathbf{k}^*]\Xi[\mathbf{b}+\mathbf{k}^*]\Xi[-\mathbf{k}^*]}{\Xi[\mathbf{a}]\Xi[\mathbf{b}]\Xi[\mathbf{c}+\mathbf{k}^*]|\det(\mathbf{M})|}
+\end{equation}
+where $k^* = -\mathbf{M}^{-1}\mathbf{s}$.
+
+%noting that if 
+%\begin{equation}
+%\mathbf{A}\mathbf{k^*}+\mathbf{s} = \mathbf{0}
+%\end{equation}
+%it is clear to see that $\mathbf{A}\mathbf{k^*} = \mathbf{-s}$ giving
+%\begin{equation}
+%\mathcal{M}_D[_2\mathbf{F}_1(\mathbf{a},\mathbf{b};\mathbf{c};-\mathbf{x})] = \frac{\Xi[\mathbf{c}]\Xi[\mathbf{a}-\mathbf{s}]\Xi[\mathbf{b}-%\mathbf{s}]\Xi[-\mathbf{k}^*]}{\Xi[\mathbf{a}]\Xi[\mathbf{b}]\Xi[\mathbf{c}-\mathbf{s}]|\det(\mathbf{A})|}
+%\end{equation}
+%{\color{red} but this means the moments are separable? Which means the distribution is a product of marginals? Actually setting the rule $\Gamma(a+k) \to \Xi[\mathbf{a}+\mathbf{k}]$ doesn't lead to separated distributions. This might be the right way forward. The parameters in the gammas are aligned to the summation indices. The exponents of the variables are transformed by the matrix!}
+
+
+
+
+
+\subsection{Multivariate Generalisations of Functions}
+Hypergeometric, 
+Confluent Hypergeometric,
+Kampe-de-Feriet, Horn functions, etc.
+
+
+
+the I function \cite{}.
+
+
+
+
+
+\section{References}
+%\printbibliography
+
+
+
+\end{document}
