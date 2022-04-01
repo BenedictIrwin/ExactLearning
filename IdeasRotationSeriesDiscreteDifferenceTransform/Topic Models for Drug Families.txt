@@ -1,0 +1,8 @@
+Reading the paper: "Evaluation Methods for Topic Models"
+Wallach, Murray, Salatkhudinov, Mimno
+
+This paper is written in terms of words, topics, documents, etc.
+Can we replace this with features, families, molecules etc.
+This will lead to a model which understands chemical families etc.
+
+Further summary is required into what a topic model is.

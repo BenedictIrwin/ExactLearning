@@ -1,0 +1,835 @@
+This is a summary of the concept of a dehydron:
+
+
+
+Dehydron: A Structurally Encoded Signal for Protein Interaction
+{Fernandez2003}
+@article{FERNANDEZ20031914,
+title = "Dehydron: A Structurally Encoded Signal for Protein Interaction",
+journal = "Biophysical Journal",
+volume = "85",
+number = "3",
+pages = "1914 - 1928",
+year = "2003",
+issn = "0006-3495",
+doi = "https://doi.org/10.1016/S0006-3495(03)74619-0",
+url = "http://www.sciencedirect.com/science/article/pii/S0006349503746190",
+author = "Ariel Fernández and Ridgway Scott",
+abstract = "We introduce a quantifiable structural motif, called dehydron, that is shown to be central to protein-protein interactions. A dehydron is a defectively packed backbone hydrogen bond suggesting preformed monomeric structure whose Coulomb energy is highly sensitive to binding-induced water exclusion. Such preformed hydrogen bonds are effectively adhesive, since water removal from their vicinity contributes to their stability. At the structural level, a significant correlation is established between dehydrons and sites for protein complexation, with the HIV-1 capsid protein P24 complexed with antibody light-chain FAB25.3 providing the most dramatic correlation. Furthermore, the number of dehydrons in homologous similar-fold proteins from different species is shown to be a signature of proteomic complexity. The techniques are then applied to higher levels of organization: The formation of the capsid and its organization in picornaviruses correlates strongly with the distribution of dehydrons on the rim of the virus unit. Furthermore, antibody contacts and crystal contacts may be assigned to dehydrons still prevalent after the capsid has been assembled. The implications of the dehydron as an encoded signal in proteomics, bioinformatics, and inhibitor drug design are emphasized."
+}
+
+######### SUMMARY OF THIS PAPER GOES HERE
+
+Dehydrons are structural motifs.
+Dehydrons appear to be important in protein-protein interactions.
+Dehydrons are backbone hydrogen bonds which have the property of being "defectively packed".
+Dehydrons work using Coulomb energy.
+Dehydrons are sensitive to the exclusion of water when binding occurs.
+There is a correlation between protein complexation and dehydrons.
+Examples "HIV-1 capsid protein P24 complexed with antibody light-chain FAB25.3"
+The number of dehydrons in proteins measure "proteomic complexity"
+Likely to act as a high level structural arrangement quantity, viruses capsids etc.
+
+Determine the binding sites of proteins
+"implications of the dehydron concept for information processing in bioinformatics and proteomics 
+and its possible impact for inhibitor design"
+
+Identified by finding regions sensitive to the exclusion of water.
+Likely to play a role in organising supramolecular complexes.
+
+#########
+
+"Discussion
+This work identifies a factor for protein association and supramolecular organization by determining a structurally encoded marker, 
+the dehydron, 
+which signals a packing defect in the monomeric structure. 
+
+This signal becomes a means to systematically locate the spots on the surface of preformed protein structure that are most sensitive 
+to perturbations in the solvent environment, 
+specifically to the exogenous removal of water. 
+The dehydron represents a defectively packed and preformed backbone hydrogen bond 
+such that further water removal from its surroundings has a significant bond-stabilizing effect.
+
+Dehydrons are identified by quantifying the sensitivity of Coulomb energetic contributions to the externally induced exclusion of water. 
+This sensitivity can be conveniently regarded as measuring the drag on an external hydrophobic group. 
+
+
+To obtain a complete picture of protein interactions, 
+the dehydron contribution should be complemented with the usual assessments of in situ geometric hindrances 
+or fittings and pairwise matches. 
+Furthermore, in an effort to clarify the dynamic functioning of dehydrons, 
+we are now performing all-atom MD simulations with explicit solvent to examine the interactions of a hydrophobic test particle with the surface of the protein.
+
+Since the dehydron is adhesive, 
+it could become a useful concept to develop models of supramolecular organization of proteins within large-scale assemblies. 
+For example, such models could be used together with data stemming from electron cryomicroscopy (Zhou et al., 1998) 
+to infer and model virus organization and virus-host interactions (Zhou et al., 2000, Zhou et al., 2001).
+
+The potential use of dehydrons in functional genomics and proteomics has been to some extent assessed in this work. 
+The number of dehydrons for homologous proteins with identical fold and function across species with diverse levels 
+of evolutionary ancestry have been shown to provide a good marker for the proteomic complexity of the species. 
+These findings suggest that the notion of function might need to be cast in terms of systems biology concepts.
+
+Finally, inhibitor drug design benefits from the identification of suitable target regions 
+on protein surfaces. Thus, adhesive spots arising from packing defects in the form of dehydrons 
+are obvious sites to focus on."
+
+
+
+Dehydron Analysis: Quantifying the Effect of Hydrophobic Groups on the Strength and Stability of Hydrogen Bonds
+{Fraser2010}
+@InProceedings{10.1007/978-1-4419-5913-3_53,
+author="Fraser, Christopher M.
+and Fern{\'a}ndez, Ariel
+and Scott, L. Ridgway",
+editor="Arabnia, Hamid R.",
+title="Dehydron Analysis: Quantifying the Effect of Hydrophobic Groups on the Strength and Stability of Hydrogen Bonds",
+booktitle="Advances in Computational Biology",
+year="2010",
+publisher="Springer New York",
+address="New York, NY",
+pages="473--479",
+abstract="In the past decade, research has demonstrated that defectively packed hydrogen bonds, or ``dehydrons,'' play an important role in protein-ligand interactions and a host of other biochemical phenomena. These results are due in large part to the development of computational techniques to identify and analyze the hydrophobic microenvironments surrounding hydrogen bonds in protein structures. Here, we provide an introduction to the dehydron and the computational techniques that have been used to uncover its biological and biomedical significance. We then illustrate how dehydron-based computational analysis can be used as a basis for reengineering pharmaceutical compounds to improve their binding specificities.",
+isbn="978-1-4419-5913-3"
+}
+
+######### SUMMARY OF THIS PAPER GOES HERE
+
+Dehydrons play an important role in protein-ligand interactions.
+Dehydrons play a role in many other biochemica phenomena.
+Computational techniques identify and analyse "hydrophobic microenvironments" in proteins.
+
+Of biological and biomedical importance.
+Can be used to modify drug molecules for specific binding.
+
+###########
+
+
+
+WRAPPA: A Screening Tool for Candidate
+Dehydron Identification
+{Fraser}
+
+######### SUMMARY OF THIS PAPER GOES HERE
+
+
+
+##########
+
+"Abstract Solvent-exposed hydrogen bonds, or “dehydrons,” are becoming an increasingly
+important biochemical motif. The dehydron plays an important role in
+a wide variety of biological phenomena and has served as the basis for redesigning
+the anticancer agent imatinib to reduce its side effects. The rapid and reliable
+identification of dehydrons in proteins is thus becoming increasingly relevant to the
+community of life scientists at large. In this report we present a web-based program,
+called WRAPPA (www.wrappa.org), that allows biologists to incorporate dehydron
+analysis into their own research. WRAPPA is a tool for hypothesis generation and
+refinement: It locates hydrogen bonds in protein structures using simple geometric
+criteria and provides detailed molecular information about the local microenvironment
+of each bond, thereby identifying “candidate” dehydrons for experimental
+investigation"
+
+"In this
+report, we use the term “wrapping” to describe the degree of hydrophobic packing
+of a hydrogen bond, and the term “under-wrapped hydrogen bond,” or UWHB, to
+denote a hydrogen bond surrounded by relatively few hydrophobic groups."
+
+"Computation has been important to uncovering the biological significance of the
+dehydron. A wide array of in silico techniques have been used to guide experimental
+work in recent years, ranging from simple molecular viewers [17] to fullscale
+molecular dynamics (MD) simulations [22, 23, 24, 46, 55, 56]. The study of
+the dehydron, in turn, is beginning to influence the development of bioinformatics
+software. For instance, the concept of “packing distance” (the difference in dehydron
+distributions between two proteins) has been introduced as a new measure of
+functional similarity [30, 53, 61]. Computational dehydron analysis has also been
+integrated into docking software [70] and protein conformational prediction software
+[73, 110]. The dehydron thus illustrates how computational and experimental
+techniques can be used together to refine hypotheses and accelerate the discovery
+process in the life sciences.
+In the first part of this report, we present the fundamental ideas behind the
+dehydron and discuss the computational approaches to identifying and analyzing
+UWHBs. We begin by outlining a simple data-analytic method for identifying candidate
+dehydrons (where the term “candidate” is used to differentiate between bonds
+identified via the analysis of Protein Data Bank (PDB) files from bonds whose thermodynamic
+properties have been experimentally confirmed). This is followed by
+a review of the evidence for the dehydron’s adhesive capacity, or “stickiness.” We
+then discuss experimental work guided by computational approaches, exploring the
+dehydron’s biological and biotechnological significance. The material in these sections
+is intended to expand upon the brief review found in [66], and give the reader
+a clear overview of dehydron analysis in general.
+The remaining sections of the report are devoted to the Web-based Residue Analysis
+Program for hydroPhobicity Assessment, or “WRAPPA”. We begin with a general
+discussion of computing in the life sciences and touch upon the philosophy behind
+WRAPPA. Following this section, we review the WRAPPA analytical code, its
+web-based user interface, and the output WRAPPA produces. Two WRAPPA-based
+analyses follow: (1) an overview of wrapping distributions for a structurally nonredundant
+subset of Protein Databank (PDB) files, and (2) a method for identifying
+(candidate) dehydron-rich proteins. The report is intended to serve as reference for
+WRAPPA users, and will be updated periodically."
+
+"2.4 The Biochemical Significance of the Dehydron
+A detailed discussion of all biological research on the dehydron is beyond the scope
+of this text. This section is therefore intended only as a brief overview, with an
+emphasis on the papers that first established the dehydron’s importance as a biochemical
+motif. Much of the work described here and in the following section was
+guided by in silico analyses, with the simple counting method described in Section
+2.1 proving itself to be quite effective.
+WRAPPA 9
+Research conducted over the past decade has revealed a diversity of biological
+roles for the dehydron [31, 33, 34, 37, 40, 41, 42, 44, 47, 48, 49, 51, 57, 59, 60,
+62, 87, 90]. Prominent among these is the substantial effect that dehydrons can have
+on protein-protein interactions and protein-ligand binding [33, 42, 47, 57, 59, 62,
+87]. Interestingly, dehydrons appear to be under selective pressure; dehydrons in
+functioning homologous proteins tend to be conserved, and mutations that result in
+pathological conditions tend to be associated with a loss of dehydrons [33, 42, 62,
+87]. (The E6V sickle-cell mutation in the hemoglobin ß subunit is an example of this
+latter phenomenon [59, 62]). The relevance of the dehydron to population genetics
+has also come to light [45, 52], with significant implications for the mechanisms
+underlying genetic drift [52].
+The importance of the dehydron is underscored by the correlation of pathological
+protein-protein interactions with the over-expression of proteins that harbor
+many dehydrons [41, 44, 51, 57]. This amyloidogenic propensity is particularly
+pronounced for the human cellular prion protein, with the mutational introduction
+of dehydrons contributing to the destabilization of the normal cellular form
+[40, 41, 51, 57, 59]. Short protein fragments endowed with fibrillogenic potential
+(see [9], [32], [74], [76], and [92]) have also been shown to underlie a localization
+or concentration of amyloid-related structural defects [37, 51, 57].
+Dehydrons can have a significant morphological impact on biological membranes
+as well. This was demonstrated in [60] by in vitro experimental work on
+cytochrome c, pyruvate dehydrogenase, and other membrane-bound proteins. The
+data in [60] show that exposing lipid bilayers to proteins with many dehydrons
+causes an exponential growth in surface area followed by a stabilization of the invaginated
+state of the membrane. That is, a greater surface area (more invaginations)
+is associated with a higher number of dehydrons in membrane-bound proteins [60].
+These results have clear implications for membrane synthesis and function in cellular
+organelles such as mitochondria.
+Finally, it has been discovered that when dehydrons are strategically engineered
+into synthetic peptides they help to enable the peptides to translocate cell membranes
+[34, 48, 49, 90]. Still an active area of research, these “conformational
+switches” can function as amphiphilic passive transport systems with potential applications
+to drug delivery. All of these examples suggest that the scope of the dehydron
+as a biochemical motif is only beginning to be understood."
+
+
+
+
+
+Turning promiscuous kinase inhibitors into safer drugs
+{Zhang2008}
+@article{ZHANG2008295,
+title = "Turning promiscuous kinase inhibitors into safer drugs",
+journal = "Trends in Biotechnology",
+volume = "26",
+number = "6",
+pages = "295 - 301",
+year = "2008",
+issn = "0167-7799",
+doi = "https://doi.org/10.1016/j.tibtech.2008.02.008",
+url = "http://www.sciencedirect.com/science/article/pii/S0167779908000851",
+author = "Xi Zhang and Alejandro Crespo and Ariel Fernández",
+abstract = "Burgeoning interest in multi-target drugs to treat complex diseases and malignancies has motivated a reassessment of the therapeutic value of promiscuity. Although drug efficacy might not correlate with specificity, it would be risky to welcome promiscuous compounds without a rational strategy to control therapeutic impact. This situation might change as novel selectivity filters are incorporated into drug design. For example, cardiotoxic side effects of the cancer drug imatinib might be curbed by applying such premises. Here, we survey approaches to control the therapeutic impact of cross-reactive kinase inhibitors and advocate the application of a novel selectivity filter by illustrating its cleaning efficacy. Finally, we evaluate the possibility of turning multi-target kinase inhibitors into clinical opportunities through judicious chemical modifications."
+}
+
+"Burgeoning interest in multi-target drugs to treat complex diseases and malignancies has motivated a reassessment of the therapeutic value of promiscuity. Although drug efficacy might not correlate with specificity, it would be risky to welcome promiscuous compounds without a rational strategy to control therapeutic impact. This situation might change as novel selectivity filters are incorporated into drug design. For example, cardiotoxic side effects of the cancer drug imatinib might be curbed by applying such premises. Here, we survey approaches to control the therapeutic impact of cross-reactive kinase inhibitors and advocate the application of a novel selectivity filter by illustrating its cleaning efficacy. Finally, we evaluate the possibility of turning multi-target kinase inhibitors into clinical opportunities through judicious chemical modifications.
+"
+
+A selectivity filter of broad application arises from comparison of the so-called ‘wrapping patterns’ of protein targets [31]. By wrapping, we mean the intramolecular protection of backbone hydrogen bonds from the hydration of amide and carbonyl groups, a competing process that, when extensive, might lead to unfolding 35, 36, 37, 38. Thus, wrapping defects are actually solvent-exposed hydrogen bonds and constitute vulnerabilities arising from imperfections in side-chain packing. These structural singularities are called dehydrons and are identified in a straightforward way from structural coordinates 31, 35, 36, 37, 38 (Box 1, Figure I). The wrapping pattern is thus determined by identifying all dehydrons in the structure. A hydrogen bond is thus wrapped completely when all surrounding water has been excluded.
+Box 1
+Dehydrons
+
+Dehydrons are a special class of packing defects in soluble proteins consisting of backbone hydrogen bonds partially exposed to water due to an insufficient number of side-chain nonpolar groups clustered around them. These bonds are incompletely buried because they are ‘wrapped’ poorly by side chains 35, 37. These defects constitute structural vulnerabilities because they open up the possibility that the partially exposed backbone might become fully hydrated, thus leading to the dismantling of the folded structure. Dehydrons promote further water expulsion from their environment because the underlying amide-carbonyl electrostatic interaction becomes enhanced and stabilized by the approach of a hydrophobic group that causes water removal [37]. Thus, because of their propensity to attract nonpolar groups, dehydrons are sticky and, hence, targetable by drugs that contain such nonpolar groups [31]. The distribution of dehydrons on the protein structure is not conserved across paralogs [36], therefore, a drug redesign geared at wrapping nonconserved dehydrons might become a powerful approach to achieve specificity [31].
+
+The identification of dehydrons from structural coordinates is straightforward: It suffices to count the number of nonpolar side-chain groups, ?, within the microenvironment of each hydrogen bond to determine which of them are packed imperfectly. The microenvironment is defined as two intersecting balls (Figure I) of fixed radius centered at the a-carbons of the residues paired by the bond. In folds of soluble proteins, at least two-thirds of the backbone hydrogen bonds are wrapped on average by ? = 26.6 ± 7.5 nonpolar groups for radius of 6.2 Å. Thus, dehydrons are defined rigorously as hydrogen bonds whose extent of wrapping lies in the tail of the distribution (mean minus one dispersion), that is, with 19 or fewer hydrophobic groups in their microenvironments.
+
+A shortcoming in identifying dehydrons arises from the need for structural information. However, comparing the wrapping pattern of paralogs is feasible, even in the absence of structure. A surrogate for dehydrons, the propensity for structural disorder, might be used to infer the wrapping patterns that can be aligned subsequently using homology threading [31]. Thus, a sequence-based disorder score, measuring the propensity for inherent disorder in a peptide chain [36] correlates with the wrapping of hydrogen-bonded residues, with dehydrons belonging to the twilight region between order and disorder [38].
+
+The wrapping pattern might be turned into an operational selectivity filter for two reasons: (i) dehydrons might be targeted by drugs that further wrap them by bringing nonpolar groups to their proximity on association; and (ii) dehydrons are not conserved across paralogs 31, 36. To assess conservation, we can align the paralog structures and compare the microenvironments of the aligned hydrogen bonds. Typically, although the bonds are conserved across paralogs, their packing is not and, hence, there are differences in the dehydron distribution 31, 36. Structure conservation across proteins within kinase families enables the alignment [31].
+
+Thus, differences in dehydron distribution constitute promising selectivity filters to clean promiscuous inhibitors. To this effect, we hereby propose designing inhibitors with the aim of wrapping nonconserved dehydrons exogenously by bringing nonpolar groups into their proximity.
+
+This proof of principle reveals that dehydrons are indeed features that could be exploited to direct the redesign of promiscuous inhibitors with the goal of enhancing their specificity.
+
+We thus suggest a general strategy to clean promiscuous inhibitors by introducing ‘wrapping’ chemical modifications that preserve the drug chemotype [16], while targeting unique dehydrons. The proof of principle described in this section serves as a first validation for this approach. However, although imatinib is certainly cross reactive, it is not a promiscuous drug. Hence, the extension of the wrapping-redesign strategy to clean a truly promiscuous drug requires further consideration, as discussed in the next section.
+o promote selectivity, we can introduce a wrapping modification to target a non-conserved dehydron in the primary target EGFR. A comparative structural analysis of the EGFR family reveals that the least conserved EGFR dehydron is Asp831–Gly833. To wrap this dehydron, we might append a methyl group at position 3 of the terminal benzene ring (Figure 2b). This dehydron-wrapping modification is likely to possess inhibitory activity exclusively against these EGFR paralogs that retain the dehydron in its original position, namely EGFR, Aurora2 [serine/threonine-protein kinase (STK)6], CDC-like kinase 3 (CLK3), v-erb-b2 erythroblastic leukemia viral oncogene homolog 2 (ERBB2), pim-1 oncogene (PIM1), proviral integration site 2 (PIM2), protein tyrosine kinase 2 [PTK2; also known as focal adhesion kinase (FAK)], STE20-like kinase (SLK) and STK10. The modified drug is expected to bind to a subset of this target group because steric hindrances might arise as a result of the chemical medication.
+
+
+
+
+Incomplete Protein Packing as a Selectivity Filter in Drug Design
+{Fernandez2005}
+@article{FERNANDEZ20051829,
+title = "Incomplete Protein Packing as a Selectivity Filter in Drug Design",
+journal = "Structure",
+volume = "13",
+number = "12",
+pages = "1829 - 1836",
+year = "2005",
+issn = "0969-2126",
+doi = "https://doi.org/10.1016/j.str.2005.08.018",
+url = "http://www.sciencedirect.com/science/article/pii/S0969212605003618",
+author = "Ariel Fernández",
+abstract = "Summary
+The conservation of structure across paralog proteins promotes alternative protein-ligand associations often leading to side effects in drug-based inhibition. However, sticky packing defects are typically not conserved across paralogs, making them suitable targets to reduce drug toxicity. This observation enables a strategy for the design of highly specific inhibitors involving ligands that wrap nonconserved packing defects. The selectivity of these inhibitors is evidenced in affinity assays on a cancer-related pharmacokinome: a powerful inhibitor is redesigned by using the wrapping technology to enhance its selectivity and affinity for a target kinase. In this way, the packing defects of a soluble protein may be used as selectivity filters for drug design."
+}
+
+One such factor has been recently identified. We have reported (Fernández, 2004, Fernández and Berry, 2004, Fernández and Scheraga, 2003) that packing defects in proteins, the so-called dehydrons (Fernández and Berry, 2004, Deremble and Lavery, 2005), or underwrapped hydrogen bonds, constitute sticky sites with a propensity to become dehydrated. The term “wrapping” indicates a clustering of nonpolar groups framing an anhydrous microenvironment. Dehydrons are signaled by insufficient intramolecular wrappers and promote protein-ligand associations that “correct” packing defects (Fernández and Scheraga, 2003, Deremble and Lavery, 2005). Their stickiness arises from the charge-screening reduction resulting from bringing nonpolar groups into proximity: water exclusion enhances and stabilizes preformed electrostatic interactions. A few (<7) nonpolar groups wrapping a hydrogen bond simply prevent the hydration of the amide and carbonyl, but a sufficient number of wrappers, while making hydration thermodynamically costly, introduce a compensation by enhancing the stability of the hydrogen bond (Fernández and Scott, 2003).
+
+We start by showing that in most PDB protein-inhibitor complexes, the ligand is in effect a wrapper of packing defects in the protein, although it was not purposely designed to fulfill this role. In this way, the design concept of ligand as a dehydron wrapper is supported by reexamination of structural data. These preliminary data pave the way to introduce a wrapping technology in drug design. A proof of principle is provided by demonstrating experimentally that targeting dehydrons that are not conserved across paralogs becomes a useful strategy to enhance binding selectivity. Thus, we take advantage of packing differences to selectively modify a powerful multiple-target inhibitor to achieve a higher specificity toward a particular target.
+
+Results
+Ligands as Dehydron Wrappers in Protein-Inhibitor Complexes
+The interfaces of the 814 protein-inhibitor PDB complexes were reexamined to determine whether inhibitors were “dehydron wrappers,” that is, whether nonpolar groups of inhibitors penetrated the desolvation domain of dehydrons. This feature was found in 631 complexes, and it was invariably found in the 488 complexes in which the binding cavity presented average or no surface hydrophobicity. This situation is illustrated in Figure 1, Figure 2 for the HIV-1 protease (Wlodawer and Vondrasek, 1998, Munshi et al., 1998) and the urokinase-type plasminogen activator (Katz et al., 2000), respectively. The inhibitor contribution to improve the protein packing is not fortuitous since the substrate must be anchored and water must be expelled from the enzymatic site. Strikingly, the wrapping of dehydrons is not purposely attempted in current drug design.
+
+"The Merck inhibitor Indinavir (Crixivan) bound to the functionally dimeric HIV-1 protease (PDB: 2BPX) is shown in Figure 1 (Wlodawer and Vondrasek, 1998, Munshi et al., 1998). The dehydrons in the protease are marked in green. On each monomer, these dehydrons are backbone hydrogen bonds involving the following residue pairs: Ala28-Arg87, Asp29-Asn88, Gly49-Gly52, and Gly16-Gln18. The cavity associated with substrate binding contains the first three dehydrons, with dehydrons 49–52 located in the flap and dehydrons 28–87 and 29–88 positioned next to the catalytic site (Asp25), to anchor the substrate. This “sticky track” determined by dehydrons 28–87 and 29–88 is required to align the substrate peptide across the cavity, as needed for nucleophilic attack by the Asp25s. The flap, on the other hand, must have an exposed and hence labile hydrogen bond needed to confer the flexibility associated with the gating mechanism. The lack of protection on the flap (49–52) hydrogen bond becomes the reason for its stickiness, as the bond can be strengthened by the exogenous removal of surrounding water. The positioning of all three dehydrons in the cavity (six in the dimer) promotes inhibitor association.
+
+Indinavir is a wrapper of packing defects in the enzymatic cavity: it contributes 12 desolvating groups to the 49–52 hydrogen bond, 10 to the 28–87 hydrogen bond, and 8 to the 29–88 hydrogen bond. All functionally relevant residues are either polar or expose the polarity of the peptide backbone (Asp25, Thr26, Gly27, Ala28, Asp29, Arg87, Asn88, Gly49, Gly52), and, thus, they are not themselves promoters of protein-ligand association. The strategic position of dehydrons involving these residues in their microenvironments becomes a decisive factor in promoting water removal or charge descreening required in facilitating the enzymatic nucleophilic attack.
+
+Figure 2 shows an inhibitor acting as a wrapper of packing defects in its complexation with the urokinase-type plasminogen activator (PDB: 1C5W), a protease associated with tumor metastasis and invasion (Katz et al., 2000). Figures 2A and 2B reveal dehydrons Cys191-Asp194, Asp194-Gly197, and Gln192-Lys143 in the protein cavity. Strikingly, none of the hydrophobic residues in the cavity contributes to the inhibitor binding (Figure 2C).
+
+Nonconserved Packing Defects as Highly Specific Targets
+Central to drug design is the minimization of toxic side effects. Because paralog proteins are likely to share common domain structures (Mount, 2001), the possibility of multiple binding partners for a given protein inhibitor arises, unless nonconserved features are specifically targeted. This problem may be circumvented by targeting dehydrons, because, in contrast to the fold, the wrapping is generally not conserved (Fernández and Berry, 2004).
+
+To determine whether dehydron targeting is likely to reduce side effects, we first investigated the extent of the conservation of dehydrons across human paralogs in the PDB. The paralogs for every crystallized protein-inhibitor complex were identified, and dehydron patterns at binding cavities were compared. A 30% minimal sequence alignment was required for paralog identification. Packing defects were found to be a differentiating marker in paralogs of 527 out of the investigated 631 proteins crystallized in complex with inhibitors. A protein chain is often reported in complexes with different inhibitors.
+
+The PDB contains 440 redundancy-free pairs of human paralogs. Of these, 308 involve some of the 527 proteins containing binding dehydrons. In 269 pairs, the intramolecular wrapping at the binding cavity differs in the location or presence of at least 1 dehydron, and, in 203 pairs, the difference extends to 2 or more dehydrons. Thus, the probability of avoiding cross reactivity by selectively wrapping packing defects is estimated at 88% (269 pairs out of 308).
+
+For instance, a-thrombin (PDB: 1A3E) (Zdanov et al., 1993), a paralog of the plasminogen activator (PDB: 1C5W), shares a common domain structure, but a different dehydron pattern (Figure 3). While the inhibitor of the a-thrombin is a wrapper of cavity dehydrons (Figure 3), additional specificity would have been gained if the inhibitor had been tailored to target the unique dehydron pattern of the cavity (compare Figures 2A and 3). Specifically, the Ser195-Gly197 dehydron present in a-thrombin becomes intramolecularly well-wrapped in the plasminogen activator (Figures 2A and 3)."
+"we may conclude that dehydrons in cavities are suitable targets for ligand design"
+
+
+
+
+Water promotes the sealing of nanoscale packing defects in folding proteins
+{Fernandez2014}
+Ariel Fernández1,2
+
+Published 25 April 2014 • © 2014 IOP Publishing Ltd
+Journal of Physics: Condensed Matter, Volume 26, Number 20
+
+"Abstract
+A net dipole moment is shown to arise from a non-Debye component of water polarization created by nanoscale packing defects on the protein surface. Accordingly, the protein electrostatic field exerts a torque on the induced dipole, locally impeding the nucleation of ice at the protein–water interface. We evaluate the solvent orientation steering (SOS) as the reversible work needed to align the induced dipoles with the Debye electrostatic field and computed the SOS for the variable interface of a folding protein. The minimization of the SOS is shown to drive protein folding as evidenced by the entrainment of the total free energy by the SOS energy along trajectories that approach a Debye limit state where no torque arises. This result suggests that the minimization of anomalous water polarization at the interface promotes the sealing of packing defects, thereby maintaining structural integrity and committing the protein chain to fold."
+
+The propagation of the distortion of water structure caused by a sub-nanometer cavity on the protein surface and the induced dipole moment arising from the resulting curvature change in phiv are shown in figure 1(a). The illustrative case corresponds to a water-exposed backbone hydrogen bond, a packing defect known as dehydron [11]. Due to the confinement of water in the nanoscale cavity of the dehydron, a P#-component is generated [11]. Dehydrons expose the backbone polar groups amide (>N–H) and carbonyl (>C = O) to hydrogen bonding with the surrounding water molecules, in competition with the intramolecular amide–carbonyl hydrogen bond, thus steering water dipoles away from alignment with E. The confined water molecules relinquish hydrogen bonding opportunities to fit in the nanoscale cavity, departing from the bulk coordination pattern, with a resulting polarization that becomes statistically independent of E. The propagation in the disruption of the water structure is computed using the molecular dynamics protocol described in [7] for a dehydron cavity of typical curvature radius ? = 2.63?Å [12], with x = 0 indicating the center of curvature at the dehydron location.
+
+
+Figure 1. (a) Confinement-induced dipole µ# and torque thetav imposed on it by the Debye field F|| of the protein. The Debye field is locally generated by the dipole moment of a preformed dehydron (packing defect) pairing an amide (>N–H) and a carbonyl (>C = O) group of the protein backbone. The dipole moment induced by water confinement at the dehydron site is generated by the change in curvature of the water-structure descriptor phiv. The figure shows the quantitative behavior of phiv = phiv(x) relative to the distance x to the dehydron interface with fixed curvature radius ? = 2.63?Å (dashed circle) with x = 0 representing the center of curvature. (b) Correlation between the SOS potential energy ?U# (normalized by solvent-accessible surface area) and the dehydron-to-backbone-hydrogen-bond ratio Y for the protein given as percentage. The proteins studied identified by their respective PDB files and ordered by increasing Y-value are 1SRL, 1ESR, 1A8O, 1PIT, 1QGB, 1ATA, 1Q7I, 2PNE. The protein dehydrons are identified from structural coordinates as described in [13]. 3. Results
+A correlation is observed for PDB-reported proteins (­figure 1(b)) between the ?U# (normalized by solvent-accessible surface area) of a protein and its dehydron ratio Y, defined as the fraction of backbone hydrogen bonds that are dehydrons (water-exposed). The correlation validates the assertion that dehydrons are the promoters of anomalous polarization. The dataset includes the protein with the maximum dehydron ratio Y = 100%: the antifreeze protein from snow flea from PDB entry 2PNE [13]. The huge net torque exerted on the interfacial water molecules of the antifreeze protein is due to the maximum density of packing defects (Y = 100%) on the protein surface and hampers the water orientational reorganization required for ice nucleation.
+
+
+Is there a case for selectively promiscuous anticancer drugs?
+{Fernandez2009}
+@article{FERNANDEZ20091,
+title = "Is there a case for selectively promiscuous anticancer drugs?",
+journal = "Drug Discovery Today",
+volume = "14",
+number = "1",
+pages = "1 - 5",
+year = "2009",
+issn = "1359-6446",
+doi = "https://doi.org/10.1016/j.drudis.2008.10.008",
+url = "http://www.sciencedirect.com/science/article/pii/S1359644608003747",
+author = "Ariel Fernández and Alejandro Crespo and Abhinav Tiwari",
+abstract = "We critically survey the paradigms of molecularly targeted cancer therapy in light of systems-level observations on tumor robustness and resilience. Multipronged attacks covering various clinical fronts such as angiogenesis, apoptosis and cancer progression, among others appear to be favored approaches at present, yet the enhancement of side effects has become a serious concern. In this regard, we argue that a departure from the yet untested single-target paradigm in favor of the notion of ‘selective nonselectivity’ may be necessary, but will ultimately require a rational control of specificity to curb side effects. This control may be achieved by drug redesign guided by known selectivity-promoting molecular features."
+}
+
+Cross-reactivities of kinase inhibitors arise because of the structural similarity of evolutionarily related (paralog) kinases. Yet, while paralogs share a similar structure, they are packed differently. If we compare the microenvironments of intramolecular hydrogen bonds aligned across paralog structures, we notice that they are different: some hydrogen bonds are exposed to solvent in one kinase and completely shielded in another. Taking into account such local differences in packing quality [24], we are able to redesign a kinase inhibitor because deficiently packed hydrogen bonds – the so-called dehydrons [28] – not only distinguish paralogs but they are sticky, hence targetable. Dehydrons are sticky because they promote their dehydration to enhance the underlying amide-carbonyl electrostatic attraction [28].
+
+Thus, a design strategy to achieve higher specificity emerges as we redesign inhibitors to turn them into protectors (wrappers) of dehydrons 24, 29, 30, 31, 32. Such wrapping designs enable paralog discrimination and hence lead to drugs with controlled specificity 24, 29, 30, 31, 32. For example, the wrapping concept has been recently adopted to tackle the challenge of ‘cleaning’ staurosporine, the most promiscuous kinase inhibitor known [32]. Our wrapping-modified staurosporine, targeting an EGFR dehydron with low level of conservation, binds only to 12% of the 220 kinases experimentally assayed by high-throughput screening [18]. This percentage of hits reveals a massive enhancement in selectivity, when compared with 90% for staurosporine. Strikingly, our cross-reactivity prediction based on wrapping differences across targets is 95% accurate, when contrasted with the experimental results [32].
+
+Another illustration of the power of the wrapping-based approach involved the redesign of the promiscuous inhibitor EKB-569 (Wyeth-Ayerst) that binds to 50 kinases [32]. The affinity screening of the dehydron-wrapping redesign agrees with the profile predicted based on dehydron conservation (95% of accuracy). Significantly, the redesigned compound is more selective than the parental compound: out of the 220 kinases screened [18] it binds to 5 kinases, whereas EKB-569 binds to 19 [32]. Thus, these experimentally validated examples suggest that wrapping redesign can be further exploited to obtain ‘selectively nonselective’ inhibitors. The operational aspects of this strategy are described in detail as we focus on a problem of immediate clinical relevance: the need for the removal of sunitinib cardiotoxicity through a redesign of the parental compound.
+
+Guided by the wrapping concept 24, 29, 30, 31, 32, we may approach the reengineering of sunitinib to enhance its selectivity toward therapeutic targets while avoiding inhibiting AMPK and RSK. A comparison of the local packing of several sunitinib targets through structure alignment led us to focus on a particular dehydron: the deficiently packed backbone hydrogen bond T83-Q99 in CAMK1G kinase (Fig. 1). This dehydron is conserved in all high-affinity targets relevant to angiogenesis and cancer-cell proliferation. Thus, it aligns with a dehydron in CAMK1D, CSF1R, EPHA2-3, KIT, FAK, SRC and VEGFR2 kinases. By contrast, it aligns with the well packed hydrogen bond K78-E94 in AMPK2 and with the well packed hydrogen bond T116-D132 in RSK. That is, the differences in the packing of the region that aligns with dehydron T83-Q99 in CAMK1G (Fig. 1) enable discrimination between clinically relevant and cardiotoxicity-promoting targets 24, 29, 30, 31, 32.
+This crucial packing difference suggests the modification to sunitinib needed to remove its cardiotoxicity 24, 29, 30, 31, 32: the examination of the sunitinib/CAMK1G PDB-complex (Fig. 1) reveals that methylation at N1 in sunitinib's indol (Fig. 2) would turn the drug into a wrapper of dehydron T83-Q99. This drug is likely to bind selectively to all clinically relevant targets because the latter contain a dehydron at the position that aligns with T83-Q99 in CAMK1G. By contrast, this wrapping modification will produce a steric clash upon association with kinases RSK and AMPK2.
+
+
+
+Kinase packing defects as drug targets
+{Crespo2007}
+@article{CRESPO2007917,
+title = "Kinase packing defects as drug targets",
+journal = "Drug Discovery Today",
+volume = "12",
+number = "21",
+pages = "917 - 923",
+year = "2007",
+issn = "1359-6446",
+doi = "https://doi.org/10.1016/j.drudis.2007.09.009",
+url = "http://www.sciencedirect.com/science/article/pii/S1359644607004011",
+author = "Alejandro Crespo and Ariel Fernández",
+abstract = "Protein kinases constitute major targets in molecular cancer therapy. The structural conservation of kinases causes specificity problems in most drug inhibitors, often resulting in dangerous side effects. Here we survey recent approaches in drug design that exploit a molecular marker for specificity: the pattern of packing defects. These packing defects are solvent-exposed intramolecular hydrogen bonds that may be protected by drugs upon association. In this light, we review design strategies to achieve paralogue discrimination, to control cross reactivity and to overcome drug resistance induced by target mutations."
+}
+
+
+Recent progress along these lines is marked by the identification of a molecular marker for specificity: the packing defects in soluble proteins 24, 25, 26, 27. These defects consist of solvent-exposed backbone hydrogen bonds and are targetable features because of their inherent stickiness [25]. One most useful property from the perspective of drug design is their lack of conservation across proteins with common ancestry 7, 28. They are indicators of protein interactivity and constitute a determinant factor for macromolecular recognition 29, 30, 31, 32, 33. They are termed dehydrons 24, 25, 26, 27, since they promote their own dehydration as a mean to strengthen and stabilize the underlying electrostatic interaction. Thus, targeting these features by turning drugs into protectors or ‘wrappers’ (water-excluders) of packing defects 34, 35 may control cross reactivity. The concept of drug-as-wrapper was initially introduced by Fernández et al.[34], when packing defects were exploited to design novel HIV-1-integrase inhibitors and rationalize the binding mode of existing HIV-1-protease inhibitors.
+
+In this work we survey the molecular design strategies to engineer drugs that act as dehydron wrappers. Decisive insilico, invitro and invivo validation of the wrapping concept is surveyed 36, 37. Finally, we propose a molecular-design exercise as potential application of the dehydron-targeting principle: the differentiation of the close paralogues IGF1R and INSR kinases.
+
+Packing defects in protein structure
+Dehydrons constitute packing defects since they are identified by a dearth of nonpolar groups from the amino acid side chains in the spatial vicinity of a backbone hydrogen bond 24, 25, 26, 27. They are defined in terms of the effect on the dielectric environment due to the approach of a nonpolar group or wrapper 24, 25, 26, 27. Solvent-exposed hydrogen bonds become strengthened and stabilized by the approach of a hydrophobic group, as in the case where a drug ligand binds to a protein. Thus, because of their propensity to attract nonpolar groups, or exclude water molecules, dehydrons constitute sticky spots that promote their own further dehydration 24, 25, 26, 27.
+
+Rigorously speaking, the term wrapping alludes to a clustering of hydrophobic groups framing an anhydrous microenvironment for an intramolecular backbone hydrogen bond within the structure of a soluble protein 24, 25, 26, 27. The extent of intramolecular hydrogen-bond desolvation, ?, may be quantified by determining the number of nonpolar groups (carbonaceous, not covalently bonded to an electrophilic atom) contained within a desolvation domain. The desolvation domain is defined as two intersecting balls (Figure 2) of fixed radius centered at the a-carbons of the residues paired by the backbone hydrogen bond. The statistics of hydrogen-bond wrapping vary according to the desolvation radius adopted, but the tails of the distribution invariably single out the same dehydrons in a given structure over a 6–7 Å radius range, a length scale that represents the thickness of three water layers. In folds for soluble proteins at least two-thirds of the backbone hydrogen bonds are wrapped on average by ? = 26.6 ± 7.5 nonpolar groups for desolvation radius of 6.2 Å. Dehydrons are then defined as hydrogen bonds whose extent of wrapping lies in the tail of the distribution, that is with 19 or fewer hydrophobic groups in their desolvation domains, so their ?-value is below the mean, minus one Gaussian dispersion.
+Figure 2. Dehydron concept. Intramolecular backbone hydrogen bonds in target proteins (green bond) prevail only if protected from water attack. Their extent of intramolecular wrapping, ?, is defined by counting the nonpolar groups (carbonaceous atoms, cyan) contained within the desolvation domain (grey spheres). Poorly wrapped hydrogen bonds (dehydrons) are defined with 19 or fewer hydrophobic groups in their desolvation domains (desolvation radius of 6.2 Å). These packing defects consist of solvent-exposed backbone hydrogen bonds and are targetable features because of their inherent stickiness, since they promote the removal of surrounding water molecules as a mean to strengthen and stabilize the underlying electrostatic interaction.
+
+Dehydrons are invariant across complexes of the same protein with different ligands and invariant across different crystallization forms, except in cases where the different ligands produce different induced fits. Thus, owing to the high conformational plasticity of kinases [16], targeting dehydrons in induced fits or flexible regions (activation loop, P-loop, catalytic loop) requires performing molecular dynamic (MD) simulations to identify the binding mode of the ligand. On the contrary, the effect of structural fluctuations on the persistence of dehydrons has been addressed through long MD simulations 36, 37.
+
+A shortcoming in the engineering of selective drugs geared at wrapping nonconserved packing defects arises from the need for structural information on the targets. In addressing this problem, we note that comparing the wrapping pattern of targets of common ancestry is actually feasible, even in the absence of structure. This is so, since a surrogate for dehydrons, reliably predicted from sequence, may be used to infer the wrapping patterns that can be subsequently aligned using homology threading [7]. Thus, a sequence-based disorder score, measuring the propensity for inherent disorder of the peptide chain [28] correlates with the wrapping of individual residues engaged in backbone hydrogen bonds, with dehydrons belonging to the twilight region between order and disorder [38]. The disorder score has been used to predict dehydrons for all tyrosine kinases, even those with unreported structure and the predictions on cross reactivity resulting thereof have been validated against high-throughput screening data [7]. This dehydron predictor based on the disorder score is operational only for homologues likely to possess high structure similarity with PDB reported proteins, as in the case of the kinase superfamily.
+
+Targeting nonconserved kinase packing defects
+Specificity and promiscuity in the druggable kinome
+In a recent bioinformatics contribution [7], it has been demonstrated that there is a relationship between the pharmacological differences between kinases against a background of available drugs and the differences between their respective patterns of packing defects. To compare the dehydron patterns from different kinases, a common region was introduced for the aligned target structures. In this way, all kinases were compared within a region defined by alignment of all residues framing the desolvation domains of dehydrons that, in turn, are environmentally affected by ligands in PDB-reported complexes. Within this framework of comparison, an environmental or wrapping distance between kinases i and j was obtained by contrasting their aligned hydrogen-bond environments that compare local dehydration propensities associated with dehydrons patterns in kinase pairs. The environmental distance matrix was obtained across the 119 kinases for which drug-affinity fingerprinting was experimentally and independently obtained [6]. This distance matrix has been contrasted with a pharmacological distance matrix assessing similarities in the affinity profiling of kinases. Nineteen inhibitors were selected from a pool of 20 that have been assayed for cross reactivity against the set of 119 kinases [6]. The highly promiscuous ligand staurosporine has been excluded since it is not pharmacologically relevant [23]. The pharmacological matrix was obtained by computing the Euclidean distance between ligand-affinity vectors in R19 with entries given in -ln scale (or dimensionless ?G/RT units; ?G, Gibbs free energy of binding; R, gas constant; T, temperature).
+
+A strong correlation (R2 = 0.917) was established between the environmental and pharmacological distance for each pair of kinases fingerprinted for affinity against a background of 19 drugs [7]. This correlation reveals that the pattern of packing defects is an operational selectivity filter for drug design, even though individual drugs were not purposely designed to wrap packing defects: pharmacological differences are essentially dictated by packing differences among targets. Thus, we can take advantage of this hitherto overlooked design feature to simplify the drug development effort and rationally enhance selectivity towards clinically significant targets.
+
+Turning a promiscuous drug into a paralogue discriminator
+The feasibility of achieving specificity by designing a wrapping drug has been tested experimentally 23, 35, 36, 37. A preliminary effort was geared at re-designing commercially available inhibitors to discriminate paralogue kinases. This endeavour started with the introduction of wrapping modifications in imatinib to enhance its specificity towards its primary target, the Abelson kinase (Abl) [35]. The nonconserved dehydrons Q300-E316, G249-Q252 in Abl were selectively targeted by a suitable wrapping modification of imatinib, sculpting into the ligand the dehydration hot spots of the kinase.
+
+In a more stringent test [23], staurosporine, the most promiscuous kinase ligand available [6] was re-engineered to elicit a selective inhibitory impact. Four PDB-reported staurosporine-binding kinases were chosen: Src kinase (PDB.1BYG), CDK2 (PDB.1AQ1), Chk1 (PDB.1NVR) and PDK1 (PDB.1OKY). A wrapping analysis revealed that only the Src kinase possesses a targetable nonconserved dehydron (Q250-E267) that may be wrapped by specific methylation of staurosporine at the imide N6-position of the indole ring (Figure 3a). Upon structural alignment, the Src Q250-E267 dehydron maps into well-wrapped backbone hydrogen bonds: K65-E81 in CDK2, K69-E85 in Chk1 and K144-S160 in PDK1 (Figure 3a) [23]. Thus, selectivity for Src kinase may be achieved by re-designing staurosporine to turn it into a wrapper of the Q250-E267 dehydron. The inhibition of Src by the staurosporine derivative improved when compared with staurosporine levels, and its impact became selective for Src to the extent expected from the limited set of targets analyzed [23]. These results demonstrate that the packing differences across paralogues may guide molecular design to significantly enhance specificity.
+
+ Contrary to the vast majority of kinases that have a threonine in the gatekeeper position, both IGF1R and INSR kinases have a methionine gatekeeper residue, increasing the likelihood of cross reactivity. Nevertheless, differences arise in their dehydron patterns: there is a dehydron in IGF1R (N1110-D1123) that is not conserved in the INSR kinase (Figure 3d). This dehydron involves the highly conserved aspartate from the DFG catalytic triad located in the activation loop and does not align with any dehydron or well-wrapped hydrogen bond in the INSR kinase (D1150). Thus, to gain selectivity, our wrapping design dictates that a purported ligand should target the N1110-D1123 dehydron in IGF1R kinase.
+
+Conclusions
+Wrapping design holds promise as a new paradigm for rational development of drugs that exclude water around accessible hydrogen bonds of the protein target. This concept represents a departure from the standard approach that focuses on promoting pairwise intermolecular interactions. It not only uses wrapping design a novel modality of ligand association, but also guides modifications to existing ligands, in contrast to a combinatorial search strategy.
+
+Using commercially available ligands and drug inhibitors as lead compounds, we are able to introduce a variety of wrapping modifications and test them on cell lines and animal models for enhanced specificity and anticancer activity. On the basis of a trustworthy structural context, the wrapping re-design should be focused on lead compounds that fulfil the following two conditions:
+(a)
+Cross reactivity must have been independently assessed by profiling the inhibitor for its affinity against a significant number of kinases.
+
+(b)
+The complexation of the inhibitor with a selected target protein is structurally reported in the PDB so that the nonconserved packing defects in the target may be identified with full certainty.
+
+
+A shortcoming in engineering drugs that wrap protein-packing defects arises because a reliable identification of such defects requires three-dimensional structures of the protein target. This is a difficult problem for kinases, since they possess flexible motifs around the ATP-pocket [16], prone to adopt induced fits that can only be safely determined from spectroscopic data. Thus, to design drugs that wrap dehydrons within the protein flexible regions, a representative ensemble of crystal structures for kinase/ligand induced-fits is required [13].
+
+
+The nonconserved wrapping of conserved protein folds reveals a trend toward increasing connectivity in proteomic networks
+{Fernandez2004}
+@article {Fern{\'a}ndez2823,
+	author = {Fern{\'a}ndez, Ariel and Scott, Ridgway and Berry, R. Stephen},
+	title = {The nonconserved wrapping of conserved protein folds reveals a trend toward increasing connectivity in proteomic networks},
+	volume = {101},
+	number = {9},
+	pages = {2823--2827},
+	year = {2004},
+	doi = {10.1073/pnas.0308295100},
+	publisher = {National Academy of Sciences},
+	abstract = {Although protein folding domains are generally conserved for function across distant homologous sequences, one crucial structural feature is not conserved: the wrapping of backbone hydrogen bonds, that is, the extent to which they are intramolecularly desolvated and thereby protected from water attack. Extensive data on protein complex interfaces led us to postulate that insufficiently wrapped backbone hydrogen bonds in monomeric domains must be adhesive, and therefore determinants of interactivity, a result that has been experimentally confirmed. Here, we show that the wrapping of certain conserved folds becomes progressively poorer as species diverge in some lineages. This trend is thus concurrent with a progressive enhancement of the interactivity of individual domains sharing the conserved fold. Such increase in interactivity is predicted to impose an {\textquotedblleft}evolutionary brake{\textquotedblright} on the overall speed of sequence divergence. This phenomenon follows when more and more residues become engaged in protein associations and thus become functionally indispensable. For complete proteomes for which statistically significant structural data are available, scale-free network statistics based solely on the distribution of folding domains, catalogued by their number of wrapping defects, best describe the proteomic connectivity. Thus, the intermolecular connectivity may be effectively used as a measure of species complexity. Our results might contribute to explaining how interactome complexity may be achieved without a dramatic increase in genome size.},
+	issn = {0027-8424},
+	URL = {http://www.pnas.org/content/101/9/2823},
+	eprint = {http://www.pnas.org/content/101/9/2823.full.pdf},
+	journal = {Proceedings of the National Academy of Sciences}
+}
+
+Although protein folding domains are generally conserved for
+function across distant homologous sequences, one crucial structural
+feature is not conserved: the wrapping of backbone hydrogen
+bonds, that is, the extent to which they are intramolecularly
+desolvated and thereby protected from water attack. Extensive
+data on protein complex interfaces led us to postulate that insufficiently
+wrapped backbone hydrogen bonds in monomeric domains
+must be adhesive, and therefore determinants of interactivity,
+a result that has been experimentally confirmed. Here, we
+show that the wrapping of certain conserved folds becomes
+progressively poorer as species diverge in some lineages. This
+trend is thus concurrent with a progressive enhancement of the
+interactivity of individual domains sharing the conserved fold.
+Such increase in interactivity is predicted to impose an ‘‘evolutionary
+brake’’ on the overall speed of sequence divergence. This
+phenomenon follows when more and more residues become
+engaged in protein associations and thus become functionally
+indispensable. For complete proteomes for which statistically significant
+structural data are available, scale-free network statistics
+based solely on the distribution of folding domains, catalogued by
+their number of wrapping defects, best describe the proteomic
+connectivity. Thus, the intermolecular connectivity may be effectively
+used as a measure of species complexity. Our results might
+contribute to explaining how interactome complexity may be
+achieved without a dramatic increase in genome size.
+A paradigmatic discovery links protein fold and biological
+function: the conservation of the fold across distant homologous
+sequences (1, 2). However, not all structural features are
+preserved, and in particular, a crucial factor defining protein
+interactivity is not conserved. This article describes this phenomenon
+and its consequences for the evolution of proteomic
+connectivity. Specifically, we address the question: Are there
+gene-encoded signals of structure that determine lower or higher
+interactivity as the same fold is examined across species?
+We recently introduced an indicator of protein interactivity,
+the underdehydrated or underwrapped hydrogen bond (3–9),
+recently termed dehydron (7), which is encoded in the 3D
+structure of protein folded domains. Dehydrons are sites of
+structural vulnerabilities resulting from incomplete wrapping or
+intramolecular desolvation of backbone hydrogen bonds (7–9);
+they have been previously shown statistically (5) and experimentally
+(6, 8) to signal adhesive sites, potentially determinant of
+protein–protein associations. A systematic mining of such signals
+is used here to identify patterns of proteomic connectivity.
+By examining folds conserved for function across species we
+found significant differences in the number and distribution of
+dehydrons. Within a conserved fold, the number of dehydrons in
+higher eukaryotes is consistently greater than in species of lower
+complexity. This finding indicates a higher interactivity because,
+as shown here, domain connectivity is proportional to the
+average number of dehydrons in the family. Furthermore, the
+dehydron patterns associated with structural domains for a given
+species consistently define a scale-free interaction network for
+the species proteomes.
+The biological complexity of higher eukaryotes does not result
+from their genome or even the estimated transcriptome sizes
+(10–12). Furthermore, the combinatorial multiplicity arising
+from domain shuffling cannot properly account for qualitative
+differences in power-law descriptions of proteomic connectivity
+(10). This statement refers to an underlying picture in which
+interactions between protein domains are mapped as connections
+on a network, where each domain is represented as a node,
+and highly connected nodes are scarce, whereas nodes with few
+connections are common, as fitted by a power-law distribution.
+Methods
+The extent of intramolecular hydrogen-bond desolvation in a
+monomeric structure may be quantified by determining the
+number of hydrophobic carbonaceous groups (CHn, n  1, 2, or
+3) within a desolvation domain typically defined as two intersecting
+balls of fixed radius centered at the -carbons of the
+hydrogen-bonded residues (3–9). The details of these calculations
+have been extensively discussed (3–9) and thus only need
+to be sketched here. The precise statistics of hydrogen-bond
+wrapping vary according to the desolvation radius adopted, but
+the tails of the distribution single out the same dehydrons in a
+given structure over a 6.0- to 7.4-Å range in the adopted
+desolvation radius. In this work the value 6.4 Å was adopted.
+In most [92% of Protein Data Bank (PDB) entries] stable
+protein folds, the backbone hydrogen bonds are on average
+wrapped by   18.7  5.9 hydrophobic groups (or 15.0  3.7
+if we count only side-chain groups and exclude those from the
+hydrogen-bonded residue pair, as indicated in ref. 3). The sole
+exception to these statistics are certain cellular prion proteins
+(9), with average wrapping as low as   11.70 (Table 1), and
+some neurotoxins held together by a profusion of disulfide
+bridges (5, 9). Dehydrons are then defined as hydrogen bonds in
+the tails of the distribution, i.e., with 12 hydrophobic groups in
+their desolvation domains. Because there is a considerable
+thermodynamic advantage associated with the removal of water
+surrounding dehydrons, such bonds have been identified, together
+with the overexposed hydrophobic groups that attach to
+the dehydrons, as determinants of protein binding sites, conferring
+specificity to protein interactions. They are virtually ubiquitous
+factors, occurring as points of contact in 38% of the PDB
+complexes. For those complexes, the density of dehydrons at the
+protein–protein interface is 1.5 times the average density for
+individual monomeric partners. Furthermore, dehydrons con
+
+stitute a significant factor (interface dehydron density larger
+than average) in 92.9% of all PDB complexes (5).
+The desolvation spheres could alternatively be defined as
+centered at N and O, the hydrogen-bond heavy atoms; this is not
+the criterion adopted here. Defined in terms of N and O, their
+78% overlap and the geometric hindrance associated with bringing
+a third residue side chain to proximity with the backbone
+makes the statistics less revealing: most hydrogen bonds appear
+nearly equally protected, by 8–11 nonpolar groups.
+Results
+Dehydrons as Determinants of Proteomic Connectivity. Now we are
+in a position to answer the question posed at the outset: there is
+at least one kind of structural characteristic that does seem to
+change in a recognizable, somewhat systematic way in interspecies
+comparisons. Although folds are generally preserved for
+function, we find vast differences in the way conserved folds pack
+their backbone hydrogen bonds. Within a conserved domain
+fold, the number of dehydrons in higher eukaryotes is consistently
+greater than in, say, bacteria, and appears to be a
+consistent signature of the species complexity. Because dehydrons
+have been found to be adhesive and to determine binding
+sites (3–6) (further validation of this result will be given in this
+work) they will be used here to assess proteomic interactivity.
+Furthermore, the defects in the packing of structural domains
+within a given species will be shown to consistently determine a
+characteristic exponent that describes the node distribution
+within a scale-free interaction network (13–15).
+The extent of intramolecular hydrogen-bond protection within
+a monomeric structure is quantified as described in Methods.
+With the desolvation-sphere radius fixed at 6.4 Å, the parameter
+ unambiguously determines the extent of underwrapping (
+ 12) that makes a hydrogen bond a dehydron.
+From a proteomics perspective, the role of dehydrons as
+determinants of interactivity is clearly validated. Fig. 1 shows a
+correlation between the number of dehydrons in all monomeric
+PDB domains from the yeast proteome and the number of
+interacting partners of such domains, inferred from large-scale
+two-hybrid experiments, deposited in the Database of Interacting
+Proteins (DIP) (16), a unique database derived from the
+yeast proteome. The correlation is statistically significant, with
+correlation coefficient 0.88 and dispersion 0.29. The DIP is
+unlikely to report binding partnerships exhaustively. Despite
+these shortcomings, the correlation clearly argues for dehydrons
+as markers for interactivity.
+Dehydrons are not in vitro artifacts (7) and, on the other hand,
+it is unlikely that underwrapped structure would prevail in vivo:
+the preservation of the structural integrity of functional proteins
+requires intermolecular contacts to prevent water attack on the
+hydrogen bonds. Unfortunately, no database of in vivo protein
+associations seems to exist at present.
+Dehydron Patterns Across Species. We noticed (Table 1) that when
+the same folding domain within a protein family is examined
+across different species, there are marked nontrivial differences
+in the percentage ratio r  rd/HB of dehydrons to backbone
+hydrogen bonds. Thus, for instance, the Src homology 3 (SH3)
+domain in the nematode Caenorhabditis elegans (pdb.3sem) has
+an r of 3.2% dehydrons in contrast with 16.6% in the human SH3
+domain (pdb.5hck) (Fig. 2 a and b). Because dehydrons determine
+protein interactivity, this difference suggests a far more
+complex signal-transduction network in the latter species. Likewise,
+on the same basis, the human ubiquitin (pdb.1ubi, r  18.7)
+is more interactive than its Escherichia coli counterpart
+(pdb.1foz, r  10.2) (Fig. 2 c and d).
+Fig. 1. Correlation between the number of dehydrons of a given domain
+fold averaged over all proteins in the domain and its number of Database of
+Interacting Proteins (DIP)-reported interactive partners. The domains are
+binned according to their number of interactive partners and, given a fixed
+number of partners, they are subsequently grouped according to the abundance
+of PDB proteins in each domain. Each domain has an associated (averaged)
+number of dehydrons. Thus, black squares correspond to domains with
+20 proteins; dark gray squares correspond to domains containing between
+10 and 21 proteins; light gray squares correspond to domains between 5 and
+11 proteins; and empty squares indicate domains with 6 representatives.
+The correlation is significant, with a correlation coefficient of 0.88 and dispersion
+0.29.
+Fig. 2. Illustrative comparative analysis of the packing of backbone hydrogen
+bonds for the same domains in different species. The dehydrons are
+indicated as green segments joining -carbons, properly desolvated backbone
+hydrogen bonds are shown as gray segments, and the backbone conformation
+is displayed as a blue virtual-bond polygonal joining -carbons. SH3 domains
+are from nematode C. elegans (pdb.3sem) (a) and H. sapiens (pdb.5hck) (b);
+ubiquitin is from E. coli (pdb.1foz) (c) and H. sapiens (pdb.1ubi) (d); and
+hemoglobin is from Paramecium (pdb.1dlw) (e) and H. sapiens -subunit
+(pdb.1bz0, chain B) (f).
+Ferna´ndez et al. PNAS  March 2, 2004  vol. 101  no. 9  2825
+CHEMISTRY BIOCHEMISTRY
+Even within the relatively noninteractive hemoglobin domain
+there are significant differences: the paramecium ‘‘hemoglobin’’
+(pdb.1 dlw) is a perfect desolvator of its hydrogen bonds (r  0),
+and is monomeric in vivo. The analogous-fold hemoglobin
+-subunit (pdb.1bz0, r  2.9) in humans possesses three dehydrons
+(Fig. 2 e and f) and occurs as a tetramer. Between these
+is the dimeric hemoglobin of mollusks. Within the natural
+interactive context of the human Hb subunit, the dehydrons
+signal crucial binding sites: dehydrons (90,94), (90,95) are associated
+with the -FG corner involved in the quaternary 12
+interface, whereas dehydron (5,9) is adjacent to Glu-6, which in
+sickle cell anemia mutates to Val-6, and is located at the
+protein–protein Glu-6-(Phe-85, Leu-88) interface in the deoxyHbS
+fiber (17).
+Fig. 2 and Table 1 suggest that as more complex species
+diverge, the conserved fold associated with a given function
+becomes more interactive. We thus predict that a ‘‘brake’’ must
+apply to the sequence evolutionary speed caused by the increasing
+number of binding-related residues (cf. refs. 1 and 2).
+As dehydrons occur in diverging species, they turn the hydrogen-bonded
+residues into potential interactors and thus are likely
+to be conserved.
+Dehydrons and Proteomic Networks. The broad separation in the
+extent of hydrogen-bond protection for different structural
+domains shown in Table 1 suggests the need to correlate the
+interactivity of structural families [or Structural Classification of
+Proteins (SCOP) superfamilies] (18, 19) with their average r value
+determined over all representative domains in the family reported
+in the PDB. Interactivity is here defined based on a
+structural criterion, i.e., by the concurrence of different domains
+in PDB protein complexes.
+Although we are constrained to adopt a structural database to
+compute the average r, the number of connections  of the family
+may be inferred independently from a broader database such as
+PFAM, which covers at least 65% of the present SWISSPROT
+release (20). The parameter  of a family can be inferred from
+a structural database by enumerating all of the partner families
+that contain domains found in PDB entries to be engaged in
+complexation or intramolecular interaction, in the case of multidomain
+proteins, with a domain in the given family (21–25).
+The strong correlation between the average ratio of dehydrons
+to well wrapped hydrogen bonds in a family and its parameter 
+is displayed in Fig. 3A for all of the families with domains
+represented in the PDB. Although a family might be found in the
+PDB, its interactions might not be exhaustively reported in this
+database (such families are indicated as gray squares) and
+connectivities need to be obtained from the broader nonstructural
+PFAM database. The families whose interactions were
+exhaustively explored in the PDB correspond to the dark squares
+in Fig. 3A.
+Of the 831 SCOP families interrogated, many share identical
+(r	, ) points in the plot displayed in Fig. 3A, albeit with different
+r dispersions. The error bars on the ordinates represent the
+dispersion in the r ratios across all members of each family
+subsequently averaged over all families partaking the same (r	,
+) point. The actual statistics of the abundance of families
+grouped according to r	 values is reported below. Although r
+values are computed on individual proteins and then averaged
+over a given family to obtain the r	 parameter, the interactivity
+ is only an attribute of the family as a whole, as it arises by
+interrogating individual PDB complexes and determining the
+concurrence of protein domains from different families. A strong
+proportionality (correlation parameter: 0.92; dispersion: 0.10%)
+exists between the average ratio r and the connectivity parameter
+ for those families whose interactivity is properly represented in
+the PDB (in such cases, the  value has been found to coincide
+with that obtained from the PFAM database). The linear correlation
+encompasses highly interactive (  20) Ig and P-loop
+NTP hydrolase families (SCOP ID nos. 2.2.1 and 3.30.1, respectively),
+middle-interactive families (6    20), such as the
+serine proteases, Rossman domains, kinases, and signaltransduction
+SH2 domain (SCOP 1.48 ID nos. 2.41.1, 3.2.1, 4.117.1,
+and 4.72.1, respectively) and even all of the sparsely interactive
+743 families with  in the range 1    6.
+This correlation is meaningful only in a statistical sense and
+does not hold at the individual protein level for a number of
+reasons: (i) the interactivity at the molecular level is in general
+Fig. 3. (A) Correlation between the average dehydron ratio and the connectivity
+ of SCOP families represented in the PDB. Of the 831 families
+interrogated, many share identical (r	, ) points, albeit with different r
+dispersions. The error bars on the ordinates represent the dispersion in the r
+ratios across all members of each family subsequently averaged over all
+families sharing the same (r	, ) point. The connectivities of families marked
+by solid squares were determined by examining PDB complexes where at least
+one domain belongs to the family, and independently from a nonstructural
+database (PFAM). The gray squares denote families with a well determined r
+ratio but whose connectivity is underreported in the PDB. They are located on
+the correlation line once their connectivity is independently determined from
+a nonstructural database (PFAM). The most interactive such family, with 8%
+dehydrons, is 1.115.1 whose PDB  value is 4, but an independent nonstructural
+assessment using PFAM gives   7. (B) SCOP families distributed according
+to their average ratio r	 of dehydrons per 100 hydrogen bonds (HBs). The
+quantity f  f(r	), with f  fraction of total number of families, gives
+the distribution here plotted in log–log scale. , H. sapiens; Œ, M. musculus;
+E, E. coli.
+2826  www.pnas.orgcgidoi10.1073pnas.0308295100 Ferna´ndez et al.
+underreported (see above); (ii) the cytosolic or cytoplasmic
+environment is a masking factor that affects the number of
+dehydrons without bearing significantly on proteomic interactivity
+(8); (iii) the spatial proximity of several dehydrons within
+a single structure might tie them up to a single binding mode (5),
+and (iv) even though an adhesive dehydron might arise on the
+protein surface, there is no guarantee that a proper geometric
+match would exist for that region. Only further studies will reveal
+specific implications for living organisms.
+The  value for the most underrepresented major interactive
+family, the armadillo (ARM) repeat (SCOP ID no. 1.110.1), falls
+along the proportionality line when its connectivity is inferred
+from the PFAM database. The same is true for some   5 and
+7 families, like 1.115.1 and 3.3.1, whose connections are underreported
+in the PDB. The fact that the Ig family has more
+interactivity than would be expected on the basis of its average
+number of dehydrons (Fig. 3A) probably implies that it is using
+binding sites in a relatively unselective way, although this idea
+needs to be established by identifying complexes with different
+partners using overlapping binding sites.
+Given that, as shown in Fig. 3A, the average number of
+dehydrons per 100 hydrogen bonds in a given family, r	, is a
+measure of its connectivity, we can determine the interactive
+complexity of a species by mapping the distribution of protein
+families according to their average r value. Thus, Fig. 3B shows
+the fraction f  f(r	) of the total number of families having on
+average r	 dehydrons per 100 backbone hydrogen bonds in their
+structural domains. The data are shown for three species chosen
+based on the number of family representatives in the PDB. The
+species selection criterion adopted is that at least two-thirds of
+the SCOP families for the species must have enough representative
+domains in the PDB so that the quantity r	 becomes
+statistically significant (its dispersion over the family is smaller
+than r	2). Thus, the family distribution according to their
+dehydron abundances for three species selected are shown in Fig.
+3B: Homo sapiens, Mus musculus, and E. coli.
+The results displayed in a log–log plot reveal a scale-free
+distribution (14, 24, 26) best approximated as f(r	)  0.36r	,
+with   1.44 for H. sapiens (broadest distribution),   1.49 for
+M. musculus, and   2.1 for E. coli. These results provide a
+structurally based assessment of the modulation of proteomic
+interactivity across different species resulting from the dramatic
+differences in the packing of conserved folds.
+Discussion
+Although the protein fold is mostly conserved for function across
+species, genotypic variation brings about a variability in the
+extent of molecular association needed to sustain the protein
+structure. This variability arises from differences in the extent to
+which intramolecular hydrogen bonds are shielded from water
+attack. Thus, as hydrogen bonds become less well wrapped
+intramolecularly, the conserved fold becomes more interactive,
+a trend observed as one examines species of increasing complexity.
+This result hinges on the fact that underwrapped hydrogen
+bonds (dehydrons) are inherently adhesive and their number
+on a given domain increases with species complexity.
+Whether such greater levels of complexation are adventitious
+to certain functions or invariably inherent to their regulation
+remains to be determined, but the increment in interactivity
+must surely impose a slowdown in sequence variability that
+deserves further study.
+A bewildering feature of higher organisms remains how
+complex physiologies can be achieved without a dramatic increase
+in genome size (the number of genes in the human
+genome proved to be deceptively low). Rice, for instance, has a
+relatively large genome, a mere order of magnitude smaller than
+higher mammals while probably possessing a far less complex
+physiology. On the other hand, most of the rice folds for specific
+functional domains are considerably better wrapped than their
+animal counterparts, as illustrated in Table 1. This trend cannot
+be statistically quantified at this point because of the dearth of
+high-resolution domains from the rice proteome in the PDB.
+Nevertheless our results imply that the interactome determined
+by the wrapping deficiencies in protein folds might represent a
+measure of complexity, helping explain how complex physiologies
+may be achieved without a significant increase in genome
+size.
+
+
+
+Functionality of Wrapping Defects in Soluble Proteins: What Cannot be Kept Dry Must be Conserved
+{Fernandez2004}
+
+@article{FERNANDEZ2004477,
+title = "Functionality of Wrapping Defects in Soluble Proteins: What Cannot be Kept Dry Must be Conserved",
+journal = "Journal of Molecular Biology",
+volume = "337",
+number = "2",
+pages = "477 - 483",
+year = "2004",
+issn = "0022-2836",
+doi = "https://doi.org/10.1016/j.jmb.2004.01.050",
+url = "http://www.sciencedirect.com/science/article/pii/S0022283604001226",
+author = "Ariel Fernández",
+keywords = "hydrogen bond, protein structure, molecular evolution, protein interactivity, wrapping",
+abstract = "Soluble proteins preserve their structure only if a sufficient number of non-polar groups are clustered around the backbone hydrogen bonds, protecting them from water attack. When these bonds are not properly wrapped or dehydrated intramolecularly, structural integrity can be preserved through binding partnerships. This is because insufficiently wrapped hydrogen bonds are inherently adhesive and become better shielded upon protein–ligand association. Thus, we postulate that deficiently wrapped hydrogen bonds are functionally relevant. Two findings that support this conjecture are: (a) there is a statistically relevant linear correlation between the number of defects in a folding domain and its proteomic connectivity, obtained from large-scale two-hybrid experiments; (b) the residues paired by under-wrapped hydrogen bonds are highly conserved. The high mutational sensitivity of under-wrapped regions can be rationalized, since their structural integrity relies on their propensity to behave as binding sites, in turn, a consequence of their adhesiveness. Thus, the regions in soluble protein structure that cannot be kept dry in water tend to be conserved."
+}
+
+1. Introduction
+The structure of soluble proteins prevails provided their backbone hydrogen bonds are shielded from water attack, a building constraint often overlooked.1., 2., 3., 4., 5., 6., 7., 8. This protection requires that a sufficient number of non-polar groups cluster around the hydrogen bonds.3., 4., 5., 6., 7., 8. When these bonds are not properly dehydrated intramolecularly, structural integrity becomes reliant on binding partnerships,4., 5., 6. in turn fostered by the adhesiveness of the wrapping defects.7 Thus, we have recently introduced an indicator of protein interactivity, the under-dehydrated or under-wrapped hydrogen bond, now termed as dehydron.6
+
+Dehydrons arise as a structural motif in proteins as the microenvironments around hydrogen bonds of soluble proteins are systematically examined in an exhaustive PDB sample4 free from redundancies.9., 10. Dehydrons are structural deficiencies resulting from incomplete intramolecular dehydration of backbone hydrogen bonds3., 4., 5., 6., 7., 8. and have been shown experimentally7 to signal adhesive sites. Their adhesiveness is grounded in the energetically favorable enhancement of the hydrogen bond electrostatics which results as surrounding water is displaced. This adhesiveness can also be explained thermodynamically, taking into account the destabilization of the non-bonded state which occurs as surrounding water is removed, a process that hinders the hydration of the exposed amide and carbonyl. Thus, soluble proteins preserve their structural integrity through a reliance on their interactive context,3., 4., 5., 6., 7., 8. required to keep the intramolecular hydrogen bonds “dry in water”.11
+
+The relevance of intramolecular electrostatic pre-organization in protein associations and enzymatic activity has been emphasized by Warshel and co-workers.12., 13., 14. The free-energy cost of reorganizing intramolecular hydrogen bonds, being considerably higher than that associated with the reorganization of solvent or solvent–protein hydrogen bonds, imposes a trend for stabilization of the pre-formed interactions.12., 13., 14. In our specific context, this trend translates with a tendency of dehydrons to seek further desolvation upon protein associations, which materializes as non-polar groups are dragged to their proximity. On the other hand, the work required to remove water molecules from the dehydron surroundings is minimal precisely because such water molecules have lost hydrogen bonding partnerships as needed to commit them to hydrate a partially protected amide–carbonyl pair.6 In simple terms, water surrounding dehydrons forms a thermodynamically unfavorable interface6 and thus becomes easily removable.
+
+Since dehydrons are adhesive, it becomes natural to enquire whether they are functionally relevant. This issue is addressed here by showing that (a) the number of wrapping defects in a protein domain is statistically proportional to the number of interacting partners and (b) the conservation of wrapping defects across homologous proteins is significant. Biological function might be an elusive attribute, but when considered together, both results support the functional significance of wrapping defects, as they stem from two very different perspectives on functionality, the physico-chemical and the evolutionary.
+
+2. Results
+To identify the dehydrons in a folding domain in the PDB, the extent of intramolecular desolvation of backbone hydrogen bonds in monomeric structure is quantified. The desolvation is assessed by determining the extent of wrapping of the hydrogen bond, a quantity obtained by determining the number of side-chain non-polar groups within a desolvation domain around the hydrogen bond (Methods).6 This assessment of the extent of desolvation is rather crude,6 but appropriate for a proteomic analysis like the one presented here, requiring massive data exploration. The non-polar groups (CH, CH2, and CH3) are comparable in size; so counting them without discrimination of relative size does not introduce a major distortion in the desolvation statistics.6 On the other hand, polar groups within the desolvation spheres need not be counted, as their presence invariably prevents non-polar groups from clustering around the hydrogen bond: they would hinder the hydration of the polar group. Thus, polar groups in the proximity of a backbone hydrogen bond mark the presence of a dehydron, which is in any case flagged by the scarcity of desolvators. This is precisely the reason why the polar residues with short side-chains, i.e. Asp, Asn, Ser and Thr are the worst wrappers of backbone hydrogen bonds15 and thus exhibit a pronounced tendency to be at protein–ligand interfaces.
+
+The structurally reported proteins contained in the database of interacting proteins (DIP)16 were exhaustively investigated and the resulting statistics assayed by linear regression. A significant linear correlation is shown in Figure 1 between the number of dehydrons in all monomeric PDB domains from the yeast proteome and the number of interacting partners of such domains, inferred from large-scale two-hybrid experiments.16 This result implies that dehydrons are vehicles of proteomic interactivity, and thus possibly of functional relevance.
+
+Figure 1. Correlation between the number of dehydrons of a given folding domain averaged over all proteins containing the same domain, and the number of DIP interacting partners of the domain. Domains are grouped according to their number of interacting partners and, given a fixed number of partners, they are subsequently grouped according to the abundance of PDB proteins sharing the domain. Each domain has an averaged number of dehydrons. Black squares denote domains with more than 20 proteins; dark grey squares, domains containing between ten and 21 proteins; light grey, domains between five and 11 proteins; and empty squares, domains with less than six representatives. The correlation obtained from linear regression analysis is significant, with a correlation coefficient of 0.88 and dispersion 0.29.
+
+To be sure, a more quantitative analysis, perhaps involving the thermodynamic parameters of complexation affinity and correlating them with the extent of wrapping of pre-formed hydrogen bonds at the protein–protein interfaces would be desirable. However, this analysis cannot be carried out at present at a proteomic scale due to the scarcity of experimental data. Furthermore, the energetic parameters used to theoretically compute binding affinities require revision.3., 13., 14. This is partly due to the need to adapt the prevalent continuum mean-field treatment of dielectric response at the molecular scales, where dipole correlations make it difficult to adopt a dielectric constant as a scalar attribute of a local environment.3
+
+Amino acid conservation at a particular position in a sequence evaluated across multiply aligned sequences is often regarded as a decisive sign for the functional relevance of the residue.9 Thus, the conservation dissection of the sequence is here contrasted with the dehydron pattern of the corresponding structure. Our aim is to show that structural regions which are not kept dehydrated in water are typically conserved across homologous proteins.
+
+As an illustration, we first focus on the ACBP, the acyl carrier-binding protein17 (PDB.1ACA), where the pattern of conserved residues was found to be controversial.18., 19. As shown in Figure 2, while only 50% of the folding nucleus17., 18., 19. is conserved, about 95% of the residues paired by dehydrons were found to be conserved. Figure 2(c) reveals the amino acid variability at each residue position on the primary sequence. The sequences aligned and used to determine the amino acid variability were obtained from PSI-BLAST20 and multiple alignment was performed using CLUSTAL W.21 The multiple alignment was performed using the 37 homologous sequences found in SwissProt with at least 28% identity and mean pair-wise sequence identity of 44%. The Shannon information entropy s(i) (Methods)22 was used to define the amino acid variability at position i along the protein chain.
+
+. Discussion
+In proteomic terms, Figure 1, Figure 4 taken together argue for a functional role of dehydrons, as they show them to be conserved and highly interactive regions. More quantitative tests, possibly correlating binding affinities13., 14. with the extent of intramolecular desolvation of pre-formed hydrogen bonds at the protein–protein interface might be helpful. However, due to the relative scarcity of experimental data and the computational uncertainties at the nanoscales,3., 27. they cannot be carried out at this time at the massive proteomic scales required to statistically assert biological facts.
+
+Figure 4 reveals that regions with relatively sparse secondary structure account for a high mutational sensitivity precisely because their structural integrity relies on marginal levels of wrapping. On the other hand, since such regions are adhesive7, and furthermore interactive, as Figure 1 shows, their conservation should be in the end expected. This fact has been validated in recent work, corroborating the significance of dehydrons in protein binding.28 In plain terms, structured regions in soluble proteins that cannot be kept dry intramolecularly are statistically shown to involve fairly conserved residues. These facts argue for a functional role24., 25. of wrapping defects, as a selection constraint is clearly applied to preserve them.
+
+4. Methods
+To identify the dehydrons in a folding domain in the PDB, the extent of intramolecular hydrogen bond desolvation in monomeric structure is quantified by determining the number of non-polar carbonaceous groups within a desolvation domain.6 This domain is defined as two intersecting balls of fixed radius centered at the a-carbon atoms of the hydrogen bonded residues. The statistics of hydrogen bond wrapping vary according to the desolvation radius adopted, but the tails of the distribution invariably single out the same dehydrons in a given structure over a 6.0–7.4 Å range in the adopted desolvation radius. Here, the value of 6.6 Å was adopted throughout for consistency.
+
+In most (~92% of PDB entries) stable protein folds, the backbone hydrogen bonds are wrapped, on average, by ?=26.1(±7.5) non-polar groups (or 14.0(±3.7) if we count only side-chain groups and exclude those from the hydrogen-bonded residue pair). Dehydrons are then defined as hydrogen bonds in the tails of the distribution, i.e. with less than 12 non-polar groups in their desolvation domains (their ?-value is at most two Gaussian dispersions below the mean).
+
+
+
+
+
+

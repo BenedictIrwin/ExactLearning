@@ -1,0 +1,146 @@
+\documentclass{article}
+
+\usepackage{authblk}
+\usepackage{url}
+\usepackage[square,numbers]{natbib}
+\usepackage{color,amssymb,amsmath}
+\usepackage{graphicx}
+\usepackage[margin=1in]{geometry}
+%\usepackage{graphicx}
+%\SectionNumbersOn
+%\AbstractOn
+
+\title{Moebius Graph Walk}
+%\author{Benedict W. J.~Irwin}
+
+
+\date{\today}
+\begin{document}
+
+%\email{ben.irwin@optibrium.com}
+%\affiliation{Optibrium, F5-6 Blenheim House, Cambridge Innovation Park, Denny End Road, Cambridge, CB25 9PB, United Kingdom}
+%\alsoaffiliation{Theory of Condensed Matter, Cavendish Laboratories, University of Cambridge, Cambridge, United Kingdom}
+
+\author[1,2]{Benedict W. J.~Irwin}
+\affil[1]{Theory of Condensed Matter, Cavendish Laboratories, University of Cambridge, Cambridge, United Kingdom}
+\affil[2]{Optibrium, F5-6 Blenheim House, Cambridge Innovation Park, Denny End Road, Cambridge, CB25 9PB, United Kingdom}
+\affil[ ]{\textit {ben.irwin@optibrium.com}}
+
+
+\maketitle
+
+\begin{abstract}
+We find a graph representation of the integers.
+\end{abstract}
+
+\section{Rules}
+The method for generating the graph representation is governed by the following rules:
+\begin{itemize}
+\item Each node (an integer $n$) must have a 'flux' equal to $\mu(n)$. The flux is the sum of inward pointing edges minus the sum of outward pointing edges.
+\item Each node has $2-\mu(n)$ edges in total.
+\end{itemize}
+the graph may be procedurally generated and new labels $n$ are assigned to nodes upon creation of an edge to balance the flux.
+
+
+
+\section{Graph Breaks}
+The second rule was brought in for a consistent way to resolve breaks in the graph. These were found to occur when Mertens function $M(n)$ equals zero for a node $n$.
+
+\section{Backbone Integers}
+These will either be prime or numbers that are not square free, or ...
+
+\section{Peripheral Integers}
+
+\section{Twin Primes Share an Edge}
+Twin primes should always be connected (unless.... 
+
+\section{Gaussian Primes}
+A318608		Moebius function mu(n) defined for the Gaussian integers.
+This appears to form a chain? With no branches???
+
+
+\section{Dirichlet Convolution}
+we have $\mu * 1 = \varepsilon$ with $\varepsilon(1)=1$ and otherwise 0. $\varepsilon$ generates a chain where the initial $1$ creates an impulse and the following numbers propagate this endlessly in the simplest forward directional chain possible. The function $1$, as a DGF is $\zeta(s)$ which creates a cascade where $1$ feeds from $2$ which branches from $3,4$ which branch into $5,6,7,8$ and so on, because each node wants to maintain a flux of $1$. Note the direction of the arrows.
+
+The Dirichlet convolution is defined over divisors, and thus divisors play a role in these graphs. The convolution of two graphs will depend on the divisors and the values of the function at each node.
+
+Adding and cancelling the edges of a graph does not convolve them, it appears to give the subtraction of the functions [check this?], for example stacking the edges of $1/\zeta(s)$ and $\zeta(s)$ appears to give a graph for $\mu(n)-1$. [My zeta was the wrong way round, it gives the sum of the two as expected].
+
+We might imagine a kind of divisor oriented matrix multiplication of the adjacency matrices. 
+
+The degree will be sum of the column minus sum of the row in terms of 'flux'.
+$$
+\mathrm{deg}_n(A) = \sum_{k=1}^N (A_{kn}-A_{nk})
+$$
+the idea is that for matrices $A$ $B$ and $C$ we have 
+$$
+a(n) = \mathrm{deg}_n(A)
+$$
+$$
+b(n) = \mathrm{deg}_n(B)
+$$
+$$
+c(n) = \mathrm{deg}_n(C)
+$$
+and 
+$$
+c(n) = (a * b)(n)
+$$
+we are searching for the operation $\otimes$ such that
+$$
+(a * b)(n) = \mathrm{deg}_n(A \otimes B) = \sum_{k=1}^N ([A \otimes B]_{kn}-[A \otimes B]_{nk})
+$$
+alternatively
+$$
+\sum_{d|n}a(d)b\left(\frac{n}{d}\right) = \sum_{k=1}^N ([A \otimes B]_{kn}-[A \otimes B]_{nk})
+$$
+and
+$$
+\sum_{d|n}b(d)a\left(\frac{n}{d}\right) = \sum_{k=1}^N ([A \otimes B]_{kn}-[A \otimes B]_{nk})
+$$
+for example
+$$
+\sum_{d|n}\mathrm{deg}_d(A)\mathrm{deg}_{n/d}(B) = \sum_{k=1}^N ([A \otimes B]_{kn}-[A \otimes B]_{nk})
+$$
+$$
+\sum_{d|n}\left(\sum_{k=1}^N (A_{kd}-A_{dk})\right)\left(\sum_{l=1}^N (B_{l,n/d}-B_{n/d,l})\right) = \sum_{k=1}^N ([A \otimes B]_{kn}-[A \otimes B]_{nk})
+$$
+$$
+\sum_{d|n}\sum_{k=1}^N \sum_{l=1}^N  (A_{kd}-A_{dk})(B_{l,n/d}-B_{n/d,l}) = \sum_{k=1}^N ([A \otimes B]_{kn}-[A \otimes B]_{nk})
+$$
+$$
+\sum_{k=1}^N \sum_{d|n} \sum_{l=1}^N  (A_{kd}-A_{dk})(B_{l,n/d}-B_{n/d,l}) = \sum_{k=1}^N ([A \otimes B]_{kn}-[A \otimes B]_{nk})
+$$
+thus at least contender for this property (for a given $k$) is
+$$
+\sum_{d|n} \sum_{l=1}^N  (A_{kd}-A_{dk})(B_{l,n/d}-B_{n/d,l}) = [A \otimes B]_{kn}-[A \otimes B]_{nk}
+$$
+$$
+\sum_{d|n} \sum_{l=1}^N  (A_{kd}B_{l,n/d}-A_{dk}B_{l,n/d} + A_{dk}B_{n/d,l}-A_{kd}B_{n/d,l}) = [A \otimes B]_{kn}-[A \otimes B]_{nk}
+$$
+the divisor symmetry being $d \leftrightarrow n/d$, the Dirichlet convolution should also commute.
+$$
+\sum_{d|n} \sum_{l=1}^N  (A_{kd}B_{l,n/d} -A_{kd}B_{n/d,l} ) - \sum_{d|n} \sum_{l=1}^N (A_{dk}B_{l,n/d} - A_{dk}B_{n/d,l}) = [A \otimes B]_{kn}-[A \otimes B]_{nk}
+$$
+this has nice properties in terms of the negated transpose of $B$.
+
+\section{Divisor Sigma}
+The graph for divisor sigma (0) is exquisite, it seems to have layers of Bell numbers and a prime for every node?
+We are likely getting the concept of flux wrong as well. The number in the Dirichlet sequence is the number of inward arrows going to that node... 
+
+$1 \leftarrow 2 \leftarrow (3,4) \leftarrow (5-9) \leftarrow $
+
+Seems to relate to $A054519 + 1$
+
+The above is false, it is the prime gaps sequence/graph that gives the correct allocation of a prime to each node.
+
+
+In this graph, a prime has inputs from nodes $p_n$ to $p_{n+1}-1$.
+
+
+
+\bibliography{bibliography}{}
+\bibliographystyle{plain}
+
+
+\end{document}

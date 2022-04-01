@@ -1,0 +1,5 @@
+Can we include the Student-t process into the Automodeller?
+
+This is for fitting QSAR like models on descriptors across datasets?
+
+If we take the code and generate a new version what happens?

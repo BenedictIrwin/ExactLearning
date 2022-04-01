@@ -1,0 +1,577 @@
+\documentclass{article}
+
+\usepackage{authblk}
+\usepackage{url}
+\usepackage[square,numbers]{natbib}
+\usepackage{color,amssymb,amsmath}
+\usepackage{graphicx}
+\usepackage[margin=1in]{geometry}
+%\usepackage{graphicx}
+%\SectionNumbersOn
+%\AbstractOn
+
+\title{Discrete Multiplicative Difference Transform}
+%\author{Benedict W. J.~Irwin}
+
+
+\date{\today}
+\begin{document}
+
+%\email{ben.irwin@optibrium.com}
+%\affiliation{Optibrium, F5-6 Blenheim House, Cambridge Innovation Park, Denny End Road, Cambridge, CB25 9PB, United Kingdom}
+%\alsoaffiliation{Theory of Condensed Matter, Cavendish Laboratories, University of Cambridge, Cambridge, United Kingdom}
+
+\author[1,2]{Benedict W. J.~Irwin}
+\affil[1]{Theory of Condensed Matter, Cavendish Laboratories, University of Cambridge, Cambridge, United Kingdom}
+\affil[2]{Optibrium, F5-6 Blenheim House, Cambridge Innovation Park, Denny End Road, Cambridge, CB25 9PB, United Kingdom}
+\affil[ ]{\textit {ben.irwin@optibrium.com}}
+
+
+\maketitle
+\begin{abstract}
+We introduce a discrete multiplicative difference transform.
+\end{abstract}
+
+\section{Abstract}
+We investigate a fundamental operation which converts a coefficient to a ratio with its successive term on commonly occurring mathematical series.
+
+\section{Main}
+Consider the following transformation of an analytic series
+\begin{equation}
+f(x)  = \sum_{k=0}^\infty a_k x^k \to \sum_{n=1}^\infty \frac{a_n}{a_{n-1}}t^n = g(t)
+\end{equation}
+in this work we will formalise this process. First we define the transform of the coefficients as an operator
+\begin{equation}
+\Pi_k^n a_k = \prod_{k=1}^n a_k = b_n,
+\end{equation}
+If we define $b_0=1$, then in general
+\begin{equation}
+\Pi_k^n \frac{b_k}{b_{k-1}} = b_n.
+\end{equation}
+we can thus consider the \emph{inverse transform} $\amalg_n^k$ (or anti-product) as
+\begin{equation}
+\amalg_n^k b_n = \frac{b_k}{b_{k-1}} = a_k
+\end{equation}
+
+
+
+\subsection{Application to Series and Functions}
+If we take the common hypergeometric series for example:
+\begin{equation}
+\;_2F_1(a,b,c,x) = \sum_{k=0}^\infty \frac{(a)_k (b)_k}{(c)_k}\frac{x^k}{k!}
+\end{equation}
+and define an operator $C_x^k$ that extracts the coefficient of $x^k$ form a series (sometimes denoted $[x^k]$),
+\begin{equation}
+C_x^k \;_2F_1(a,b,c,x) = \frac{(a)_k (b)_k}{(c)_k k!}
+\end{equation}
+we can note that this coefficient in well described by a product of terms
+\begin{equation}
+\amalg_k^n C_x^k\;_2F_1(a,b,c,x) = \amalg_k^n \frac{(a)_k (b)_k}{(c)_k k!} = \frac{(n+a-1)(n+b-1)}{(n+c-1)n}
+\end{equation}
+Define an infinite summation operator as 
+\begin{equation}
+\Sigma_{n=r}^t f(n) = \sum_{n=r}^\infty f(n) t^n
+\end{equation}
+we can define a transformed series as \begin{equation}
+G(t) = \Sigma_{n=1}^t \amalg_k^n C_x^k\;_2F_1(a,b,c,x)= \sum_{t=1}^\infty \frac{(n+a-1)(n+b-1)}{(n+c-1)}\frac{t^n}{n}
+\end{equation}
+when writing the actual evaluated sum, the intermediate indices, which are contracted in pairs are arbitrary and one can write the operator $(\Sigma_1\amalg C)_x^t$, in this case
+\begin{equation}
+G(t) =  \frac{(a b  -a c -b c  +2 c  -1  )}{c(1-c)} t_{1,c;c+1} + \frac{1}{c}t_{2,c;c+1} - \frac{(a b -b -a + 1)}{(1-c)}t_{1,1;2}
+\end{equation}
+where $t_{a,b;c} = t \, _2F_1(a,b;c;t)$. This shows that the transform of the hypergeometric function is a linear combination of three hypergeometric functions of the same order.
+
+
+As an example, let $f(x) = \frac{2}{\pi}K(x)$ with $a=b=1/2,c=1$, then $$
+G(t) = \frac{\text{Li}_2(t)}{4}+\frac{t}{1-t}+\log (1-t)
+$$
+we can extract the coefficients from this series as have that the inverse Z-transform of $G(\frac{1}{t})$ gives
+$$
+C^n_t G(t) = \mathcal{Z}^{-1}_t\left[G\left(\frac{1}{t}\right)\right](n) = \frac{(1-2n)^2}{4n^2}, n>0
+$$
+and we can re-extrude this as 
+$$
+\Pi_n^n \frac{(1-2n)^2}{4n^2} = \frac{\Gamma(\frac{1}{2}+n)}{\pi \Gamma(1 + n)^2}
+$$
+yielding
+$$
+\Sigma_{n=0}^x \Pi_n^n \frac{(1-2n)^2x}{4n^2} =  \frac{2}{\pi}K(x)
+$$
+
+\section{The Transform}
+We now have the transform
+\begin{equation}
+\mathcal{T}_x^t = \Sigma_{n=1}^t \amalg_k^n C_x^k
+\end{equation}
+we can consider the inverse transform as 
+\begin{equation}
+(\mathcal{T}^{-1})_{t}^x = \Sigma_{n=0}^x \Pi_n^k C_t^n
+\end{equation}
+
+\section{Generalised Expression}
+We have for equalised number of top and bottom Pochhammer symbols
+\begin{equation}
+\mathcal{T}_x^t \;_NF_N(a_1,\cdots,a_N;b_1,\cdots,b_N,x)= G(t) =  - \log(1-t)\prod_k \frac{a_k-1}{b_k-1} + \sum_{l} \frac{t \Phi(t,1,b_l)\prod_k (b_l-a_k)}{(b_l-1)\prod_{k\ne l} (b_l-b_k)} 
+\end{equation}
+
+
+\section{Connection to Mellin Transform}
+We can connect this to the Mellin transform and the Ramanujan master theorem, which essentially extracts coefficients. For a function 
+\begin{equation}
+f(x) = \sum_{k=1}^\infty \frac{(-1)^k}{k!} \phi(k) x^k
+\label{eqn:RMT}
+\end{equation}
+we have that the Mellin transform is related to the coefficient function by 
+$$
+\mathcal{M}[f](s) = \Gamma(s)\phi(-s)
+$$
+for suitable functions. In effect this becomes the method of coefficient extraction, but brings a sign flip, $\sigma$, operation in. Thus for a function defined as in equation \ref{eqn:RMT} we have
+$$
+Q f = \Delta^* \sigma \frac{1}{\Gamma(s)} \mathcal{M}^{-1} f
+$$
+then an operator $G$ would indicate summing over positive non-zero integers
+$$
+G_n[\square](t) = \sum_{n=1}^\infty t^n \square
+$$
+
+
+\section{Identities}
+some important identities that are not immediately obvious when reducing more complex series expansions such as elliptic integrals
+
+\begin{align}
+\prod_{n=1}^n \frac{(2n)!}{(2n-2)!} = \Gamma(2n+1) \\
+\prod_{n=1}^n \frac{(mn)!}{(mn-m)!} = \Gamma(mn+1) \\
+\prod_{n=1}^n \frac{(mn + b)!}{(mn-m+b)!} = \frac{\Gamma(mn+b)!}{b!} \\
+\prod_{n=1}^n \frac{3-2n}{1-2n} = \frac{1}{1-2n}
+\end{align}
+
+
+\section{Examples}
+Transforms from function to generating function:
+\begin{align}
+G Q[e^x] = -\log(1-t) \\
+G Q[e^{-x}] = \log(1-t) \\
+GQ\left[\frac{1}{1-x}\right] = \frac{t}{1-t} \\
+GQ\left[\frac{1}{1+x}\right] = -\frac{t}{1-t} \\
+GQ\left[I_0(\sqrt{x})\right] = \frac{\text{Li}_2(t)}{4} \\
+GQ\left[I_0(\sqrt{3x})\right] = \frac{3\text{Li}_2(t)}{4} \\
+GQ\left[J_0(\sqrt{x})\right] = -\frac{\text{Li}_2(t)}{4} \\
+GQ[ \frac{2}{\pi} K(x)] = \frac{\text{Li}_2(t)}{4}-\frac{t}{t-1}+\log (1-t) \\
+GQ[ \frac{2}{\pi} E(x)] = \frac{3\text{Li}_2(t)}{4}+\frac{t}{1-t}+2\log (1-t) \\
+GQ[ \frac{\arcsin(\sqrt{z})}{\sqrt{z}}] = 3 + \frac{1}{1-t} - 4 \frac{\mathrm{arctanh}{\sqrt{t}}}{\sqrt{t}} - \frac{1}{2}\log(1-t) \\
+GQ[ 3\frac{\sin(\arcsin(\sqrt{z})/3)}{\sqrt{z}}] = -\frac{1}{t-1}-\frac{4}{9} \log (1-t)-\frac{35 \tanh
+    ^{-1}\left(\sqrt{t}\right)}{9 \sqrt{t}}+\frac{26}{9} \\
+GQ\left[(1-x)^{-5/9}\right] = \frac{1}{1-t} + \frac{4}{9} \log(1-t) \\
+GQ\left[(1-x)^{a-1}\right] = \frac{1}{1-t} + a \log(1-t)\\
+GQ\left[1-\sqrt{x}\tanh^{-1}(\sqrt{x})\right] = \frac{t}{1-t} - 2 \sqrt{t} \tanh^{-1}(\sqrt{t}) \\
+\cosh(\sqrt{x}) \to \sqrt{t} \tanh^{-1}(\sqrt{t}) + \frac{1}{2}\log(1-t) \\
+\cos(\sqrt{x}) \to -\sqrt{t} \tanh^{-1}(\sqrt{t}) - \frac{1}{2}\log(1-t) \\
+\sum_{k=0}^\infty \frac{x^k}{(3k)!} \to \frac{t}{2} \, _2F_1\left(\frac{1}{3},1;\frac{4}{3};t\right)-\frac{t}{2}
+    \, _2F_1\left(\frac{2}{3},1;\frac{5}{3};t\right)-\frac{1}{6} \log (1-t)
+\end{align}
+here we see that
+$$
+GQ\left[ \frac{2}{\pi} K(x)\right] = GQ\left[I_0(\sqrt{x})\right] + GQ\left[\frac{1}{1+x}\right] + G Q[e^{-x}]
+$$
+There could be some secret equivalence between the function on the left and that on the right. I.e. the elliptic K function may transform under an operator and the combination of functions on the right may transform in analogy under a different operator. For example
+$$
+tD_t \pm \log(1-t) \to \frac{\pm t}{1-t}
+$$
+so this meta derivative converts 
+$$
+e^{\pm x} \to \frac{1}{1\pm x}
+$$
+this can be seen to be similar to an inverse Borel transform!
+
+From the above list of transforms it is clear that we see repeating units or "elements", for example $\log(1-t)$ is very common. It may be instructive to find a naming system for these units to give a compact representation of the resulting function. Whether these elements form some kind of basis for the underlying function space is yet to be investigated. We appear to have functions of the form $x \;_2F_1(a,b,c,x)$, or at least for shorthand
+\begin{align}
+-\log(1-t) = t\;_2F_1(1,1,2,t) = t_{1,1;2} \\
+\sqrt{t} \sin^{-1}(\sqrt{t}) = t_{\frac{1}{2},\frac{1}{2};\frac{3}{2}}
+\end{align}
+with this we can immediately see 
+$$
+\sum_{k=0}^\infty \frac{x^k}{(3k)!} \to  \frac{t_{\frac{1}{3},1;\frac{4}{3}}}{2}-\frac{t_{\frac{2}{3},1;\frac{5}{3}}}{2}+\frac{t_{1,1;2}}{6} = 
+\begin{bmatrix} \frac{1}{2} & -\frac{1}{2} & \frac{1}{6} \end{bmatrix} 
+\begin{bmatrix} t_{\frac{1}{3},1;\frac{4}{3}} \\ t_{\frac{2}{3},1;\frac{5}{3}} \\ t_{1,1;2} \end{bmatrix}
+$$
+
+important terms might include
+$$
+\sum_{n=1}^\infty H_n t^n = -\frac{\log(1-t)}{1-t} = \frac{t_{1,1;2}}{1-t}
+$$
+to handle this we would need to evaluate 
+$$
+\prod_{k=1}^n H_k = f(n)
+$$
+and apparently little is understood about these terms in OEIS A097423 and A097424.
+We have that 
+$$
+\prod_{k=1}^k \frac{H_k}{H_{k-1}} = H_k
+$$
+with the first term being 1. This gives a seqence of numbers whose numerators appear to be the same as the original harmonic numbers, but the denominators are $1,2,9,22,125,137,343,\cdots$
+
+
+
+
+\section{Derivatives}
+Consider the derivative of a sequence, we have 
+$$
+\frac{d}{dx} \sum_{k=0}^\infty a_k x^k = \sum_{k=0}^\infty (k+1)a_{k+1}x^k
+$$
+where we have made sure to keep the sequence index from $0$ to $\infty$. We can write 
+$$
+\prod_{n=1}^k \frac{n+1}{n} = k+1
+$$
+which tells us
+$$
+Q[f'(x)] = \sum_{n=1}^\infty \frac{n+1}{n} \Delta^*_k[a_{k+1}](n) t^n
+$$
+for example if for $e^x$ we have $a_k = 1/k!$, then the derivative gives
+$$
+Q[e^x] = \sum_{n=1}^\infty \frac{n+1}{n} \Delta^*_k[\frac{1}{k!}](n) t^n
+$$
+and $\Delta^*_k[\frac{1}{k!}](n) = (n+1)^{-1}$ which consistently gives
+$$
+Q[e^x] = \sum_{n=1}^\infty \frac{1}{n} t^n = -\log(1-t)
+$$
+this is powerful, and we can use this to calculate unknown derivatives $\Delta^*_k$, and potentially solve differential equations in a mirror domain. In general we have a beautiful relationship
+$$
+\frac{d^n}{dx^n} \sum_{k=0}^\infty a_k x^k = \sum_{k=0}^\infty (k+1)_n a_{k+n}x^k
+$$
+Then
+$$
+\mathcal{T}_x^t D_x^n \sum_{k=0}^\infty a_k x^k = \mathcal{T}_x^t \sum_{k=0}^\infty (k+1)_n a_{k+n}x^k = \sum_{k=1}^\infty \frac{(k+1)_n a_{k+n}}{(k)_n a_{k+n-1}} t^n = \sum_{k=1}^\infty \frac{k+n}{k}\frac{a_{k+n}}{a_{k+n-1}} t^n
+$$
+
+
+
+we can even iterate this, and the lower summation index decreases each time.
+$$
+\sum_{n=1}^\infty \frac{t^n}{n} = -\log(1-t) \to \sum_{k=2}^\infty \frac{k-1}{k} u^k = \frac{u}{1-u} + \log(1-u)
+$$
+
+\section{Differential Equation}
+Consider the differential equation 
+$$
+f''(x) + f'(x) = 0
+$$
+for which the general solution is 
+$$
+f(x) = C_1 \cos(x) + C_2 \sin(x)
+$$
+we find that 
+$$
+\mathcal{T}_x^t f(x) =  \frac{C_2}{C_1}t - \frac{C_1}{C_2}\frac{t^2}{2} + \frac{C_2}{C_1}\frac{t^3}{3} - \frac{C_2}{C_1}\frac{t^4}{4}+\cdots
+$$
+or
+$$
+\mathcal{T}_x^t f(x) = \frac{C_1}{2C_2} \log(1-t^2) + \frac{C_2}{C_1} \tanh^{-1}(t)
+$$
+this has the nice property of 
+$$
+G'(t) =\frac{1}{1+t}
+$$
+for the right choice of constants.
+
+
+The equivalent of an $n^{th}$ order derivative in the new space is 
+$$
+O^n \sum_{k=1}^\infty a_k x^n \to \sum_{k=1}^\infty \frac{k+n}{k}a_{k+n} x^k
+$$
+
+
+We find that because $e^x$ is invariant to the derivative $D_x$, the transform of $e^x \to -\log(1-t)$ is invariant to another operator $M_t$ as
+\begin{equation}
+M_t[-\log(1-t)] = M_t \sum_{n=1}^\infty \frac{t^n}{n}
+\end{equation}
+\begin{equation}
+M_t[-\log(1-t)] =\sum_{n=1}^\infty  M_t \frac{t^n}{n}
+\end{equation}
+\begin{equation}
+M_t[-\log(1-t)] =\sum_{n=2}^\infty  \frac{n}{(n-1)}\frac{t^{n-1}}{n}
+\end{equation}
+\begin{equation}
+M_t[-\log(1-t)] =\sum_{n=1}^\infty  \frac{n+1}{n}\frac{t^{n}}{n+1} = -log(1-t)
+\end{equation}
+the apparent rule is that
+$$
+M_x x^k = \begin{cases} \frac{k}{k-1} x^{k-1}, k>1 \\ 0\end{cases}
+$$
+
+Another example is 
+$$
+D_x \frac{1}{1-x} \to \frac{1}{(1-x)^2}
+$$
+we have 
+$$
+\mathcal{T}_x^t \frac{1}{1-x} \to \frac{t}{1-t}
+$$
+$$
+\mathcal{T}_x^t \frac{1}{(1-x)^2} \to \frac{t}{1-t} - \log(1-t)
+$$
+we find that consistently with this
+$$
+M_t \frac{t}{1-t} \to \frac{t}{1-t} - \log(1-t)
+$$
+which implied that $\mathcal{T}_x^t D_x \to M_t$
+
+
+\section{Transforming Differential Equations}
+Consider the differential equation
+
+\section{Things to Consider}
+Shift equations. Dirichlet series. New definition of integration. New definition of generating function, is it possible to get back to a sequence by looking at the ratio generating function?
+
+Can we construct a duality to the GMRT in the new transform space?
+Can we extend the GMRT to non-linear functions in the exponent.
+
+What is the transform in the Mellin domain between these functions?
+\begin{equation}
+\begin{matrix}
+ &      & \mathcal{M}_x[f](s) & \\
+ & f(x) & \leftrightarrow & g(s) \\
+ \mathcal{T}_x^t & \updownarrow & & \updownarrow \\
+ & G(t) & \leftrightarrow & F(q)
+\end{matrix}
+\end{equation}
+
+By analogy to 
+$$
+\Gamma(s) = \int_0^\infty x^{s-1}e^{-x} \; dx
+$$
+we might have
+$$
+\Upsilon(q) = \int_0^\infty k(t,q) \log(1-t) \; \mu t
+$$
+the analogy is that is we have a function of the form 
+$$
+G(t) = -\sum_{n=1}^\infty \phi(n)\frac{t^n}{n}
+$$
+then the new analogue to the Mellin transform $U$ would give 
+\begin{equation}
+U[G(t)] = \Upsilon(q)\phi(-n)
+\end{equation}
+if we have for well behaved functions
+$$
+f(x) = \sum_{k=0}^\infty \frac{(-1)^k}{k!} a_k x^k \to \Gamma(s) a_{-s}
+$$
+then
+$$
+\mathcal{T}_x^t f = G(t) = \sum_{n=1}^\infty \frac{-1}{n} \frac{a_n}{a_{n-1}}t^n \to \Upsilon(q) \frac{a_{-q}}{a_{-q-1}}
+$$
+or perhaps
+$$
+\mathcal{T}_x^t f = G(t) = \sum_{n=1}^\infty \frac{-1}{n} \frac{a_n}{a_{n-1}}t^n \to \Upsilon(q) \frac{a_{-q}}{a_{1-q}}
+$$
+then in the case of $\log(1-t)$ we assume $a_n=1$ everywhere which consistently gives $U[\log(1-t)] = \Upsilon(q)$. Next consider
+$$
+\frac{1}{1+x} = \sum_{k=0}^\infty \frac{(-1)^k}{k!} \Gamma(1+k) x^k \to \Gamma(s)\Gamma(1-s)
+$$
+the transform has 
+$$
+\frac{-t}{1-t} = \sum_{n=1}^\infty \frac{-1}{n} n t^n \to \Upsilon(q)\frac{q}{1+q}, a_0=1
+$$
+or depending on the definition
+$$
+\frac{-t}{1-t} = \sum_{n=1}^\infty \frac{-1}{n} n t^n \to \Upsilon(q)\frac{-q}{1-q}, a_0=1
+$$
+
+for the top on, if we assume that $\Gamma(s)\Gamma(1-s) \to \Upsilon(q)\Upsilon(1-q)$, then we have
+$$
+\Upsilon(1-q) = \frac{q}{1+q} \to \Upsilon(q) = \frac{1-q}{2-q}
+$$
+for the second definition we get 
+$$
+\Upsilon(q) = \frac{q-1}{q}
+$$
+
+consider coefficient extraction as the operator 
+$$
+\frac{1}{n!}\frac{d^n}{dx^n} \Bigg|_{x=0} \to a_n
+$$
+the similar thing for the $M_t$ derivative is 
+$$
+\frac{(n-1)(n-2)\cdots 1}{n(n-1)\cdots 2} \frac{1}{t}\frac{\mu^{n-1}}{\mu t^{n-1}} \Bigg|_{t=0} \to a_{n}
+$$
+or
+$$
+\frac{1}{n} \frac{1}{t}\frac{\mu^{n-1}}{\mu t^{n-1}} \Bigg|_{t=0} \to a_{n}
+$$
+
+we can assume that the hypergeometric analogue (with negative argument gives 
+$$
+U[G(t)] = \frac{\Upsilon(c)}{\Upsilon(a)\Upsilon(b)} \frac{\Upsilon(a-s)\Upsilon(b-s)}{\Upsilon(c-s)} \Upsilon(s)
+$$
+with 
+$$
+G(t) = \sum_{n=1}^\infty \frac{-1}{n} \frac{(a+n-1)(b+n-1)}{(c+n-1)} t^n
+$$
+which should perhaps be
+$$
+G(t) = t \sum_{n=0}^\infty \frac{-1}{n+1} \frac{(a+n)(b+n)}{(c+n)} t^n
+$$
+
+
+\section{Beautiful Discovery}
+Consider the hypergeometric function 
+$$
+\;_2F_1(-1,-1;1,x) = 1+x
+$$
+we can use this to get a form for the transform 
+$$
+G(t) = \frac{t}{1-t} + 4 \log(1-t) + 4 \mathrm{Li}_2(t)
+$$
+Now we apply the $M_t$ operator
+$$
+M_t G(t) = 3 + \frac{1}{1-t} + \frac{4}{t}\log(1-t) - \log(1-t)
+$$
+amazingly, this corresponds to $D_x(1+x) = 1$! So there is a function that represents $1$.
+We can go further and take 
+$$
+M_t M_t G(t) = \frac{t-2}{t-1} + \frac{2}{t}\log(1-t)
+$$
+this function represents $0$. However... it can go for one more round giving (which is therefore some kind of absolute zero)
+$$
+M_t M_t M_t G(t) = \frac{1}{1-t} - \frac{t}{2} + \frac{1}{t}\log(1-t)
+$$
+after this we find 
+$$
+M_t^n M_t M_t M_t G(t) = \frac{1}{1-t} - \frac{t}{2} + \frac{1}{t}\log(1-t)
+$$
+so this is an example of a function which is invariant to the transform $M_n$, and we have 
+$$
+\frac{1}{1-t} - \frac{t}{2} + \frac{1}{t}\log(1-t) = \frac{2 t^2}{3} + \frac{3 t^3}{4} + \frac{4 t^4}{5} + \cdots
+$$
+interestingly the coefficients when converted back give
+$$
+\sum_{k=1}^\infty \frac{\Gamma(n)}{\Gamma(n+1)} x^n = - \log(1-x)
+$$
+which is clearly a very special function. I may have messed up this process as an off by one shift would ruin it all.
+
+
+\section{Integration Problem}
+% Consider  https://math.stackexchange.com/questions/3686433/efficient-faster-methods-to-find-the-general-closed-form-of-int-01-frac-ln
+
+Consider 
+$$
+\int J_0(\sqrt{x}) \; dx \to 2 \sqrt{x} J_1(\sqrt{x})
+$$
+is there a consistent way of completing the integral in the transformed space?
+We have 
+$$
+\mathcal{T}[J_0(\sqrt{x})] = \frac{-1}{4}\mathrm{Li}_2(t)
+$$
+it is worth considering that 
+$$
+\mathrm{Li}_2(z) = \int_0^z \frac{- \log(1-t)}{t} \; dt
+$$
+which can be represented as 
+$$
+\mathrm{Li}_2(z) = \int_0^z \frac{\mathcal{T}_x^t[e^x]}{t} \; dt
+$$
+
+we have 
+$$
+J_\nu(z) = (-1)^\nu \sum_{k=0}^\infty \frac{(-1)^k}{k!} \frac{1}{\Gamma(k-\nu+1)}\frac{z^{2k-\nu}}{2^{2k-\nu}}
+$$
+$$
+J_1(\sqrt{z}) = - \frac{1}{\sqrt{z}}\sum_{k=0}^\infty \frac{(-1)^k}{k!} \frac{1}{\Gamma(k)}\frac{\sqrt{z}^{2k}}{2^{2k-1}}
+$$
+$$
+2 \sqrt{z} J_1(\sqrt{z}) = -\sum_{k=0}^\infty \frac{(-1)^k}{k!} \frac{1}{\Gamma(k)}\frac{z^k}{4^{k}}
+$$
+we find this corresponds to 
+$$
+\mathcal{T}[2\sqrt{t}J_1(\sqrt{t})] =  \frac{-1}{4}\sum_{n=1}^\infty \frac{t^n}{n^2}\frac{n}{n-1}
+$$
+now we consider which transform takes us from 
+$$
+\frac{-1}{4} \sum_{n=1}^\infty \frac{t^n}{n^2} \to \frac{-1}{4} \sum_{n=1}^\infty \frac{t^n}{n^2} \frac{n}{n-1}
+$$
+the transform appears to be $t M_t$ because the power of $t$ is not affected but a factor of $n/(n-1)$ is present. Thus it is in fact
+$$
+\frac{-1}{4} \sum_{n=1}^\infty \frac{t^n}{n^2} \to \frac{-t}{4} \sum_{n=2}^\infty \frac{t^{n-1}}{n^2} \frac{n}{n-1}
+$$
+
+We can try this out on another function.
+$$
+f(z) = \frac{\sqrt{\pi}}{2}\frac{\mathrm{erf}(\sqrt{z})}{\sqrt{z}} = \sum_{k=0}^\infty \frac{(-1)^k x^k}{(2k+1)k!}
+$$
+then we have 
+$$
+T_x^t[f] = \sum_{n=1}^\infty \left(\frac{t^n}{n} - \frac{4 t^n}{1+2n}\right) = - \log(1-t) + 4 - \frac{\tanh^{-1}(\sqrt{t})}{\sqrt{t}}
+$$
+now we apply the $t M_t$ operator
+$$
+t M_t T_x^t[f] = t M_t \sum_{n=1}^\infty \left(\frac{t^n}{n} - \frac{4 t^n}{1+2n}\right)
+$$
+$$
+t M_t T_x^t[f] =  t\sum_{n=1}^\infty \left( M_t[\frac{t^n}{n}] - M_t[\frac{4 t^n}{1+2n}]\right)
+$$
+$$
+t M_t T_x^t[f] =  t \sum_{n=2}^\infty \left( \frac{n}{n-1}\frac{t^{n-1}}{n} - \frac{n}{n-1}\frac{4 t^{n-1}}{1+2n}\right)
+$$
+$$
+t M_t T_x^t[f] =  t \sum_{n=2}^\infty \left( \frac{t^{n-1}}{n-1} - \frac{n}{n-1}\frac{4 t^{n-1}}{1+2n}\right) = t \frac{4 t^{3/2}+3 t^{3/2} \log (1-t)+12 \sqrt{t}-12
+    \tanh ^{-1}\left(\sqrt{t}\right)}{9 t^{3/2}}
+$$
+the key thing here is that
+$$
+\mathcal{T}^{-1}[t M_t T_x^t[f]] = \mathcal{T}^{-1}[\sum_{n=1}^\infty \frac{-(1+2n)t^{n+1}}{n(2n+3)}]
+$$
+we don't know how to handle the $t^{n+1}$ we find that the corresponding 
+$$
+\sum_{k=0}^\infty \frac{3 (-1)^k x^{k+1}}{(3+2k)k!} =   \frac{3 \sqrt{\pi } \text{erf}\left(\sqrt{x}\right)}{4 \sqrt{x}}-\frac{3
+    e^{-x}}{2}
+$$
+is very close, but each individual term appears to be off by a constant shift, as the answer is 
+$$
+\sqrt{\pi } \sqrt{z} \text{erf}\left(\sqrt{z}\right)+e^{-z}
+$$
+
+\section{Generating Function Shift Operator}
+We should carefully consider the action of the shift operator in the transform... I.e. $\mathcal{T}^{-1}[t f(t)]$.
+
+We may have to reformulate all of this as follows:
+For a function we have 
+$$
+f(x) = \sum_{k=0}^\infty a_k x^k
+$$
+the transform gives
+$$
+\mathcal{T}[f](t) = t \sum_{n=0}^\infty \frac{a_{n+1}}{a_n}t^n
+$$
+then we observe that for
+$$
+e^x = \sum_{k=0}^\infty \frac{x^k}{\Gamma(k+1)}
+$$
+we get
+$$
+\mathcal{T}[e^x](t) = t \sum_{n=0}^\infty \frac{\Gamma(n+1)}{\Gamma(n+2)} t^n = t \sum_{n=0}^\infty \frac{t^n}{n+1} = -\log(1-t)
+$$
+then \textbf{Rule: We use zero indexing when possible and move spare powers of variables outside the sum}. The nice symmetry between $\Gamma(k+1)$ and $k+1$ is retained.
+
+
+\section{Inverse}
+If we have 
+$$
+M_t t^k = \frac{k+1}{k}t^{k-1}
+$$
+then we have 
+$$
+M_t^{-1} t^k = \frac{k+1}{k+2}t^{k+1}
+$$
+there is still the question of how to deal with constants
+$$
+M_t c =? \\
+M_t 0 = ? \\
+M^{-1} c = ? \\
+M^{-1} 0 = ?
+$$
+
+
+\bibliography{bibliography}{}
+\bibliographystyle{plain}
+
+
+\end{document}

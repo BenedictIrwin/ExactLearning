@@ -1,0 +1,11 @@
+GloVe is an embedding for words.
+The distances between words in the resulting space is meaningful.
+
+For example the separation between queen and woman and king and man will retain a notion of gender.
+
+The iea is can we extend that to molecules, either by the fingeprint of DIRECTLY by the SMILES string.
+Reccurent neural networks can handle brackets.
+
+Matt thinks IBM are working on some kind of druglike molecule generation via strings.
+
+Could train on CHEMBL and see what the molecular space looks like. For example similar backbones having the same fragment either present or not.

@@ -1,0 +1,6 @@
+There were lots of examples of images in which motifs were recognised by deep learning, then the wieghts could be cranked up to generate a picture full of cats, hats etc.
+Very wacky.
+
+But if a deep network was trained to recognise chemical groups. What would happen if the resulting wieghts were tweaked?
+Would it be able to generate molecules with extra motifs?
+

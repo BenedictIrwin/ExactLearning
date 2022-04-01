@@ -1,0 +1,8 @@
+If we take two molecules A and B, these can be enumerated using the same set of descriptors
+
+If we take the diffeence of each set of descriptors, we will end up with positive and negative descriptor values.
+If we find the molecule closest to these descriptor values in a much large set, then we can write the difference of two molecules A and B as the difference of another two molecules B and C
+where C is the positive values only and D is the negative values only.
+
+What will this look like?
+

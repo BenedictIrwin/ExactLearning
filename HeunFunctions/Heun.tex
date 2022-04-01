@@ -1,0 +1,2389 @@
+\documentclass{article}
+
+\usepackage{authblk}
+\usepackage{url}
+\usepackage[square,numbers]{natbib}
+\usepackage{color,amssymb,amsmath}
+\usepackage{graphicx}
+\usepackage[margin=1in]{geometry}
+%\usepackage{graphicx}
+%\SectionNumbersOn
+%\AbstractOn
+
+\title{Heun Functions as Composition of Hypergeometric Functions}
+%\author{Benedict W. J.~Irwin}
+
+
+\date{\today}
+\begin{document}
+
+%\email{ben.irwin@optibrium.com}
+%\affiliation{Optibrium, F5-6 Blenheim House, Cambridge Innovation Park, Denny End Road, Cambridge, CB25 9PB, United Kingdom}
+%\alsoaffiliation{Theory of Condensed Matter, Cavendish Laboratories, University of Cambridge, Cambridge, United Kingdom}
+
+\author[1,2]{Benedict W. J.~Irwin}
+\affil[1]{Theory of Condensed Matter, Cavendish Laboratories, University of Cambridge, Cambridge, United Kingdom}
+\affil[2]{Optibrium, F5-6 Blenheim House, Cambridge Innovation Park, Denny End Road, Cambridge, CB25 9PB, United Kingdom}
+\affil[ ]{\textit {ben.irwin@optibrium.com}}
+
+
+\maketitle
+
+\begin{abstract}
+The Heun function and their confluent forms are very general and solve many interesting problems in physics and mathematics. A general way to implement these functions computationally is desirable, and it is still not well understood how to represent the functions as a contour integral over simpler functions. We notice a pattern in the composition of hypergeometric functions which explains the series expansion about zero as well as stability under limiting cases.
+\end{abstract}
+
+
+\section{Motivation}
+
+\section{Introduction}
+It appears to me that the series expansion for the generalised Heun function may be related to a composition of hypergeometric functions. Define the HeunG functions as $G(a,q;\alpha,\beta,\gamma,\delta;z)$, then through extensive experimental observations we hypothesise that
+\begin{equation}
+G(a,q;\alpha,\beta,\gamma,\delta;z) = \,_2F_1\left(q,\frac{1}{a},\gamma; q(z)\right)
+\end{equation}
+where 
+$$
+q(z) = z + \sum_{k=2}^\infty a_k z^k.
+$$
+From series expansions we can see that the coefficient of $z$ in $q(z)$ must be $1$. The above relationship fits with the definition
+$$
+G(1,\alpha \beta; \alpha, \beta, \gamma, \delta; z) = \,_2F_1(\alpha,\beta,\gamma,z)
+$$
+and explains why $\gamma \notin {-1,-2,-3,-4,\cdots}$, because these cause a traditional divergence in $\,_2F_1$. For a simple case, again through extensive observation, it seems that the series expansion about zero is given by
+\begin{equation}
+\,_2F_1\left(q,1,\gamma;\sum_{k=1}^\infty x^k\right) = 1 + \frac{q x}{\gamma}  \sum_{k=0}^\infty \left(\sum_{l=0}^k \binom{k}{l} \frac{(1+q)_l}{(1+\gamma)_l}\right)x^k.
+\end{equation}
+Now we introduce the $a$ parameter and find through further matching of series terms
+\begin{equation}
+\,_2F_1\left(q,\frac{1}{a},\gamma;\sum_{k=1}^\infty x^k\right) = 1 + \frac{q x}{\gamma a}  \sum_{k=0}^\infty \left(\sum_{l=0}^k \binom{k}{l} \frac{(1+q)_l}{(1+\gamma)_l} \frac{(1+\frac{1}{a})_l}{(l+1)!}\right)x^k
+\end{equation}
+[{\color{red} consider an (inverse) binomial transform on the above!}]. We now consider coefficients on the series in the argument of the hypergeometric function.
+
+
+Amazingly... it seems that replacing
+$$
+x + \sum_{k=2}^\infty \lambda_k x^k
+$$
+with the series reversion
+$$
+\mathrm{inv}\left(x + \sum_{k=2}^\infty \lambda_k x^k\right)
+$$
+only leads to a sign change in the output? [NOT TRUE, just small terms]
+
+We expand in terms of 
+$$
+\,_2F_1\left(q,\frac{1}{a},\gamma;\sum_{k=1}^\infty \lambda_k x^k\right)
+$$
+but find a nicer expansion in terms of 
+$$
+\,_2F_1\left(q,\frac{1}{a},\gamma;x + \sum_{k=2}^\infty \frac{\lambda_k x^k}{k! a^{k-1}(1+\gamma)^{k-2}(1+g)_{k-1}}\right)
+$$
+this leaves solutions for $\lambda_k$ as complicated multivariate polynomials when equating 
+$$
+G(a,q;\alpha,\beta,\gamma,\delta;z) = \,_2F_1\left(q,\frac{1}{a},\gamma;x + \sum_{k=2}^\infty \frac{\lambda_k x^k}{k! (aq)^{k-1}(1+\gamma)^{k-2}(1+\gamma)_{k-1}}\right)
+$$
+the first term is 
+$$
+\lambda_2 = -a \alpha \beta \gamma - a q + \alpha q + \beta q - \delta q + a \delta q + a \gamma q - a q^2
+$$
+this is apparently relating to the formula for the inverse of the Heun function.
+
+
+
+\section{Reccurrance}
+%http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.390.6674&rep=rep1&type=pdf
+Consider the recurrence relation
+$$
+c_0 = 1
+$$
+$$
+c_1 = \frac{q}{\gamma a}
+$$
+$$
+A c_{n+2} = B c_{n+1} +Cc_n
+$$
+\begin{align}
+A = a(n+2)(n+1+\gamma)\\
+B = [q+(n+1)(\alpha+\beta-\delta+(\gamma+\delta-1)a)+(n+1)^2(a+1)] \\
+C = -(n+\alpha)(n+\beta)
+\end{align}
+which defines the coefficients of the HeunG function as 
+$$
+G(x) = \sum_{k=0}^\infty c_k x^k
+$$
+if we swap the coefficients to a new set such that we have an exponential type generating function
+$$
+G(x) = \sum_{k=0}^\infty \frac{b_k x^k}{k!}
+$$
+$$
+A (n+2)! b_{n+2} = B (n+1)! b_{n+1} + C n! b_n
+$$
+or just 
+$$
+A' b_{n+2} = B' b_{n+1} + C' b_n
+$$
+\begin{align}
+A' = a(n+2)(n+2)!(n+1+\gamma)\\
+B' = (n+1)![q+(n+1)(\alpha+\beta-\delta+(\gamma+\delta-1)a)+(n+1)^2(a+1)] \\
+C' = -n!(n+\alpha)(n+\beta)
+\end{align}
+now we solve for the \emph{negative} terms! 
+$$
+A' b_{1} = B' b_{0} + C' b_{-1}
+$$
+$$
+b_{-1} = \frac{A' b_{1} - B' b_{0}}{C'} 
+$$
+$$
+b_{-1} = \frac{(n+1)^2 }{(\alpha+n) (\beta+n)}\left((a \delta+a \gamma+a n+\alpha+\beta-\delta+n+1)-\frac{q}{\gamma} \left(\gamma n+3 \gamma+n^2+4 n+4\right) \right)
+$$
+from this we can recognise two terms 
+\begin{align}
+\tau_0 = (a \delta+a \gamma+a n+\alpha+\beta-\delta+n+1) \\
+\tau_1 = \left(\gamma n+3 \gamma+n^2+4 n+4\right)
+\end{align}
+$$
+b_{-1} = \frac{(n+1)^2 }{(\alpha+n) (\beta+n)}(\tau_0-\frac{q}{\gamma} \tau_1)
+$$
+
+
+
+%$$
+%b_{-2} = \frac{A' b_{0} - B' b_{-1}}{C'} 
+%$$
+%$$
+%b_{-2} =  \frac{q(n+1)^3 \tau_0}{(\alpha+n)^2 (\beta+n)^2}-\frac{q(n+1)^4 \tau_1 \tau_0}{\gamma (\alpha+n)^2 (\beta+n)^2}+\frac{(n%+1)^4 \tau_0^2}{(\alpha+n)^2 (\beta+n)^2}-\frac{a (n+2)^2 (n+1)
+%    (\gamma+n+1)}{(\alpha+n) (\beta+n)}-\frac{(n+1)^3 q^2 \tau_1}{\gamma (\alpha+n)^2 (\beta+n)^2}
+%$$
+
+note that $\delta$ is not mentioned in this apart from in the term $\tau_0$. When $a=1$, we see that the two terms containing $\delta$ cancel, which is essentially one of the confluences.
+
+
+
+\section{Differential Equations}
+
+
+
+\section{Amazing Relationship}
+If we consider the product formula for the Riemann zeta function 
+$$
+\prod_p \frac{1}{1-p^{-s}} = f(s)
+$$
+consider trying to write it as a single coefficient
+$$
+\prod_p \frac{1}{1-p^{-s}} = \exp\left(\int_{-\infty}^\infty \delta(p(x)) \log\left(\frac{1}{1-x^{-s}}\right) \; dx \right)
+$$
+where $p(x)$ is zero for primes only. If we were to compare this with our coefficient expression
+$$
+\exp\left(\int_{-\infty}^\infty \delta(p(x)) \log\left((x)_s\right) \; dx \right)
+$$
+then the kernels might have an alignment. The striking thing is searching for the roots of 
+$$
+\frac{1}{1-x^{-k}} = (x)_k
+$$
+as $k$ increases. We find $2k$ roots. It appears that the real roots converge (for large $k$) to $ -k+1, -k+2, \cdots, -2, -1, -1 ,0, 1$. Note the repetition of $-1$. These are the roots of $(x)_k=0$. However, all the complex roots appear symmetric in the imaginary axis, and include $ \pm i$ for $k=20$. Also there only appear to be four pairs of numbers required to describe all of these $16$ extra complex roots, including all permutations of plus and minus. But the roots change as the number $k$ changes. The complex roots appear to be on the unit circle and are the roots of $1-x^k=0$.
+
+
+
+
+
+
+\section{Approximate Shifts}
+It seems an analogue of representing a function $f(z)$ in terms of $s(z)$ as 
+$$
+f(z) = \sum_{k=0}^\infty \frac{(s(z)-s(z_0))^k}{k!}\left[\frac{1}{s'(z)}D^k f(z) \right]_{z_0}
+$$
+is given by
+$$
+a_n = \sum_{k=0}^\infty \frac{(b_n-b_{n_0})_k}{k!}\left[\frac{1}{\Delta_1 b_n} \Delta_k a_n \right]_{n\to n_0}
+$$
+using the "factorial power" method in MMA. This gives for example that
+$$
+n! = 1 + \frac{(n)_2}{2} + \frac{(n)_3}{3} + \frac{3(n)_4}{8} + \cdots
+$$
+or apparently
+$$
+n! = \sum_{k=0}^\infty \left(\sum_{l=0}^k \frac{(-1)^l}{l!}\right) (n)_k
+$$
+impressively, expanding about $n=1$, we have
+$$
+\sigma_0(n) = n - \frac{(n-1)_2}{2} + \frac{(n-1)_3}{3} - \frac{5(n-1)_4}{24} + \cdots
+$$
+
+
+
+\section{Umbral RMT}
+Consider this!
+
+
+\section{Integral of moments}
+This is purely guessing. For integer $n$, we seem to have something like
+%$$
+%\int_0^1 t^n\log\Gamma(t+a)dt = -n! \psi^{(-n-2)}(a)+n!\psi^{(-n-2)}(1+a)-\frac{n!}{1!}\psi^{(-n-1)}(1+a)+\frac{n!}{2!}\psi^{(-n)}(1+a)-\frac{n!}{3!}\psi^{(-n+1)}(1+a)+\frac{n!}{4!}\psi^{(-n+2)}(1+a)-\cdots
+%$$
+so I suspect that 
+$$
+I(a,n)=\int_0^1 t^n\log\Gamma(t+a)dt = n!(-1)^{n+1}\left( \psi^{(-n-2)}(a) -\sum_{k=0}^n \frac{(-1)^k}{k!}\psi^{(-n-2+k)}(1+a) \right)
+$$
+this seems to work numerically for integer $n\ge 0$ and any $a$ I have tried. This gives some sort of closed forms, for example
+$$
+I(1,1) = -\frac{1}{4} - 2 \ln A + \psi^{(-3)}(1)\\
+I(1,2) = \frac{1}{4}\ln\left(\frac{2\pi}{A^4}\right)\\
+$$
+with $A$ the Glaisher–Kinkelin constant.
+
+Consider
+$$
+f(q) = \sum_{n=0}^\infty \frac{(-1)^n}{n!} I(a,n) q^n 
+$$
+we then know the coefficient function and the Mellin transform could potentially be given by the RMT!!
+
+
+
+
+
+\section{Amazing}
+This amazing paper defines great series of operators 
+%%https://link.springer.com/content/pdf/10.1007/s40819-017-0315-7.pdf
+
+Apparently advanced Borel transforms end up with terms such as 
+$$
+\Gamma(\gamma + \delta \partial_x)
+$$
+
+
+\section{Consider Series}
+For the following this is the falling factorial
+$$
+\sum_{k=0}^\infty \frac{(-1)^k}{k!} [x]_k = \,_1F_0(-x;;1)
+$$
+$$
+\sum_{k=0}^\infty \frac{(-1)^k}{k!} \frac{[x]_k}{2^k} = 2^{-x}
+$$
+$$
+\sum_{k=0}^\infty \frac{(-1)^k}{k!} \frac{[x]_k}{n^k} = \left(\frac{n-1}{n}\right)^x
+$$
+$$
+\sum_{k=0}^\infty \frac{(-1)^k}{k!} n^k [x]_k = \left(1-n\right)^x
+$$
+$$
+\sum_{k=0}^\infty \frac{(-1)^k}{k!} \frac{[x]_k}{[a]_k} = \,_1F_1(-x;-a;-1)
+$$
+$$
+\sum_{k=0}^\infty \frac{(-1)^k}{k!} \frac{[x]_k [b]_k}{[a]_k} = \,_1F_1(-x,-b;-a;-1)
+$$
+what is the RMT equivalent for these kind of series? This would be the umbral RMT.
+
+
+
+for POCHHAMMER symbols we have 
+$$
+\sum_{k=0}^\infty \frac{(-1)^k}{k!} (x)_k = 2^{-x}
+$$
+we can define the Pochhammer-Mellin transform as 
+$$
+\mathcal{M}_P[f] = \int_0^\infty (\log(2) x)^s f(x) \frac{dx}{x}
+$$
+then we have in analogy to $e^{-x}$
+$$
+\mathcal{M}_P[2^{-x}] = \Gamma(s)
+$$
+
+
+\section{Amazing}
+We have
+$$
+\int_0^\infty (x)_n e^{-x} \; dx = \sum_{k=1}^n k! |s(n,k)|
+$$
+$$
+\int_0^\infty (x)_n 2 K_0(2 \sqrt{x}) \; dx = \sum_{k=1}^n k!^2 |s(n,k)|
+$$
+$$
+\int_0^\infty [x]_n 2 K_0(2 \sqrt{x}) \; dx = \sum_{k=1}^n (-1)^{n-k} k!^2 |s(n,k)|
+$$
+there is likely a mapping here similar to the RMT! This is simply because
+$$
+(x)_n = \sum_{k=0}^n s(n,k) x^k
+$$
+
+we also have  binomial transforms
+\begin{equation}
+\int_0^\infty (1+x)^n e^{-x} \; dx = BT[n!]
+\end{equation}
+\begin{equation}
+\int_0^\infty (1+x)^n 2 K_0(2 \sqrt{x}) \; dx = BT[n!^2]
+\end{equation}
+
+\section{Unknown Function}
+If we have an unknown function
+$$
+f(x) = \sum_{k=0}^\infty a_k x^k
+$$
+we know that 
+$$
+\int_0^\infty f(x) e^{-x} \; dx = \sum_{k=0}^\infty k! a_k
+$$
+$$
+\int_0^\infty f(x) 2K_0(2 \sqrt{x}) \; dx = \sum_{k=0}^\infty k!^2 a_k
+$$
+if we have enough known functions we can attempt to solve the system of equations? We would produce a massive matrix equation... 
+\begin{equation}
+\begin{bmatrix}
+\int_0^\infty f(x) e^{-x} \; dx \\
+\int_0^\infty f(x) 2K_0(2 \sqrt{x}) \; dx \\
+
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 & 1 & 2 & 6 & \\
+1 & 1 & 4 & 36 & \\
+\end{bmatrix}
+\begin{bmatrix}
+a_0 \\ a_1 \\ a_2
+\end{bmatrix}
+\end{equation}
+we can invert the coefficient matrix once for any function. A good example is 
+\begin{equation}
+\begin{bmatrix}
+\int_0^\infty f(x) e^{-x} \; dx \\
+\int_0^\infty f(x) x e^{-x} \; dx \\
+\int_0^\infty f(x) x^2 e^{-x} \; dx \\
+\int_0^\infty f(x) x^3 e^{-x} \; dx
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 & 1 & 2 & 6 & \\
+1 & 2 & 6 & 24 & \\
+2 & 6 & 24 & 120
+\end{bmatrix}
+\begin{bmatrix}
+a_0 \\ a_1 \\ a_2 \\ a_3
+\end{bmatrix}
+\end{equation}
+this extends trivially to 
+\begin{equation}
+\begin{bmatrix}
+\int_0^\infty f(x) e^{-x} \; dx \\
+\int_0^\infty f(x) x^{\alpha} e^{-x} \; dx \\
+\int_0^\infty f(x) x^{2\alpha} e^{-x} \; dx \\
+\int_0^\infty f(x) x^{3\alpha} e^{-x} \; dx
+\end{bmatrix}
+=
+\begin{bmatrix}
+\Gamma(1) & \Gamma(2) & \Gamma(3) & \Gamma(4) & \\
+\Gamma(1 + \alpha) & \Gamma(2 + \alpha) & \Gamma(3 + \alpha) & \Gamma(4 + \alpha) & \\
+\Gamma(1 + 2\alpha) & \Gamma(2 + 2\alpha) & \Gamma(3 + 2\alpha) & \Gamma(4 + 2\alpha) & \\
+\Gamma(1 + 3\alpha) & \Gamma(2 + 3\alpha) & \Gamma(3 + 3\alpha) & \Gamma(4 + 3\alpha) & 
+\end{bmatrix}
+\begin{bmatrix}
+a_0 \\ a_1 \\ a_2 \\ a_3
+\end{bmatrix}
+\end{equation}
+where alpha can be a fraction. This is no good because we have an infinite domain... 
+
+We have q-Pochhammer numbers generating subfactorials
+$$
+\int_0^\infty (x;1)_s e^{-x} \; dx = (-1)^s A000166
+$$
+For Bell B polynomials
+$$
+\int_0^\infty B_s(x) e^{-x} \; dx = A000670
+$$
+interesting adaptations are 
+$$
+\int_0^\infty \frac{x^s}{s!}(x)_s e^{-x} \; dx = series reversion of [x + x \log(1-x)] = \sum_{k=0}^n k! (-1)^{n-k} s(n,k) \binom{n+k}{n}
+$$
+can we use this to relate to inverse functions? We also have 
+$$
+\int_0^\infty \frac{x^s}{s!^2}(x)_s 2K_0(2\sqrt{x}) \; dx  = \sum_{k=0}^n k!^2 (-1)^{n-k} s(n,k) \binom{n+k}{n}^2
+$$
+$$
+\int_0^\infty (1+x)_n e^{-x} \; dx = \sum_{k=1}^n (k-1)! (-1)^{n-k} s(n,k)
+$$
+
+
+In terms of EGF
+$$
+\int_0^\infty (1-x)_n e^{-x} \; dx \to \log(1-\log(1-x)) \sim (-1)^{n+1} \sum_{k=1}^n (k-1)! s(n,k)
+$$
+$$
+\int_0^\infty (1-x)_n e^{-x} \; dx \to \log\left(\frac{1}{1+\log(1-x)}\right)
+$$
+$$
+\int_0^\infty (2x)_n e^{-x} \; dx \to \frac{1}{1+2\log(1-x)}
+$$
+$$
+\int_0^\infty (nx)_n e^{-x} \; dx \to \frac{1}{1+n\log(1-x)}
+$$
+
+We have left factorials
+$$
+\int_0^\infty \left(\sum_{k=0}^n x^k\right) e^{-x} \; dx \to \sum_{k=0}^{n-1} k! = !n
+$$
+$$
+\int_0^\infty \left(\sum_{k=0}^n x^k\right) 2K_0(2 \sqrt{x}) \; dx \to \sum_{k=0}^n k!^2
+$$
+
+$$
+\int_0^\infty \left(\sum_{k=0}^n x^k\right) \frac{1}{1-x} \; dx \to \sum_{k=0}^n k!^2
+$$
+
+we remember that this link is between the Mellin transforms 
+\begin{align}
+e^{-x} \to \Gamma(s) \\
+2 K_0(2 \sqrt{x}) \to \Gamma(s)^2 
+\end{align}
+so we write
+$$
+\int_0^\infty \left(\sum_{k=0}^n x^k\right) e^{-x} \; dx \to \sum_{k=1}^{n+1} \Gamma(k)
+$$
+
+$$
+\int_0^\infty \left(\sum_{k=0}^n x^k\right) 2K_0(2 \sqrt{x}) \; dx \to \sum_{k=1}^{n+1} \Gamma(k)^2
+$$
+
+thus as 
+$$
+\mathcal{M}^{-1}_{k \to x}[k^{-s}] = \frac{(-\log(x))^{s-1}}{\Gamma(s)}
+$$
+$$
+\int_0^\infty \left(\sum_{k=0}^n x^k\right) \frac{(-\log(x))^{s-1}}{\Gamma(s)} \; dx \to \sum_{k=1}^{n+1} \frac{1}{k^s} = H_{1+n}^{(s)}
+$$
+giving an amazing kernel, but this is only "formal" or symbolic.
+$$
+\int_0^\infty \frac{1}{1-x} \frac{(-\log(x))^{s-1}}{\Gamma(s)} \; dx \to \sum_{k=1}^{\infty} \frac{1}{k^s} = \zeta(s)
+$$
+
+Infinite limite, path inthegral, mathematica VariationalD and other concepts. Mellin transform -> Path integral? 
+
+
+\section{Continuous Functional}
+Consider a Volterra type expansion of the Mellin transform, but in a product sense. 
+$$
+\mathcal{M}[f](s) = \prod_{k=1}^\infty H_k[f]
+$$
+for some other intermediate transform, we can define 
+$$
+\Lambda_k(s) = \begin{cases} k & k<s \\ 1 & k \ge s \end{cases}
+$$
+and we have 
+$$
+\prod_{k=1}^\infty \Lambda_k(s) = \Gamma(s)
+$$
+therefore 
+$$
+H_k[e^{-x}] = \Lambda_k(s)
+$$
+$$
+H_k[2K_0(2\sqrt{x})] = \Lambda_k^2(s)
+$$
+but for fractional and general $s$ the discrete product will not work, so we consider a product integral as 
+$$
+\prod_a^b f(x)^{dx} = \exp\left(\int_a^b \log f(x)\;dx \right)
+$$
+we would like to see that 
+$$
+\exp\left(\int_0^\infty \log H[f](x,s)\;dx \right) = \Gamma(s)
+$$
+for any $s$ in the region of convergence of the Mellin transform. We can guess that
+$$
+\log \Gamma(s) = \int_0^\infty \log H[e^{-x}](t,s)\;dt = \int_0^\infty \frac{e^{-t}}{t}\left(s-1-\frac{1-e^{-t(s-1)}}{1-e^{-t}}\right) \; dt
+$$
+
+
+We have 
+$$
+\int_0^\infty (x)_2^s e^{-x} \; dx \to Residues (-1)^n\frac{A001517}{n!}
+$$
+which relates to Bessel polynomials
+
+
+\section{Grand Equation}
+Consider the equation
+$$
+H'' + \int_0^\infty dq \frac{\rho_+}{z-q}  H' + \prod_0^\infty dq \frac{\rho_\times}{z-q}  H = 0
+$$
+we then write
+$$
+\rho_+ = \gamma_G \delta(q) + \delta_G \delta(q-1) + \epsilon_G \delta(q-a_G)
+$$
+$$
+\rho_\times = \alpha_G \delta(q) + \beta_G \delta(q-1) + \delta(q-a_G)
+$$
+enforce
+$$
+\int_0^\infty \rho_+ dq = \int_0^\infty \rho_\times \; dq
+$$
+then we can pick out the Heun equation.
+
+Specifically consider
+$$
+H''(z) + \left(\int_{-\infty}^\infty \frac{\rho_+(q)}{z-q} \; dq \right)  H'(z) + \exp\left( \int_{-\infty}^\infty \rho_\times(q) \log\left(\frac{1}{z-q}\right) \; dq \right)  H(z) = 0
+$$
+
+
+
+\textbf{HOW DO WE GET THE HYPERGEOMETRIC EQUATION FROM THIS FORMALISM?}
+
+We also consider 
+$$
+\rho_+ = \gamma \delta(q) + (\alpha+\beta-\gamma+1) \delta(q-1)
+$$
+$$
+\rho_\times = \alpha \delta(q) + \beta \delta(q-1)
+$$
+which will give 
+\begin{verbatim}
+$$
+H''(z) + \left(\int_{-\infty}^\infty \frac{\gamma \delta(q) + \\ 
+(\alpha+\beta-\gamma+1) \delta(q-1)}{z-q} \; dq \right)  H'(z) + \\ 
+\exp\left( \int_{-\infty}^\infty (\alpha \delta(q) + \beta \delta(q-1)) 
+\log\left(\frac{1}{z-q}\right) \; dq \right)  H(z) = 0 \\
+$$
+
+$$
+H''(z) + \left(\frac{\gamma}{z} + \frac{\alpha+\beta-\gamma+1}{z-1} \right)  H'(z)
+ + \exp\left( \log\frac{\alpha}{z} + \log \frac{\beta}{z-1} \right)  H(z) = 0
+$$
+
+$$
+H''(z) + \left(\frac{\gamma}{z} + \frac{\alpha+\beta-\gamma+1}{z-1} \right)  H'(z)
+ + \frac{\alpha}{z} \frac{\beta}{z-1}  H(z) = 0
+$$
+\end{verbatim}
+which is the equation for the canonical hypergeometric $H(z) = \;_2F_1(\alpha,\beta;\gamma;z)$
+
+Now we can consider a pair of non-trivial densities $\rho$ which have a limiting case as delta functions, for example a broadening of the above solutions
+$$
+\rho_+ = \gamma \delta(q) + (\alpha+\beta-\gamma+1) \delta(q-1)
+$$
+$$
+\rho_\times = \alpha \delta(q) + \beta \delta(q-1)
+$$
+
+Very interestingly we have the Hilbert transform of $\rho_+$ appearing
+$$
+f''(z) + \pi \mathcal{H}[\rho_+](z)  f'(z) + \exp\left( \int_{-\infty}^\infty \rho_\times(q) \log\left(\frac{1}{z-q}\right) \; dq \right)  f(z) = 0
+$$
+we may also wish to consider the second integral as a transform 
+$$
+f''(z) + \pi \mathcal{H}[\rho_+](z)  f'(z) + \mathcal{I}[\rho_\times](z) f(z) = 0
+$$
+we note that the two densities may well converge on one with a different weighting scheme. We may want to consider the principal value of the integrals
+
+We have 
+$$
+\int_0^\infty \frac{e^{-x}}{z-x} \; dx = \mathrm{Ei}(z)e^{-z}
+$$
+$$
+\int_{-\infty}^\infty \frac{e^{-|x|}}{z-x} \; dx = \mathrm{Ei}(z)e^{-z} - \mathrm{Ei}(-z)e^z
+$$
+$$
+\int_0^\infty e^{-x} \log\frac{1}{z-x} \; dx = \frac{i\pi+\mathrm{Ei}(z)}{e^{z}} - \log(z)
+$$
+$$
+\int_0^\infty e^{-x} \log\frac{1}{z-x} \; dx = \frac{i\pi+\mathrm{Ei}(z)}{e^{z}} - \log(z)
+$$
+$$
+\begin{cases}
+                    \text{Indeterminate} & z=0 \\
+                    e^z \text{Ei}(-z)+e^{-z} \text{Ei}(z)+\log \left(\frac{1}{z^2}\right)-i \pi  \left(e^z-2\right) & \Re(z)<0\land z=\Re(z) \\
+                    e^{-z} \text{Ei}(z)-\log (-z)-\log (z)-e^z \Gamma (0,z)+i \pi  & z\neq \Re(z) \\
+                    e^{-z} (\text{Ei}(z)+i \pi )-2 \log (z)-e^z \Gamma (0,z) & \text{True}
+                   \end{cases}
+$$
+
+Consider that 
+$$
+\delta(x) = \lim_{\varepsilon \to 0} \frac{1}{2 \varepsilon}e^{-\frac{|x|}{\varepsilon}}
+$$
+Consider $\alpha=\beta=\gamma=1$ for the solution $(1-x)^{-1}$
+$$
+\rho_+ = \delta(q) + 2 \delta(q-1)
+$$
+$$
+\rho_\times = \delta(q) + \delta(q-1)
+$$
+
+
+We have an important result
+$$
+\int_{-\infty}^\infty \frac{e^{-\frac{|x-\mu|}{\sigma}}}{z-x} \; dx = e^{-\frac{z-\mu}{\sigma}} \text{Ei}\left(\frac{z-\mu}{\sigma}\right)-e^{\frac{z-\mu}{\sigma}} \text{Ei}\left(-\frac{z-\mu}{\sigma}\right)
+$$
+so broadening the hypergeometric delta function in terms of this exponentials gives 
+$$
+\pi \mathcal{H}[\rho_+] = \frac{\gamma}{2 \varepsilon}\left(e^{-\frac{z}{\varepsilon}} \text{Ei}\left(\frac{z}{\varepsilon}\right)-e^{\frac{z}{\varepsilon}} \text{Ei}\left(-\frac{z}{\varepsilon}\right)\right) + \frac{(\alpha+\beta-\gamma+1)}{2 \varepsilon} \left( e^{-\frac{z-1}{\varepsilon}} \text{Ei}\left(\frac{z-1}{\varepsilon}\right)-e^{\frac{z-1}{\varepsilon}} \text{Ei}\left(-\frac{z-1}{\varepsilon}\right) \right)
+$$
+for consistency we must retain that in the $\varepsilon \to 0$ case we have
+$$
+\left(\frac{\gamma}{z} + \frac{\alpha+\beta-\gamma+1}{z-1} \right)
+$$
+this appears to be the case and each term gives half with 
+$$
+\lim_{\varepsilon\to 0} \frac{e^{\mp\frac{z}{\varepsilon}} \textrm{Ei}\left(\pm\frac{z}{\varepsilon}\right)}{2 \varepsilon} = \frac{\pm 1}{2z}
+$$
+so this is a beautiful mirror of the delta function equation in the transformed domain.
+
+The next term is $\mathcal{I}[\rho_\times]$ which appears to take a form such as:
+$$
+\begin{cases}
+                    3 e^{\frac{z-1}{3}} \left(\text{Ei}\left(\frac{1-z}{3}\right)-i \pi \right)+3 e^{\frac{1}{3}-\frac{z}{3}} \text{Ei}\left(\frac{z-1}{3}\right)-6 \log (1-z)+6 i \pi  & z\leq 1 \\
+                    3 e^{\frac{z-1}{3}} \text{Ei}\left(\frac{1-z}{3}\right)+3 e^{\frac{1}{3}-\frac{z}{3}} \left(\text{Ei}\left(\frac{z-1}{3}\right)+i \pi \right)-6 \log (z-1) & \text{True}
+                   \end{cases}
+$$
+which is clearly having problems with a branch cut in the log expression we can reduce this to (check this)
+$$
+\int_{-\infty}^\infty e^{-\frac{|x-\mu|}{\sigma}} \log\frac{1}{z-x} \; dx = \sigma e^{\frac{z-\mu}{\sigma}} \text{Ei}\left(-\frac{z-\mu}{\sigma}\right)+\sigma e^{- \frac{z-\mu}{\sigma}} \text{Ei}\left(\frac{z-\mu}{\sigma}\right)- 2 \sigma \log (z-1) + O(i \pi)
+$$
+very interestingly we seem to have very similar terms, but there is now a sum rather than a difference.
+
+Remember that we need to  this result!
+
+
+
+Also consider the direct extension to the hypergeometric function
+$$
+\;_2F_1(a,b,c,x) = \sum_{k=0}^\infty \frac{(a)_k(b)_k}{(c)_k k!} x^k
+$$
+One could possibly represent this as a pair of densities
+$$
+\rho_1(x) = \delta(x-a) + \delta(x-b)
+$$
+$$
+\rho_2(x) = \delta(x-c) + \delta(x-1)
+$$
+or
+$$
+\rho(x) = \delta(x-a) + \delta(x-b) -  \delta(x-c) - \delta(x-1)
+$$
+
+but the requirement to balance $a+b-c+1=?$ is harder to interpret.
+
+If we consider the integral 
+$$
+\mathcal{T}[\rho](k) = \exp\left(\int_{-\infty}^\infty \rho(x) \log((x)_k) \; dx \right)
+$$
+then we have the coefficient term for the basic hyper-geometric expression, in the form of an integral transform, which has a kernel
+$$
+K(x,k) = \log((x)_k)
+$$
+containing the Pochhammer symbol. We could consider expressing this in a different transform in terms of the loggamma function. This allows us to numerically compute the coefficients for certain inputs for example
+$$
+\sum_{k=0}^\infty \mathcal{T}[e^{|x-1|}](k) x^k = e^0 + e^a_1 x + 3^a_2 x^2 + ?
+$$
+$$
+a_1 = \frac{-e^2 \text{Ei}(-1)-\text{Ei}(1)+i \pi }{e}
+$$
+$$
+a_2 =  \log (4)-\frac{e^3 (e \text{Ei}(-2)+\text{Ei}(-1))+e
+    \text{Ei}(1)+\text{Ei}(2)-i (e-1) \pi }{e^2}
+$$
+
+For example the coefficients of Elliptic E function 
+$$
+c_k = \exp\left(\int_{-\infty}^\infty (\delta(x-\frac{1}{2}) + \delta(x+\frac{1}{2})-2\delta(x-1)) \log((x)_k) \; dx \right)
+$$
+
+consider derivatives of the delta function $\delta'(x-1)$, this appears to give coefficients which are related to the unsigned Stirling numbers.
+
+Consider the inverse transform, consider scalings inside the delta function $\delta(ax +b)$...
+For positive $a,b$ this looks like 
+$$
+\delta (ax +b) \to (\frac{b}{a})_k^{1/a}
+$$
+in general
+$$
+\delta (ax +b) \to (\frac{b}{a})_k^{(\theta(-b/a)+\theta(b/a))/|a|}
+$$
+
+This presents a representation of functions such as 
+$$
+f(x) = \sum_{k=0}^\infty \frac{\sqrt{(\frac{3}{2})_k}}{k!} x^k
+$$
+the coefficients are simply given by 
+$$
+c_k = \exp\left(\int_{-\infty}^\infty (\delta(2x-3)-\delta(x-1)) \log((x)_k) \; dx \right)
+$$
+we can extend to $\delta(a x^2 + b x + c)$, which has roots that will activate the coefficient.
+
+In theory this should sum over those roots, and likewise for any function $f(x)$ with zeros $x_k$, to give 
+$$
+c_k = \exp\left(\int_{-\infty}^\infty \delta(f(x)) \log((x)_k) \; dx \right)
+$$
+however, the above linear example was not so straightforward and there was an additional power on the Pochhammer term. The answer will be
+$$
+c_k = \exp\left(\int_{-\infty}^\infty \delta(f(x)) \log((x)_k) \; dx \right) = \sum_{\zeta} (x_\zeta)_k^{1/|f'(x_\zeta)|}
+$$
+a sum over roots. More so
+$$
+c_k = \exp\left(\int_{-\infty}^\infty \kappa \delta(f(x)) \log((x)_k) \; dx \right) = \sum_{\zeta} (x_\zeta)_k^{\kappa/|f'(x_\zeta)|}
+$$
+
+It would then seem that for a series of functions $f_r(x)$ with roots $x_{kr}$
+$$
+c_k = \exp\left(\int_{-\infty}^\infty \left(\sum_r \kappa_r \delta(f_r(x))\right) \log((x)_k) \; dx \right) = \prod_r \sum_{\zeta_r} (\zeta_r)_k^{\kappa_r/|f'_r(\zeta_r)|}
+$$
+can we then allow a general function to be constructed as a sum of delta functions (or in integral of delta functions)
+$$
+f(x) = \int_{-\infty}^\infty \delta(x'-x)f(x') \; dx'
+$$
+we can postulate that this extends into a product integral, and the coefficient becomes a functional of the weight function $\kappa$
+$$
+c_k[\kappa] = \exp\left(\int_{-\infty}^\infty \left(\int_a^b \kappa(r) \delta(f(r,x)) dr\right) \log((x)_k) \; dx \right) = \prod_{a}^b \left[ \sum_{\zeta_r} (\zeta_r)_k^{\kappa(r)/|f'(r,\zeta_r)|} \right]^{dr}
+$$
+
+assume $f(r,x) = x-r$ and $[a,b] \to (-\infty,\infty)$
+$$
+c_k[\kappa] = \exp\left(\int_{-\infty}^\infty \left(\int_{-\infty}^\infty \kappa(r) \delta(x-r) dr\right) \log((x)_k) \; dx \right) = \prod_{-\infty}^\infty \left[ (\kappa(r))_k \right]^{dr}
+$$
+
+$$
+c_k[\kappa] = \exp\left(\int_{-\infty}^\infty \kappa(x) \log((x)_k) \; dx \right) = \prod_{-\infty}^\infty \left[ (\kappa(r))_k \right]^{dr}
+$$
+this reveals a property about the original expression.
+
+We find
+
+$$
+\mathcal{T}[\rho](k) = \exp\left(\int_{-\infty}^\infty \rho(x) \log((x)_k) \; dx \right) = \prod_{-\infty}^\infty \left[ (x)_k^{\rho(x)}\right]^{dx}
+$$
+
+
+\section{Inverse Transform}
+Consider the inverse transform through the Mellin transform definitions of hypergeometric functions etc...
+
+Through the Mellin transform we have 
+$$
+\mathcal{M}[_2F_1(a,b,c,-x)](s) = \Gamma(s) \frac{\Gamma(c) \Gamma(a-s)\Gamma(b-s)}{\Gamma(a)\Gamma(b)\Gamma(c-s)}
+$$
+a better version would take the factorial into account via
+$$
+\mathcal{M}^*[_2F_1(a,b,c,-x)](s) = \frac{\Gamma(c)\Gamma(1) \Gamma(a-s)\Gamma(b-s)}{\Gamma(a)\Gamma(b)\Gamma(c-s)\Gamma(1-s)}
+$$
+the log of this converts 
+$$
+\rho(x) = \delta(x-a) + \delta(x-b) - \delta(x-c) - \delta(x-1)
+$$
+as 
+$$
+\mathcal{Y}\left[ \log \frac{\Gamma(a-s)}{\Gamma(a)}\right](x) = \delta(x-a)
+$$
+and 
+$$
+\mathcal{Y}^{-1}\left[\delta(x-a)\right](x) =  \log \frac{\Gamma(a-s)}{\Gamma(a)} 
+$$
+
+now consider the \textbf{actual} coefficients of the function are
+$$
+_2F_1(a,b,c,x) = \sum_{k=0}^\infty \frac{\Gamma(a+k)}{\Gamma(a)}\frac{\Gamma(b+k)}{\Gamma(b)}\frac{\Gamma(c)}{\Gamma(c+k)}\frac{\Gamma(1)}{\Gamma(1+k)} x^k = \sum_{k=0}^\infty c_k x^k
+$$
+so therefore enforce that 
+$$
+\mathcal{Y}[ \log c_k](x) = \rho(x) = \delta(x-a) + \delta(x-b) - \delta(x-c) - \delta(x-1)
+$$
+consistent with
+$$
+\mathcal{Y}_k\left[ \log \frac{\Gamma(a+k)}{\Gamma(a)}\right](x) = \delta(x-a)
+$$
+therefore 
+$$
+\log c_k = \mathcal{Y}^{-1}[\rho(x)](k)
+$$
+$$
+c_k = \exp\left(\mathcal{Y}^{-1}[\rho(x)](k)\right) = \mathcal{T}[\rho(x)](k)
+$$
+
+
+\section{Cleaner Version}
+Define
+$$
+\log c_k = \mathcal{Y}[\rho]
+$$
+$$
+c_k = \mathcal{T}[\rho]
+$$
+we have 
+$$
+\mathcal{Y}[\rho] = \int_{-\infty}^\infty \rho(x) \log( (x)_k ) \; dx
+$$
+$$
+\mathcal{T}[\rho] = \exp\left(\int_{-\infty}^\infty \rho(x) \log( (x)_k ) \; dx\right) = \prod_{-\infty}^\infty \left[ (x)_k^{\rho(x)}\right]^{dx}
+$$
+we have
+$$
+\mathcal{Y}^{-1}_k\left[ \log \frac{\Gamma(a+k)}{\Gamma(a)}\right](x) = \delta(x-a)
+$$
+under Fredholm theory this is a bit like a kernel. This implies that if
+$$
+g(y) = \int_a^b \log \frac{\Gamma(x+y)}{\Gamma(x)} f(x) dx 
+$$
+then 
+$$
+Y^{-1}_k [g](x) = f(x)
+$$
+and 
+$$
+g(k) = \int_{-\infty}^\infty f(x) \log((x)_k) \; dx
+$$
+this is what we defined....
+
+\subsection{Mellin}
+Also
+$$
+\mathcal{T}^{-1}[\cdot] = \mathcal{Y}^{-1}[\log \cdot]
+$$
+this tells us that for a given function $f$
+$$
+\rho_f(x) = \mathcal{T}^{-1}\left[\frac{\mathcal{M}_x[f(x)](-s)}{\Gamma(-s)}\right]
+$$
+$$
+\Gamma(-s)\mathcal{T}[\rho_f(x)](s) = \mathcal{M}_x[f(x)](-s)
+$$
+
+
+\section{Particles}
+Consider the 3D analogue of the transform, which leads to $\delta^{(3)}(\mathbf{x-k})$ type functions etc. for coefficients. 
+Consider the ladder diagram etc. by the GRMT paper, if we look at the coeeficient structurwe of the kernels of these particle interactions, can we see anything that resembles physics! Also consider other physics solutions. We consider the transform as an \textbf{umbral} version of the Mellin transform, converting the $x^s$ to a $(x)_s$ and the integration space is different from $dx/x$ for $[0,\infty)$ to $dx$ for $(-\infty,\infty)$ for example. 
+
+Consider an interaction diagram, and that coefficients or functions can be draw like Feynman diagrams, with say $a$ and $b$ arrows pointing inward, and $c$ and $1$ arrows pointing outwards for a hypergeometric like solution,, what space is this in? Consider Bessel functions a s solutions. Consider exponential functions only take different arguments $x,-x,ikx$ etc. but the underlying \textbf{coefficients} are the same, so these are in fact the same physical object, just with a different "momentum" or parameter, i.e. complex valued etc. 
+
+Can this reformulate many physics processes on the same footing? Consider that $\delta$ functions are particles.
+
+Consider the repateded mellin transform, and the concept of a virtual particle... can we draw a more complex diagram for this? 
+Consider the inverse? Can we backtrack Feynman diagrams to these coefficients? What functions do real physics particles interactions represent? Reverse engineer sums of Pochhammers i.e. hypergeometrics as sums of particles... i.e. 
+
+$$
+A = \sum_{k} \,_2F_1(1,k+1;k;1) \to A(q) = \sum_{k} \,_2F_1(1,k+1;k;q) \to \sum_{k} \delta(x-1) + \delta(x-k-1) - \delta(x-k) - \delta(x-1)
+$$
+$$
+\sum_{k} w(k)\,_2F_1(1,k+1;k;q) \to \sum_{k} w(k)(\delta(x-k-1) - \delta(x-k))
+$$
+
+\textbf{consider that the Heun functions can be expressed as this series of hypergeometric terms, and the shape of the transforms in terms of delta functions i.e. coefficients}.
+
+\section{Pochhammer Symbols}
+We have the expansion of Pochhammer symbols:
+$$
+(x)_k = x(x+1) \cdots (x+k-1) = \sum_{l=0}^k (-1)^{k-l} S_1(k,l) x^l
+$$
+in terms of unsigned Stirling numbers of the first kind. These therefore count 'permutations' according to their number of cycles, fixed points are cycles of length one. We would then have that Stirling numbers of the second kind are inverses... \textbf{Is this the inverse coefficient transform? Check it out.}
+
+We can then consider the transform as 
+$$
+\int_{-\infty} ^ \infty \rho(x) \log((x)_k) \; dx = \int_{-\infty} ^ \infty \rho(x) \log(\sum_{l=0}^k (-1)^{k-l} S_1(k,l) x^l) \; dx 
+$$
+when the $\exp$ is taken and the delta function $\delta(x-a)$ is fed in, we get 
+$$
+c_k = \sum_{l=0}^k (-1)^{k-l} S_1(k,l) a^l
+$$
+for the hypergeometric equation we have
+$$
+c_k = \frac{\left(\sum_{l=0}^k (-1)^{k-l} S_1(k,l) a^l\right)\left(\sum_{l=0}^k (-1)^{k-l} S_1(k,l) b^l\right)}{\left(\sum_{l=0}^k (-1)^{k-l} S_1(k,l) c^l\right)\left(\sum_{l=0}^k (-1)^{k-l} S_1(k,l) 1^l\right)}
+$$
+
+another interpretation is the product of terms 
+
+$$\log c_k = \int_{-\infty} ^ \infty \rho(x) \log(x(x+1)\cdots(x+k-1)) \; dx 
+$$
+$$
+\log c_k = \int_{-\infty} ^ \infty \rho(x) \sum_{l=0}^{k-1}\log(x+l) \; dx 
+$$
+we may be able to write
+$$
+\log c_k = \sum_{l=0}^{k-1} \int_{-\infty} ^ \infty \rho(x) \log(x+l) \; dx 
+$$
+and
+$$
+c_k = \prod_{l=0}^{k-1} \exp\left( \int_{-\infty} ^ \infty \rho(x) \log(x+l) \; dx  \right)
+$$
+plausibly, due to the nature of this
+$$
+\frac{c_k}{c_{k-1}} = \exp\left( \int_{-\infty} ^ \infty \rho(x) \log(x+k-1) \; dx  \right)
+$$
+which gives the two term recurrence relation for the coefficients. If we choose a non-standard density such as $\rho(x) = x \Theta(x)e^{-x}$ we get 
+$$
+\frac{c_k}{c_{k-1}} = e^{k-1} (k-2) \text{Ei}(1-k)+\log (k-1)+1, k>1
+$$
+
+We should stick to weight functions that integrate to $0$, such as $x e^{-x} - e^{-x}$, this retains the mass above and below the line, i.e. the balance of positive and negative delta functions. This leads to $1+ e^{k-1}(k-1)Ei(1-k)$, which might be a convergent series... It does appear to be convergent. So the trick of ensuring the input function integrates to $0$ is useful.. The log coefficients might converge, but the exp ones struggle... 
+
+\textbf{If the gamam functions related to delta function in the density, then what impulse gives rise to a Barnes-G function? }
+
+
+
+
+The Lah numbers will relate two types of object [NOTE THE NOTATION IS DIFFERENT HERE FOR RISING AND FALLING FACOTREIALS[]
+$$
+x^{(n)} = \sum_{k=1}^n L(n,k) (x)_k$$ $$(x)_n = \sum_{k=1}^n (-1)^{n-k} L(n,k)x^{(k)}.
+$$
+
+
+\section{Derivatives}
+Can we find a transform such that when the derivative is taken, n times, the transform is applied n times to the density to keep the coefficients the same?
+$$
+D^n_x \,_2F_1(a,b;c;x) = \frac{(a)_n (b_n)}{(c)_n} \, _2F_1(a+n,b+,;c+n;x)
+$$
+this means 
+$$
+\frac{(a)_k (b)_k}{(c)_k k!} \to \frac{(a)_n (b)_n}{(c)_n} \frac{(a+n)_k (b+n)_k}{(c+n)_k k!}
+$$
+
+$$
+\frac{(a)_n (b)_n}{(c)_n} \frac{(a+n)_k (b+n)_k}{(c+n)_k k!} = \exp\left(\int_{-\infty}^\infty \rho(x)\log((x)_k)  \;dx \right)
+$$
+it then appears that 
+$$
+\rho(x) = \delta(x-a) + \delta(x-b) - \delta(x-c) - \delta(x-1) \to \rho'(x)
+$$
+with
+$$
+\rho'(x) = \delta(n-k)(\rho(x) + \delta(x-1)) + \delta(x-a-n) + \delta(x-b-n) - \delta(x-c-n) -\delta(x-1)
+$$
+we can conclude that the transform $T_x^n$ that corresponds to the derivative $D_x^n$ is applied as 
+$$
+T_x^n \delta(x-q) = \delta(n-k)\delta(x-q) + \delta(x-q-n)
+$$
+which somewhat problematically depends on $k$. We would also like the property that iterated applications of the operators gives a consistent transform. I.e. $T^1_x T^1_x \equiv T^2_x$. 
+
+It is clear that the term $\delta(x-1)$ did not change, this makes the series expansion an exponential expansion. It is consistent to see a shift
+$$
+T_x^n \delta(x-q) \to \delta(x-q-n)
+$$
+
+if we define the coefficient transform such that
+$$
+\mathcal{C}[\,_2F_1(a,b,c,x)](k) = \frac{(a)_k (b)_k}{(c)_k} \to \rho(x) = \delta(x-a) + \delta(x-b) - \delta(x-c)
+$$
+then we clearly have 
+$$
+\mathcal{C}[D_x^n \,_2F_1(a,b,c,x)](k) = \mathcal{C}[\,_2F_1(a,b,c,x)](n) \frac{(a+n)_k (b+n)_k}{(c+n)_k} \to \rho(x) = \delta(x-a-n) + \delta(x-b-n) - \delta(x-c-n)
+$$
+the rule is in principle true for any analytic expansion... 
+$$
+f(x) \to c_k
+$$
+$$
+f^{(1)}(x) \to (k+1)c_{k+1}
+$$
+$$
+f^{(2)}(x) \to (k+2)(k+1)c_{k+2}
+$$
+$$
+f^{(n)}(x) \to (k+1)_n c_{k+n}
+$$
+a possible 'canonical' form for a series expansion is then 
+$$
+f(x) = \sum_{k=0}^\infty \exp\left( \int_{-\infty}^\infty \rho(x) \log((x)_k) \; dx + k \log(x) \right)
+$$
+
+
+
+
+\section{Next}
+\textbf{CONSIDER THE GENERALISED FORMS WITH EIGENVALUES ETC IN THE HYPERGEOMETRIC FUNCTIONS}.
+It seems in general that 
+$$
+\sum_{k=0}^\infty \frac{x^k}{P_n(k)} = \frac{1}{a_0}\;_{n+1}F_{n}(1,-\lambda_1,\cdots,-\lambda_n;1-\lambda_1,\cdots,1-\lambda_n;-x)
+$$
+for an order $n$ polynomial... with roots $\lambda$. For a numerator which is a polynomial, we will be able to expand in terms of this function. For a denominator which is a product of two polynomials, there is a higher order expansion, or potentially a simpler form... The higher order expansion just does the same with the roots as if they were separate terms due to the factorisation.
+
+\textbf{CONSIDER AIRY ZETA, OTHER ZETA and SIN BESSELS ETC with zeroes...}
+
+What differential equation does this new function solve? 
+
+The generalised hypergeometric equation is of the form 
+$$
+x \prod_{k=1}^p ( \theta_x + a_k) f(x;\mathbf{a,b}) = \theta_x \prod_{k=1}^q (\theta_x + b_k -1) f(x;\mathbf{a,b})
+$$
+this should be a limit of the more generalised equation!
+
+\section{Refs}
+We referred to the equations in the text:
+%https://arxiv.org/pdf/1405.6837.pdf
+%https://arxiv.org/pdf/0712.4299.pdf
+
+
+
+\section{Continued Fractions}
+Consider Series[D[Log[Hypergeometric2F1[a,b,c,x]],x],{x,0,1}] in the representation Series[ContinuedFractionK[c[k],1,{k,0,3}]]
+
+
+
+\section{Product Integral Residues}
+Consider
+$$
+\prod_{C} [f(x)]^{dx}
+$$
+for a contour $C$. If we have a pole at $x=1$
+$$
+f(x) = \frac{1}{1-x}
+$$
+we can write 
+$$
+\prod_{C} [f(x)]^{dx} = \exp\left( \int_{C} \log(f(x)) \; dx \right)
+$$
+if the contour is a circle around $1$, we write $x = 1 + e^{i t}$, $dx = i e^{it} dt$ and 
+$$
+\prod_{C} [f(x)]^{dx} = \exp\left( \int_{C} i e^{it} \log(\frac{1}{-e^{-i t}}) \; dt \right) = 1
+$$
+if the contour is reversed, it is still $1$. There is also no need to account for the $2 \pi i$.
+
+If we have this multiplicative residue, we find that of $\Gamma(s)$ around $s=0$ gives $-1$
+
+
+Performing a numerical integration as 
+\begin{verbatim}
+NIntegrate[LogGamma[x],Join[{x},Table[-3+(-1)^(2k/1000),{k,0,1000}]],WorkingPrecision->20,PrecisionGoal->20,MaxRecursion->15,AccuracyGoal->20]
+\end{verbatim}
+we find that $\log \Gamma(x)$ appears to have residues $1,3,5,7$ at points $0,-1,-2,-3,\cdots$.
+However, these points shrink away as the contour shrinks around the pole.
+
+
+For these non-simple singularities we come up with a strategy for analysis.
+
+We can however look at the ratio of the shrinking one of radius $1/n$ with a unit contour:
+$$
+\mathcal{T}_k[\log \Gamma(z)](n) = \frac{\int_{\gamma_n \sim k} \log\Gamma(z) \; dz}{\int_{\gamma_1 \sim k} \log\Gamma(z) \; dz}
+$$
+
+about $k=0$ this gives the sequence $1,3,6,10,15,\cdots$ which are the triangle numbers, with formula
+$$
+\mathcal{T}_0[\log \Gamma(z)](n) = \frac{n(n+1)}{2}
+$$
+about $k=-1$ we empirically find 
+$$
+\mathcal{T}_{-1}[\log \Gamma(z)](n) = \frac{(n+1)(n+2)}{6} \to 2, \frac{10}{3}, 5, 7, \frac{28}{3}, 12, \cdots
+$$
+the next goes to 
+$$
+\mathcal{T}_{-2}[\log \Gamma(z)](n) \approx \frac{(n+3)(n+4)}{10} \to 1, 2,3,\frac{21}{5},\frac{28}{5},\frac{36}{5},9,11, \cdots
+$$
+however, the first term does not agree! So it is not clear whether the ratio $1$ should be interpreted as a data point. It is also possible that generating functions are a better way to visualise the pattern.
+$$
+0 \to \frac{1}{(1-z)^3}
+$$
+$$
+-1 \to \frac{z^2-3z+3}{3(1-z)^3}
+$$
+$$
+-2 \to \frac{z^3-5z+5}{5(1-z)^3}
+$$
+$$
+-4 \to \frac{z^4-7z+7}{7(1-z)^3}
+$$
+Then we can conclude that the generating function is given by 
+$$
+\sum_{n=0}^\infty \mathcal{T}_{-k}[\log \Gamma(z)](n) z^n = \frac{z^{k+1} + (2k+1)(1-z)}{(2k+1)(1-z)^3}
+$$
+
+in the case of 
+$$
+\mathcal{T}_{0}[\log \frac{1}{x}](n) = n \to 1,2,3,4,\cdots
+$$
+this is very nice. Amazingly the ratio of shrinking $\log \Gamma$ to constant $\log \frac{1}{x}$ at $k=0$ also gives the triangle numbers, a very nice comparison comes from the shrinking of \textbf{both} of these. This gives
+$$
+\frac{\int_{\gamma_n \sim 0} \log\Gamma(z) \; dz}{\int_{\gamma_n \sim 0} \log\frac{1}{z} \; dz} = \frac{n+1}{2}
+$$
+we find that
+$$
+\mathcal{T}_{0}[\exp(1/x)](n) = 1 \to 1,1,1,1,1,\cdots
+$$
+
+we have 
+$$
+\frac{\delta \log \frac{1}{x} }{\delta \log \frac{1}{x}} = n
+$$
+$$
+\frac{\delta \log \frac{1}{x} }{\delta \log^2 \frac{1}{x}} = \frac{n}{2}
+$$
+$$
+\frac{\delta \exp \frac{1}{x} }{\delta \log \frac{1}{x}} = 1
+$$
+$$
+\frac{\delta \exp \frac{1}{x} }{\delta \log^2 \frac{1}{x}} = \frac{1}{2}
+$$
+$$
+\frac{\delta \exp \frac{1}{x} }{\delta \log^3 \frac{1}{x}} = \frac{1}{6-\pi^2}
+$$
+
+$$
+\frac{\delta \log^2 \frac{1}{x} }{\delta \exp \frac{1}{x}} = 2r(1-\log(r))
+$$
+
+\section{What are we trying to measure?}
+Apparently, given two functions, each with a singularity we can draw a contour around the singularity and measure. As each contour shrinks, the value of each integral goes to zero, but at different rates. 
+$$
+\frac{C_0^r[\log \frac{1}{x}]}{C_0^r[\exp \frac{1}{x}]} = \frac{1}{r}
+$$
+this means the result of the $\log$ loop is $r$ times smaller than the $\exp$ loop. Apparently
+$$
+\frac{C_0^r[\log^2 \frac{1}{x}]}{C_0^r[\exp \frac{1}{x}]} = \frac{2(1+\log(r))}{r}
+$$
+and
+$$
+\frac{C_0^r[\log^3 \frac{1}{x}]}{C_0^r[\exp \frac{1}{x}]} = \frac{3(2+\log(r)^2 + \log(r^2)) - \pi^2}{r}
+$$
+
+\begin{verbatim}
+ExtCInt[f_,p_,r_]:=Integrate[f,Join[{x},Table[p+r(-1)^(2k/4),{k,0,4}]],Assumptions->r<1&&r>0]
+\end{verbatim}
+
+
+We can actually calculate this analytically and we get a table
+\begin{table}[h]
+\begin{tabular}{|c|c|c|}
+\hline
+$f(x)$ & $p$ & Residue$= \frac{I}{2 \pi i}$ \\
+\hline 
+$\log(1/x)$ & $0$ & $r$ \\
+$\log^2(1/x)$ & $0$ & $2 r(1-\log(r))$ \\
+$\log^3(1/x)$ & $0$ & $-t \left(-3 (\log (t)-2) \log (t)+\pi ^2-6\right)$ \\
+$\log^4(1/x)$ & $0$ & $4 t \left(\log (t) \left(-(\log (t)-3) \log (t)+\pi ^2-6\right)-\pi ^2+6\right)$ \\
+$\exp(1/x)$ & $0$ & $1$ \\
+$x^{-1/2}$ & $0$ & $\frac{2 \sqrt{t}}{\pi}$ \\
+$x^{-3/2}$ & $0$ & $\frac{2 }{\pi\sqrt{t}}$ \\
+$x^{-5/2}$ & $0$ & $\frac{-2 }{3\pi \sqrt{t^3}}$ \\
+$x^{1/2}$ & $0$ & $\frac{-2}{3 \pi} t^{3/2}$ \\
+$x^{1/k} $ & $0$ & $-\frac{k t^{\frac{1}{k}+1} \sin \left(\frac{\pi }{k}\right)}{\pi  k+\pi }$ \\
+$x^{-1/k}$ & $0$ & $\frac{k t^{\frac{k-1}{k}} \sin \left(\frac{\pi }{k}\right)}{\pi  (k-1)}$ \\
+$\frac{1}{1-\sqrt{x}}$ & $0$ & $\frac{2}{\pi}(\arctan(\sqrt{t})-\sqrt{t}) $ \\
+$\frac{1}{\sqrt{x}}+\frac{1}{1-\sqrt{x}}$ & $0$ & $\frac{2}{\pi}\arctan(\sqrt{t}) $ \\
+$x^{m/k}$ & $0$ & $\frac{i k t \left((-t)^{\frac{m}{k}}-e^{\frac{m (\log (t)-i \pi )}{k}}\right)}{2 \pi  (k+m)}$ \\
+$x^a$ & $0$ & $-\frac{t^{a+1} \sin (\pi  a)}{\pi  a+\pi }$ \\
+$x^{-a}$ & $0$ & $\frac{i \left(-1+e^{2 i \pi  a}\right) t (-t)^{-a}}{2 \pi  (a-1)}$ \\
+$x^a$ & $-1$ & $\frac{\left((1-t)^{a+1}-(t+1)^{a+1}\right) \sin (\pi  a)}{\pi  (a+1)}$ \\
+$x^a$ & $-c$ & $\frac{\left((c -t)^{a+1}-(t+c )^{a+1}\right) \sin (\pi  a)}{\pi  (a+1)}$ \\
+\hline 
+\end{tabular}
+\end{table}
+
+\pagebreak
+
+Consider the definition of a residue derivative motivated by the above
+$$
+R_t t^{a+1} = \frac{- \pi a}{\sin(\pi a)} t^{a} = -\Gamma(1+a)\Gamma(1-a)t^{a}
+$$
+$$
+R_t t^{a} = -\Gamma(a)\Gamma(2-a)t^{a-1}
+$$
+when applied to a power series (with non-integer) coefficients, this will produce the function, which when the residue at $0$ is taken, will return the original function. The inverse is clearly the 'integral' equivalent, which gives 
+$$
+x^a \to \frac{-x^{a+1}}{\Gamma(1+a)\Gamma(1-a)}
+$$
+we also seem to have 
+$$
+R_t t = \log(1/t)
+$$
+
+a nice equation is 
+$$
+\int_{\gamma \sim -c} x^{s-1} dx = \frac{(c+x)^a -(c-x)^a}{\Gamma(1+s)\Gamma(1-s)}
+$$
+
+% CMellin[f_,p_,r_,s_]:=Integrate[x^(s-1)f,Join[{x},Table[p+r (-1)^(2 k/4),{k,0,4}]],Assumptions->r>0&&r<1]/(2 Pi I) // FullSimplify[#,Assumptions->r>0&&r<1] &
+
+\section{Differential Equations}
+Exponential
+$$
+\left[\int_{-\infty}^\infty \delta(n-1) D^n_x \; dn\right]f(x)=f(x) = \sum_{k=0}^\infty \exp\left( \int_{-\infty}^\infty -\delta(x-1) \log((x)_k)\;dx\right)x^k
+$$
+Bessel J $-f''-x^{-1}f'=f$
+$$
+\left[\int_{-\infty}^\infty (-\delta(n-2)- x^{-1}\delta(n-1)) D^n_x \; dn\right]f(x)=f(x) = \sum_{k=0}^\infty \exp\left( \int_{-\infty}^\infty -2\delta(x-1) \log((x)_k)\;dx\right) \left(\frac{x}{2}\right)^{2k}
+$$
+
+We can imagine sloshing the probability of the differential operators out in a fractional manner, perhaps in a beta distributed way.
+
+For example
+$$
+f(x) = \sum_{k=0}^\infty a_k x^k
+$$
+$$
+D_x^n f(x) = \sum_{k=0}^\infty a_k \frac{\Gamma(k+1)}{\Gamma(k-n+1)} x^{k-n}
+$$
+then a weighted sloshing of the derivative 
+$$
+\int P(n) D_x^n f(x) \; dn = \int P(n) \sum_{k=0}^\infty a_k \frac{\Gamma(k+1)}{\Gamma(k-n+1)} x^{k-n} \;\ dn
+$$
+
+\section{Derivatives}
+By taking derivatives of the dirac delta functions we reach a new type of 'hypergeometric' series as 
+$$
+\sum_{k=0}^\infty ( -\psi ^{(0)}(a+k)+\psi ^{(0)}(a)-\psi ^{(0)}(b+k)+\psi ^{(0)}(b)+\psi ^{(0)}(c+k)-\psi ^{(0)}(c)+H_k)x^k
+$$
+this seems intricately connected to the umbral world where ratios of terms are taken. We should consider what the equivalent of the Mellin transform is in this case!
+
+\subsection{Harmonic Derivative}
+We can introduce the harmonic derivative. The eigenfunction of this is given by the series 
+$$
+\textrm{hexp}(x) = \sum_{k=0}^\infty H_k x^k = - \frac{\log(1-x)}{1-x}
+$$
+with harmonic numbers $H_k$. The harmonic derivative for powers of $x$ is defined by 
+$$
+H_x[a x^k] = (a - \frac{1}{k})x^{k-1}
+$$
+notably $H_x[x] = 0$. We can now see that 
+$$
+H_x \textrm{hexp}(x) = \textrm{hexp}(x)
+$$
+thus the solution to the harmonic differential equation 
+$$
+H_x f(x) = f(x)
+$$
+is given by the harmonic exponential function $\textrm{hexp}(x)$. We see that the factorial $1/k!$ is replaced by $H_k$ and in general Pochhammer symbols $(a)_k$ are replaced by $\psi^{(0)}(a) - \psi^{(0)}(a+k)$. We see that these series are unlikely to have a constant term.
+
+We find that $\textrm{hexp}(i x)$ has a nice real and imaginary part. We can define harmonic trigonometric functions
+$$
+\textrm{hexp}(i x) = \textrm{hcos}(x) + i \textrm{hsin}(x) 
+$$
+we have 
+$$
+\textrm{hcos}(x) = \sum_{k=1}^\infty (-1)^k H_{2k} x^{2k} = -\frac{\log \left(x^2+1\right)}{2 x^2+2}-\frac{2 x \tan ^{-1}(x)}{2 x^2+2}
+$$
+$$
+\textrm{hsin}(x) = \sum_{k=1}^\infty (-1)^{k+1} H_{2k-1} x^{2k-1} = \frac{\tan ^{-1}(x)}{x^2+1}-\frac{x \log \left(x^2+1\right)}{2 \left(x^2+1\right)}
+$$
+we have that 
+$$
+H_x \textrm{hsin}(x) = \textrm{hcos}(x)
+$$
+$$
+H_x \textrm{hcos}(x) = -\textrm{hsin}(x)
+$$
+we can speculate that the harmonic Fourier transform will be a form of wavelet transform. The cos term has the right shape.
+
+$$
+\int_0^\infty \frac{\textrm{hexp}(-x)}{x} \; dx = - \zeta(2)
+$$
+
+in terms of a Mellin transform we appear to converge in the strip $-2<\Re{[s]}<0$, there is some degree of symmetry around $-1\pm 1/n$
+
+$$
+-G_{3,3}^{3,2}\left(1\left|
+                   \begin{array}{c}
+                    -\frac{9}{10},0,\frac{1}{10} \\
+                    -\frac{9}{10},-\frac{9}{10},0 \\
+                   \end{array}
+                   \right.\right)
+$$
+$$
+ -G_{3,3}^{3,2}\left(1\left|
+                   \begin{array}{c}
+                    -\frac{19}{20},0,\frac{1}{20} \\
+                    -\frac{19}{20},-\frac{19}{20},0 \\
+                   \end{array}
+                   \right.\right)
+$$
+we appear to have 
+$$
+\int_0^\infty x^{-\frac{1}{n}}\textrm{hexp}(-x) \; dx = -G_{3,3}^{3,2}\left(1\left|
+                   \begin{array}{c}
+                    0,\frac{1}{n}-1,\frac{1}{n} \\
+                    0,\frac{1}{n}-1,\frac{1}{n}-1 \\
+                   \end{array}
+                   \right.\right)
+$$
+
+\subsection{The Harmonic Laplace Transform}
+$$                   
+\int_0^\infty e^{-x}\textrm{hexp}(-x) \; dx =  -e \left(\frac{1}{2} \left(\gamma ^2+\frac{\pi ^2}{6}\right)-\, _3F_3(1,1,1;2,2,2;-1)\right)            
+$$
+this hypergeometric term is clearly related to a polylogarithm.
+$$
+\int_0^\infty e^{-x}\textrm{hexp}(-k x) \; dx = \fbox{$-e^{\frac{1}{k}} k \left(\frac{\frac{1}{2} \log ^2\left(\frac{1}{k}\right)+\gamma  \log \left(\frac{1}{k}\right)+\frac{\pi ^2}{12}+\frac{\gamma ^2}{2}}{k^2}-\frac{\,
+    _3F_3\left(1,1,1;2,2,2;-\frac{1}{k}\right)}{k^3}\right)\text{ if }\Im(k)\neq 0\lor \Re(k)\geq 0$}
+$$
+these become apparent as related to the generating functions and exponential generating functions of the 'hyperharmonic' numbers.
+\begin{verbatim} https://en.wikipedia.org/wiki/Hyperharmonic_number \end{verbatim}
+
+The harmonic Laplace transform of hexp(-x) gives
+$$
+\fbox{$\frac{6 \text{Li}_3\left(\frac{1}{k}\right)+6 \text{Li}_2\left(\frac{1}{k}\right) (\log (k)-\gamma )+2 \text{Li}_2\left(\frac{k-1}{k}\right) (\log (k)-3 \gamma +2)+3 (2 \gamma -\log (k)) (\log (k-1)-\log (k))
+    \log (k)-6 \zeta (3)+\gamma  \pi ^2}{2 (k-1)}-\frac{2 \text{HypergeometricPFQ}^{(\{0,0,0\},\{0,1\},0)}\left(\{1,1,1\},\{2,2\},\frac{k-1}{k}\right)}{k}\text{ if }(\Re(k)\geq 0\lor k\notin \mathbb{R})\land \Re(k)<1$}
+$$
+
+% Cos minimum -0.63492879178810795299, x -> -1.5009042832369512837
+
+\subsection{Harmonic Ramanujan Master Theorem}
+We can try to mimic this concept and introduce the harmonic gamma function
+$$
+\mathcal{H}[\textrm{hexp}(-x)](s) = \Gamma_h(s)
+$$
+we should then have that the harmonic gamma function has residues equal to the harmonic numbers at the negative integers (or potentially the reciprocals of the integers $1/2,1/3,1/4$ etc.)
+
+\subsection{Umbral Connection}
+We can speculate that if a given hypergeometric function solves a differential equation, then the equivalent hyperharmonic function will solve the transformed equation. We consider the eigenfunctions that satisfy
+$$
+z H_z f(z) = \lambda f(z)
+$$
+is is likely that no solution exists for $\lambda =1$.
+
+It seems that the harmonic derivative of a monomial equals the original monomial at the same coefficient as the derivative and at zero.
+
+
+\section{Hypergeometric Derivative}
+Define a hypergeometric derivative operator such that the eigenfunction is the appropriate hypergeometric function. We then have 
+$$
+D^{a,b;c}_x x^k = \frac{k(c+k-1)}{(a+k-1)(n+k-1)}x^{k-1}
+$$
+with the regular derivative as 
+$$
+D^;_x x^k = k x^k
+$$
+according to 
+$$
+\;_0F_0(;;x) = e^x
+$$
+
+we can then have extended differential equations such as 
+$$
+D^{a,b;c}_x f(x) = f(x)
+$$
+solution $f(x) = \,_2F_1(a,b;c;x)$, but more interestingly the hypergeometric Schrödinger equation
+$$
+-\frac{\hbar^2}{2m} [D^{a,b;c}_x]^2 f(x) + V(x)f(x) = \lambda f(x)
+$$
+if we consider no potential
+$$
+-\frac{\hbar^2}{2m} [D^{a,b;c}_x]^2 f(x) = \lambda f(x)
+$$
+as a series 
+$$
+f(x) = \sum_{k=0}^\infty a_k x^k
+$$
+$$
+-\frac{\hbar^2}{2m} [D^{a,b;c}_x]^2 \sum_{k=0}^\infty a_k x^k = \lambda \sum_{k=0}^\infty a_k x^k
+$$
+$$
+-\frac{\hbar^2}{2m} [D^{a,b;c}_x]\sum_{k=1}^\infty a_k  \frac{k(c+k-1)}{(a+k-1)(n+k-1)} x^{k-1} = \lambda \sum_{k=0}^\infty a_k x^k
+$$
+$$
+-\frac{\hbar^2}{2m}\sum_{k=2}^\infty a_k  \frac{k(c+k-1)}{(a+k-1)(n+k-1)} \frac{(k-1)(c+k-2)}{(a+k-2)(n+k-2)} x^{k-2} = \lambda \sum_{k=0}^\infty a_k x^k
+$$
+$$
+\sum_{k=0}^\infty a_{k+2}  \frac{(k+2)(c+k+1)}{(a+k+1)(n+k+1)} \frac{(k+1)(c+k)}{(a+k)(n+k)} x^{k} = -\frac{2m}{\hbar^2}\lambda \sum_{k=0}^\infty a_k x^k
+$$
+
+for $a_0 = 1$ and $a_1 = 0$ we have 
+$$
+f(x) = \, _4F_3\left(\frac{a}{2}+\frac{1}{2},\frac{a}{2},\frac{b}{2}+\frac{1}{2},\frac{b}{2};\frac{1}{2},\frac{c}{2}+\frac{1}{2},\frac{c}{2};-\frac{2 \lambda  m x^2}{\hbar^2}\right)
+$$
+for $a=1/2,b=-1/2,c=1$ which corresponds to an elliptic E function, we have
+$$
+f(x) = \frac{E\left(-\sqrt{2} \sqrt{-\frac{\lambda  m x^2}{h^2}}\right)+E\left(\sqrt{2} \sqrt{-\frac{\lambda  m x^2}{h^2}}\right)}{\pi }
+$$
+\textbf{DOES THIS MATCH RELATIVITY? CAN WE DESCRIBE THE METRIC CHANGES AS A CHANGE IN THE MEANING OF DERIVATIVE?}
+
+Consider the change of differential equation, but the solution remains the same... For some functions the argument of the differential operator will be $-x^2$ for example. Then if we have a function of $x$, this is actually a function of $-x^2$ and so on.  If this is an energy eigenvalue we have 
+$$
+f(x) = \, _4F_3\left(\frac{a}{2}+\frac{1}{2},\frac{a}{2},\frac{b}{2}+\frac{1}{2},\frac{b}{2};\frac{1}{2},\frac{c}{2}+\frac{1}{2},\frac{c}{2};-\frac{2 E  m x^2}{\hbar^2}\right)
+$$
+the argument 
+$$
+-\frac{2 E  m x^2}{\hbar^2}
+$$
+when square rooted turns into 
+$$
+i\frac{\sqrt{2 E  m}}{\hbar} x = i k x
+$$
+for a plane wave.
+
+When $a=1,b=1,c=1$ we get a Cauchy distribution type shape. Does this mean the solution to a hypergeometric Schrödinger equation also gives some of the commonly seen physics equations ?
+$$
+f(x) = \, _4F_3\left(\frac{a}{2}+\frac{1}{2},\frac{a}{2},\frac{b}{2}+\frac{1}{2},\frac{b}{2};\frac{1}{2},\frac{c}{2}+\frac{1}{2},\frac{c}{2};\left(i\frac{\sqrt{2 E  m}}{\hbar} x\right)^2\right)
+$$
+where would a hypergeometric differential equation arise in physics? Essentially, whenever a hypergeometric solution exists to a problem, we can take the differential equation that generated that solution and rewrite it as a hypergeometric differential equation.
+
+\subsection{Hypergeometric Wave Equation}
+Consider 
+$$
+D_{a,b;c,t}^2 u(x,t) = c^2  D_{a,b;c,x}^2 u(x,t)
+$$
+second derivatives..
+
+
+The derivative of $e^x$ 
+$$
+ \frac{(a-c) (-x)^{-a} \Gamma (a)}{a-b}-\frac{(b-c) (-x)^{-b} \Gamma (b)}{a-b}+\frac{c (-x)^{-a} \Gamma (a,-x)}{a-b}-\frac{c (-x)^{-b} \Gamma (b,-x)}{a-b}-\frac{(-x)^{-a} \Gamma (a+1,-x)}{a-b}+\frac{(-x)^{-b} \Gamma
+    (b+1,-x)}{a-b}
+$$
+
+consider as above... but use a separable solution
+$$
+u(x,t) = f(x)g(t)
+$$
+we can postulate that 
+$$
+u(x,t) = \, _4F_3\left(\frac{a}{2}+\frac{1}{2},\frac{a}{2},\frac{b}{2}+\frac{1}{2},\frac{b}{2};\frac{1}{2},\frac{c}{2}+\frac{1}{2},\frac{c}{2};-k^2 x^2\right)\, _4F_3\left(\frac{a}{2}+\frac{1}{2},\frac{a}{2},\frac{b}{2}+\frac{1}{2},\frac{b}{2};\frac{1}{2},\frac{c}{2}+\frac{1}{2},\frac{c}{2};\omega^2 t^2\right)
+$$
+
+\subsection{Limits}
+We have
+$$
+\lim_{a \to \infty} \, _1F_0\left(a;\frac{x}{a}\right) = e^x
+$$
+and in analogy to this,
+$$
+\lim_{a \to \infty} D_{x/a} = D_x
+$$
+
+
+$$
+-\frac{\hbar^2}{2m} [D^{a;}_x]^2 f(x) + V(x)f(x) = \lambda f(x)
+$$
+if we consider no potential
+$$
+-\frac{\hbar^2}{2m} [D^{a;}_x]^2 f(x) = \lambda f(x)
+$$
+as a series 
+$$
+f(x) = \sum_{k=0}^\infty a_k x^k
+$$
+$$
+-\frac{\hbar^2}{2m} [D^{a;}_x]^2 \sum_{k=0}^\infty a_k x^k = \lambda \sum_{k=0}^\infty a_k x^k
+$$
+$$
+-\frac{\hbar^2}{2m} [D^{a;}_x] \sum_{k=1}^\infty a_k \frac{k}{(a+k-1)} x^{k-1} = \lambda \sum_{k=0}^\infty a_k x^k
+$$
+$$
+-\frac{\hbar^2}{2m} \sum_{k=2}^\infty a_k \frac{k(k-1)}{(a+k-1)(a+k-2)} x^{k-2} = \lambda \sum_{k=0}^\infty a_k x^k
+$$
+$$
+-\frac{\hbar^2}{2m} \sum_{k=2}^\infty a_{k+2} \frac{(k+1)(k+2)}{(a+k+1)(a+k)} x^{k} = \lambda \sum_{k=0}^\infty a_k x^k
+$$
+a general solution is given by 
+$$
+f(x) = \left(\frac{2 E m x^2}{h^2}+1\right)^{-a} \left(c_2 \left(1-\sqrt{2 E} x \sqrt{-\frac{m}{h^2}}\right)^a+c_1 \left(\sqrt{2 E} x \sqrt{-\frac{m}{h^2}}+1\right)^a\right)
+$$
+if we let $x-x/a$ and take the infinite limit we get 
+$$
+\lim_{a\to \infty}f\left(\frac{x}{a}\right) = c_1 e^{\sqrt{2 e} x \sqrt{-\frac{m}{h^2}}}+c_2 e^{-\sqrt{2 e} x \sqrt{-\frac{m}{h^2}}}
+$$
+which is the plane wave solution to the Schrödinger equation. 
+$$
+\lim_{a\to \infty}f\left(\frac{x}{a}\right) = c_1 e^{i k x}+c_2 e^{- i k x}
+$$
+so what does this more general solution describe?
+$$
+f(x) = \left(1 + k^2 x^2\right)^{-a} \left(c_2 \left(1-ikx\right)^a+c_1 \left(1 + i k x \right)^a\right)
+$$
+they always appear to look like Cauchy type distributions. With $a=1,k=1$ the one above  integrates to $\pi$. If we divide $x$ by $a$ and take the large $a$ limit, we see a wave packet forming, this eventually stretches into a wave. Very interestingly in this case, if $a \to -\infty$ we also get a wave that is the same. When $a=0$ it is a flat solution.
+
+\section{Computation of DE}
+The generalised hypergeometric equation is 
+$$
+z\prod_{n=1}^{p}\left(z\frac{{\rm{d}}}{{\rm{d}}z} + a_n\right)w = z\frac{{\rm{d}}}{{\rm{d}}z}\prod_{n=1}^{q}\left(z\frac{{\rm{d}}}{{\rm{d}}z} + b_n-1\right)w
+$$
+thus we know that the annihilating operator is given by
+$$
+\left[z\prod_{n=1}^{p}\left(z\frac{{\rm{d}}}{{\rm{d}}z} + a_n\right) -  z\frac{{\rm{d}}}{{\rm{d}}z}\prod_{n=1}^{q}\left(z\frac{{\rm{d}}}{{\rm{d}}z} + b_n-1\right) \right] w = 0 
+$$
+therefore the(/an) eigenoperator is
+$$
+\left[z\prod_{n=1}^{p}\left(z\frac{{\rm{d}}}{{\rm{d}}z} + a_n\right) -  z\frac{{\rm{d}}}{{\rm{d}}z}\prod_{n=1}^{q}\left(z\frac{{\rm{d}}}{{\rm{d}}z} + b_n-1\right) + \lambda \right] w = \lambda w
+$$
+
+for the regular function we have 
+$$
+z(1-z)\frac {d^2w}{dz^2} + \left[c-(a+b+1)z \right] \frac {dw}{dz} - ab\,w = 0.
+$$
+or 
+$$
+\frac{z(1-z)}{ab}\frac {d^2w}{dz^2} + \left[\frac{c-(a+b+1)z}{ab} \right] \frac {dw}{dz}= w.
+$$
+so we can argue that 
+$$
+D_{a,b;c;x} f(x) = \left[\frac{z(1-z)}{ab} D_z^2 + \frac{c-(a+b+1)z}{ab} D_z \right]f(x)
+$$
+\begin{verbatim}
+HD[f_,a_,b_,c_,x_]:= x(1-x)/a/b D[f,{x,2}] + (c-(a+b+1)x)/a/b D[f,x]
+\end{verbatim}
+This gives a method to solve differential equations in terms of standard operators.
+
+\section{Mellin Transform}
+We find the Mellin transform of the hypergeometric derivative is 
+$$
+\mathcal{M}[g^H(x)](s) = \frac{1}{a b}\left( (s-1)(s-c)\varphi(s-1) + s(a+b-s)\varphi(s) \right)
+$$
+with $\mathcal{M}[g(x)](s) = \varphi(s)$
+$$
+(s-1) (c-s) \left(-2 s
+    (a+b+1)+a+b+2 s^2+1\right)
+    \mathcal{M}_x[g(x)](s-1)
+    +s^2 (a+b-s)^2
+    \mathcal{M}_x[g(x)](s)
+    +(s-2) (s-1) (c-s) (c-s+1)
+    \mathcal{M}_x[g(x)](s-2)
+$$
+
+in order to organise this in a better way
+$$
+\mathcal{M}[g^H(x)](s) = \frac{1}{ab}( k_{10} \varphi(s) + k_{11} \varphi(s-1))
+$$
+$$
+\mathcal{M}[g^{2H}(x)](s) = \frac{1}{a^2b^2}( k_{20} \varphi(s) + k_{21} \varphi(s-1) + k_{22} \varphi(s-2))
+$$
+with 
+\begin{align}
+k_{00} = 1 \\
+k_{10} = (s-1)(s-c) \\
+k_{11} = s(a+b-s) \\
+k_{20} = s^2 (a+b-s)^2 = k_{11}^2\\
+k_{21} = (s-1)(c-s)(-2 s(a+b+1)+a+b+2s^2+1) \\
+k_{22} = (s-2)(s-1)(s-c)(s-c-1)
+\end{align}
+\begin{verbatim}
+V*MellinTransform[g[x], x, 2 + s] == E*MellinTransform[g[x], x, s] +
+  (h^2*((-2 + s)*(-1 + s)*(-1 - cc + s)*(-cc + s)*MellinTransform[g[x], x,
+       -2 + s] + (cc - s)*(-1 + s)*(1 + aa + bb - 2*(1 + aa + bb)*s + 2*s^2)*
+      MellinTransform[g[x], x, -1 + s] + (aa + bb - s)^2*s^2*
+      MellinTransform[g[x], x, s]))/(2*aa^2*bb^2*m)
+\end{verbatim}
+\begin{verbatim}
+V*p[s+2] == E*p[s] +
+  (h^2*((-2 + s)*(-1 + s)*(-1 - cc + s)*(-cc + s)*p[s-2] + (cc - s)*(-1 + s)*(1 + aa + bb - 2*(1 + aa + bb)*s + 2*s^2)*
+      p[s-1] + (aa + bb - s)^2*s^2*
+      p[s]))/(2*aa^2*bb^2*m)
+\end{verbatim}
+
+\section{Integration}
+We can consider an integration such that if 
+$$
+D^H_x g(x) = f(x)
+$$
+then 
+$$
+\int f(x) D^H_x = g(x) + C
+$$
+extending the notion of an antiderivative.
+For example
+$$
+D^H_x e^x = \frac{e^x (\gamma -x (\alpha +\beta +1))}{\alpha  \beta }+\frac{e^x (1-x) x}{\alpha  \beta }
+$$
+then we should have 
+$$
+\int D^H_x \frac{e^x (\gamma -x (\alpha +\beta +1))}{\alpha  \beta }+\frac{e^x (1-x) x}{\alpha  \beta }  = e^x + C
+$$
+we also have 
+$$
+\int D_x^H x^k = \frac{(a+k)(b+k)}{(c+k)(k+1)} x^{k+1} + C
+$$
+presumably
+$$
+\int_0^1 D_x^H x^k = \frac{(a+k)(b+k)}{(c+k)(k+1)}, \;\;\Re[k]>-1
+$$
+therefore
+$$
+\prod_{k=0}^{n-1} \int_0^1 D_x^H x^k = \prod_{k=0}^{n-1} \frac{(a+k)(b+k)}{(c+k)(k+1)} = c_n
+$$
+and 
+$$
+\sum_{n=0}^\infty \left[\prod_{k=0}^{n-1} \int_0^1 D_x^{\,_2F_1} x^k\right]x^n = \,_2F_1(a,b;c;x)
+$$
+this reveals a definition of functions in the same (regular derivative) begin
+$$
+\sum_{n=0}^\infty \left[\prod_{k=0}^{n-1} \int_0^1 dx x^k\right]x^n = e^x
+$$
+we can consider relations to Bernoulli polynomials.
+
+
+Thus for an analytic function, can we write
+$$
+f(x) = \sum_{n=0}^\infty a_n x^n
+$$
+and 
+$$
+a_n = \left[\prod_{k=0}^{n-1} \int_0^1 D_x^{f} x^k\right]
+$$
+? Or does this only work for some kind of two term recurrence structure?
+
+\section{Polynomials}
+Which special polynomials are defined using derivatives in this way? If we take the Rodriguez formula and convert the derivaitve to the hypergeometric equivalent, we get extended polynomials:
+
+$$
+H_1(x) =  \frac{2 (\gamma +1) x}{\alpha  \beta }-\frac{2 x^2 (\alpha +\beta +2)}{\alpha  \beta }-\frac{4 x^3}{\alpha  \beta }+\frac{4 x^4}{\alpha  \beta } 
+$$
+$$
+H_2(x) =  -\frac{2 (\gamma  (\gamma +1))}{\alpha ^2 \beta ^2}+\frac{2 (\gamma +1) x (3 \alpha +3 \beta +5)}{\alpha ^2 \beta ^2}-\frac{4 x^2 \left(\alpha ^2+2 \alpha  (\beta +2)+\beta  (\beta +4)-\gamma  (\gamma
+    +7)-5\right)}{\alpha ^2 \beta ^2}-\frac{4 x^3 (2 \gamma  (\alpha +\beta +5)+9 \alpha +9 \beta +35)}{\alpha ^2 \beta ^2}+\frac{4 x^4 \left(\alpha ^2+2 \alpha  (\beta +6)+\beta ^2+12 \beta -4 \gamma +12\right)}{\alpha ^2 \beta
+    ^2}+\frac{16 x^5 (\alpha +\beta +\gamma +10)}{\alpha ^2 \beta ^2}-\frac{16 x^6 (\alpha +\beta +5)}{\alpha ^2 \beta ^2}-\frac{32 x^7}{\alpha ^2 \beta ^2}+\frac{16 x^8}{\alpha ^2 \beta ^2}
+$$
+these quickly get very large... 
+
+\section{As a derivative}
+$$
+\left\{\left\{f(x)\to c_1 x^{\frac{k (c+k-1)}{(a+k-1) (b+k-1)}}\right\}\right\}
+$$
+
+
+\section{Integration as DE}
+We can interpret the problem 
+$$
+f(x) + C = \int g(x) D_x^{a,b;c} 
+$$
+for known $g(x)$ as the solution to the DE, 
+$$
+D^{a,b;c}_x f(x) = g(x)
+$$
+which is integrable (in terms of the new operator). 
+
+Side effect, we find that 
+$$
+D^{a,b;c}_x B_x(1-c,c-a-b) = 0
+$$
+i.e. this function is annihilated by the 2F1 hypergeometric derivative. If constants are annihilated by the normal derivative, then this might resemble a hypergeometric constant. The solution, for $g(x) = 1/x$ does indeed contain two constants, one normal integration constant, and another was $C B_x(1-c,c-a-b)$.
+
+For the elliptic $K$ function and $g(x)$ we get anti-hypergeometric derivative for the integral as 
+$$
+\left\{\left\{f(x)\to \frac{1}{8} (-2 \text{Li}_2(x)+(\log (x)+4 c_1) (-2 \log (1-x)+\log (x)+4 c_1))+c_2\right\}\right\}
+$$
+with zero constants this is 
+$$
+ -\frac{\text{Li}_2(x)}{4}+\frac{\log ^2(x)}{8}-\frac{1}{4} \log (1-x) \log (x)
+$$
+we can parametrise a contour around $0$ as the contour $\gamma = [1,i]\cup[i,-1]\cup [-1,-i] \cup[-i,1]$ then 
+$$
+\int_\gamma \frac{1}{x} \; D^{a,b;c}_x 
+$$
+these pieces relate to the Catalan constant, but sum to zero.
+
+Better is a parametrisation of the unit circle.. Normally we set $x = e^{i z}$ and $dx = i e^{i z} dz$ however now we are considering the hypergeometric integral, and instead use 
+$$
+\frac{D^{a,b;c} x}{D^{a,b;c} z} = \frac{D^{a,b;c} e^{i z}}{D^{a,b;c} z} = D_z^{a,b;c} e^{i z} = \frac{i c e^{i z}}{a b}+\frac{e^{i z} z^2}{a b}-\frac{(1+i) e^{i z} z}{a b}-\frac{i e^{i z} z}{a}-\frac{i e^{i z} z}{b} = \lambda(z)
+$$
+this gives the contour integral 
+$$
+\int_0^{2 \pi} \frac{\lambda(z)}{e^{i z}} D^{a,b;c}_z
+$$
+which is interpreted as the limits of a solution to the differential equation 
+$$
+D_z^{a,b;c} f(x) = \frac{\lambda(z)}{e^{i z}}
+$$
+solved by 
+$$
+f(x) = ...
+$$
+complicated expression. with $a=b=1/2$ we arrive at the residue 
+$$
+ \frac{1}{3} \pi  c \, _2F_1(1,1;c+1;2 \pi )-\frac{2}{3} \pi  \, _2F_1(1,1;c+1;2 \pi )-\frac{\pi  c}{3}+\frac{\left(\frac{1}{2 \pi }-1\right)^{c-1}
+    c_1}{1-c}-\frac{0^{1-c} c_1}{1-c}-\frac{2 \pi ^2}{3}+\left(\frac{2}{3}+2 i\right) \pi
+$$
+there is clearly a $2 \pi I$ term in there as we might expect. The rest is somewhat complicated.
+If we set $c=a+b$ and then take limits, we can by setting $c_0=0$ get a form 
+$$
+\int_\gamma \frac{1}{x} \; D^{1/2,1/2;1}_x  = \frac{1}{6} \left((2+13 i) \pi -4 \pi ^2+\log (2 \pi -1)\right)
+$$
+
+Consider something a little easier:
+$$
+\int e^{-x} D^{1,1;1}_x =  \left\{\left\{f(x)\to -\frac{\text{Ei}(1-x)}{e}-c_1 \log (x-1)+\frac{e^{-x}+c_1 (-(x-1)) \log (x)+c_1}{1-x}+c_2\right\}\right\}
+$$
+we find that if $c_1 \to 0$
+$$
+\int_0^\infty  e^{-x} D^{1,1;1}_x =  \frac{1}{e}\mathrm{Ei}(1) - 1
+$$
+
+In general 
+$$
+\int g(x) D^{a,b;c}_x = \int _1^x\exp (\log (1-y)^{c-a-b-1}-\log y^c) \int _1^{y}-\frac{a b \exp (c \log (z)-(-a-b+c-1) \log (1-z))
+    g(z)}{(z-1) z}dzdy
+$$
+$$
+\int g(x) D^{a,b;c}_x = a b \int _1^x (1-y)^{c-a-b-1}y^{-c} \int _1^{y}-\frac{ \exp (\log (z^c)+\log (1-z)^{-(-a-b+c-1)})
+    g(z)}{(z-1) z}dzdy
+$$
+this looks like a double beta integral
+$$
+\int g(x) D^{a,b;c}_x = a b \int _1^x (1-y)^{c-a-b-1}y^{-c} \int _1^{y} z^{c-1}(1-z)^{a+b-c}g(z)dzdy
+$$
+i.e. this is the function that solves 
+$$
+D^{a,b;c}_x f(x) = g(x)
+$$
+the more general form with constants of integration is 
+$$
+\int g(x) D^{a,b;c}_x = \int _1^x(1-y)^{-a-b+c-1} y^{-c} \left(c_1+ a b \int _1^y g(z) (1-z)^{a+b-c} z^{c-1}dz\right)dy + c_2
+$$
+this explains the origin of the incomplete beta function which is annihilate by $D_x^{a,b;c}$. This can be seen as a pair of transforms, and there is an interesting interpretation in the coefficients $a,b,c$ where the signs flip. A nice example is the elliptic case when $c=1$ and $a=b=1/2$ giving:
+$$
+\int g(x) D^{1/2,1/2;1}_x = \int _1^x(1-y)^{-1} y^{-1} \left(c_1+ \frac{1}{4}\int _1^y g(z)dz\right)dy + c_2
+$$
+which under certain circumstances is 
+$$
+\int g(x) D^{1/2,1/2;1}_x = \int _1^x \frac{G(y)}{4y(1-y)} \; dy
+$$
+. Additionally, we have the eigenfunctions satisfying $D^{a,b;c}_x f(x) = f(x)$ as 
+$$
+f(x) = \int f(x) D^{a,b;c}_x = \int _1^x(1-y)^{-a-b+c-1} y^{-c} \left(c_1+ a b \int _1^y f(z) (1-z)^{a+b-c} z^{c-1}dz\right)dy + c_2
+$$
+so we can write 
+$$
+\,_2F_1(a,b,c,x) = a b \int _1^x(1-y)^{-a-b+c-1} y^{-c} \int _1^y \,_2F_1(a,b,c,z) (1-z)^{a+b-c} z^{c-1}dz dy
+$$
+an interesting form of this is
+$$
+\,_2F_1(a,b,c,x) = a b \int _1^x \int _1^y  \frac{\,_2F_1(a,b,c,z)}{y(1-y)}\left(\frac{1-z}{1-y}\right)^{a+b-c} \left(\frac{z}{y}\right)^c dz dy
+$$
+it seems very important that $B_x(1-c,c-a-b)$ vanishes when the operator is applied. This means any integral solution caries a constant term times this, because it will vanish when the operator is reverse applied. This means there are two types of constant, a true constant and a parametric constant that depends on $a,b,c$. However, it seems this terms is also a function of $x$! This means some of the rules normally associated with integration etc. will no longer apply.
+
+Problematic is that $B_x(0,0)=\infty$, and this means a divergent term for many commonly seen hypergeometric functions. It is interesting to note that $B(n,1) \to x^n/n$ which is the quantity that when differentiated, gives the unit coefficient power of x below. It seems that $(1-c)(c-a-b)B_x(1-c,c-a-b)\to 0$ when the factors all go to zero.
+
+\subsection{List of Key Functions}
+Derivative (annihilates constants)
+$$
+D_x \to c_1
+$$
+$$
+D_x^2 \to c_2 + c_1 x
+$$
+$$
+D_x^n \to \sum_{k=1}^n c_k x^{k-1}
+$$
+
+Hypergeometric Equation 
+$$
+D^{a,b;c} \to c_2 + c_1 B_x(1-c,c-a-b)
+$$
+Bessel equation 
+$$
+D^{Bess,a}_x = \frac{x^2}{x^2-a^2}D_x^2 + \frac{x}{x^2-a^2}D_x \to c_2 + c_1 \log(x)
+$$
+Airy equation
+$$
+D^{Airy}_x = \frac{1}{x}D_x^2 \to c_2 + c_1 x
+$$
+Hermite 
+$$
+D^{Hermite,\lambda}_x = -\frac{1}{2 \lambda} D_x^2 + \frac{x}{\lambda} D_x \to c_1 + c_2 \frac{\sqrt{\pi}}{2} \mathrm{erfi}(x)
+$$
+Legendre
+$$
+D^{Legendre,\lambda}_x = -\frac{1}{\lambda} D_x( (1-x^2) D_x) \to c_2 - c_1 \mathrm{arctanh}(x)
+$$
+Laguerre
+$$
+c_2 + c_1 \mathrm{Ei}(x)
+$$
+Kummer (Power times Exp integral)
+$$
+\frac{z}{a} D_z^2 + \frac{b-z}{a} D_z \to c_2-c_1 x^{1-b} E_b(-x)
+$$
+Heun (!!) likely $\epsilon = \alpha + \beta - \gamma - \delta +1$, AppelF1 function.
+$$
+- \frac{z(z-1)(z-a)}{\alpha \beta z -q}D_z^2 - \frac{z(z-1)(z-a)}{\alpha \beta z -q}\left( \frac{\gamma}{z}+\frac{\delta}{z-1} +\frac{\epsilon}{z-a}\right) D_z \to c_2-\frac{c_1 x^{1-\gamma} (x-a)^{-\epsilon} \left(1-\frac{x}{a}\right)^{\epsilon} F_1\left(1-\gamma;\delta,\epsilon;2-\gamma;x,\frac{x}{a}\right)}{\gamma-1}
+$$
+Schrodinger (general potential)
+$$
+\frac{-\hbar^2}{2 m E} D_x^2 + \frac{V(x)}{E} \to  \int _1^x\int _1^{K[2]}\frac{2 m V(K[1])}{h^2}dK[1]dK[2]+c_2 x+c_1
+$$
+Schrodinger (Vacuum) [Same as Airy function]
+$$
+\frac{-\hbar^2}{2 m E} D_x^2 \to c_2 + c_1 x
+$$
+Schrodinger (Harmonic)
+$$
+\frac{-\hbar^2}{2 m E} [D_x^2 + \frac{1}{2 E} m \omega^2 x^2]f(x) \to \left\{\left\{f(x)\to c_2 D_{-\frac{1}{2}}\left(\frac{i \sqrt{2} \sqrt{m} \sqrt{\omega } x}{\sqrt{h}}\right)+c_1 D_{-\frac{1}{2}}\left(\frac{\sqrt{2} \sqrt{m} \sqrt{\omega } x}{\sqrt{h}}\right)\right\}\right\}
+$$
+Painlev\'e I
+$$
+\sqrt{\frac{1}{6}D_x^2 - \frac{t}{6}}  \to \wp (x+c_1;-2 t,c_2) \to  \left\{\left\{f(x)\to \frac{t x^2}{2}+c_2 x+c_1\right\}\right\}
+$$
+Gegenbauer
+$$
+-\frac{1-x^2}{n(n+2 a)}D_x^2 + \frac{x(2a+1)}{n(n+2a)}D_x \to c_2 +  c_1 x \, _2F_1\left(\frac{1}{2},a+\frac{1}{2};\frac{3}{2};x^2\right)
+$$
+Jacobi
+$$
+\to c_2-c_1 2^{-a-b-1} B_{\frac{1-x}{2}}(-a,-b)
+$$
+Chebyshev
+$$
+\to c_1 \tanh ^{-1}\left(\frac{x}{\sqrt{x^2-1}}\right)+c_2
+$$
+Chebyshev
+$$
+\to c_2-\frac{c_1 x}{\sqrt{x^2-1}}
+$$
+
+thus it seems that a function defines the operator in the above way, as the function which is annihilated by the operator. Then by getting the eigenfunction of the operator we define a new special function.
+
+\textbf{Can we form a graph, where the eigenfunction of one operator becomes the annihilating function of another operator?}.
+
+The above motivates the naming of the Heun associated function and understanding its properties.
+
+\textbf{Apparently in a linear potential (see the airy interpretation of the Schrödinger equation) we can write the Schrödinger solution in terms of Airy functions.} We find the linear part, but doing the above process. Then we find (or define) the eigenfunction in terms of the original equation (or another equation that reduces to the same expression???) then we can write the solution of the more complex equation in these terms?). Also note that if we add a quartic term to the harmonic wavefunction, it will be annihilated...
+
+\subsection{Powers of Operators}
+Consider the above but take powers of these operators...
+
+The function that $D^2_{bessel}$ annihilates is 
+$$
+ \frac{1}{12} \log (x) \left(3 \left(c_3 x^2+4 c_1\right)-2 a^2 \log (x) (c_3
+    \log (x)+3 c_2)\right)+\frac{1}{4} (c_2-c_3) x^2+c_4
+$$
+which is the function that when $D_{bess}$ is applied, gives $c_2 + c_1 \log(x)$. Thus we can consider a series expansion in terms of these functions! If we have the solution 
+$$
+D^n_{?} S_n(x) = 0 
+$$
+then if we write a function as an expansion
+$$
+f(x) = a_0 S_0(x) + a_1 S_1(x) + a_2 S_2(x) + \cdots = \sum_{k=0}^\infty a_k S_k(x)
+$$
+this is a generating function with respect to the operator $D_?$, we know that everything will shift down upon repeated application.
+One potential problem, is that the constant is wiped out by any of the operators. Thus for example we have an Airy series
+$$
+f(x) = a_0(b_0 + b_1 x) + a_1( \frac{b_2 x^3}{2 \cdot 3} + \frac{b_3 x^4}{3 \cdot 4}) + a_2\left( \frac{b_4 x^6}{5 \cdot 6} + \frac{b_5 x^7}{6 \cdot 7} \right) + \cdots 
+$$
+or approximately 
+$$
+f(x) = \sum_{k=0}^\infty a_k \left(\frac{b_{2k} (3k-2)! x^{3 k}}{(3k)!} + \frac{b_{2k+1} (3k-1)! x^{3k+1}}{(3k+1)!} \right)
+$$
+the issue being with $k=0$, so without defining a new Pochhammer type symbol we have
+$$
+f(x) = b_0 + b_1 x + \sum_{k=1}^\infty \left(\frac{b_{2k} (3k-2)! x^{3 k}}{(3k)!} + \frac{b_{2k+1} (3k-1)! x^{3k+1}}{(3k+1)!} \right)
+$$
+where we have removed the $a_k$ because they can be absorbed into the $b_k$. In fact it is much  easier  to write 
+$$
+f(x) = \sum_{k=0}^\infty b_{2k}x^{3 k} + b_{2k+1} x^{3k+1}
+$$
+example, $b_k=1$, we have 
+$$
+f(x) = \frac{1+x}{1-x^3} = 1 + x + x^3 + x^4 + x^6 + x^7 + \cdots
+$$
+$$
+D_{Airy,x}f(x) = 6(1 + 2x + 5 x^3 + 7x^4 + 12 x^6 + 15 x^7 + \cdots)
+$$
+which is the \textbf{Airy generating function} of the generalised pentagonal numbers (times 6).
+
+The real beauty of this is that 
+$$
+\mathrm{Ai}(x) = \frac{1}{3^{2/3} \Gamma \left(\frac{2}{3}\right)}-\frac{x}{\sqrt[3]{3} \Gamma
+    \left(\frac{1}{3}\right)}+\frac{x^3}{6\ 3^{2/3} \Gamma
+    \left(\frac{2}{3}\right)}-\frac{x^4}{12 \left(\sqrt[3]{3} \Gamma
+    \left(\frac{1}{3}\right)\right)}+\frac{x^6}{180\ 3^{2/3} \Gamma
+    \left(\frac{2}{3}\right)}-\frac{x^7}{504 \left(\sqrt[3]{3} \Gamma
+    \left(\frac{1}{3}\right)\right)}+\frac{x^9}{12960\ 3^{2/3} \Gamma
+    \left(\frac{2}{3}\right)}-\frac{x^{10}}{45360 \left(\sqrt[3]{3} \Gamma
+    \left(\frac{1}{3}\right)\right)}+O\left(x^{11}\right)
+$$
+$$
+\mathrm{Bi}(x) =    \frac{1}{\sqrt[6]{3} \Gamma \left(\frac{2}{3}\right)}+\frac{\sqrt[6]{3}
+    x}{\Gamma \left(\frac{1}{3}\right)}+\frac{x^3}{6 \sqrt[6]{3} \Gamma
+    \left(\frac{2}{3}\right)}+\frac{x^4}{4\ 3^{5/6} \Gamma
+    \left(\frac{1}{3}\right)}+\frac{x^6}{180 \sqrt[6]{3} \Gamma
+    \left(\frac{2}{3}\right)}+\frac{x^7}{168\ 3^{5/6} \Gamma
+    \left(\frac{1}{3}\right)}+\frac{x^9}{12960 \sqrt[6]{3} \Gamma
+    \left(\frac{2}{3}\right)}+\frac{x^{10}}{15120\ 3^{5/6} \Gamma
+    \left(\frac{1}{3}\right)}+O\left(x^{11}\right)
+$$
+this is the \textbf{natural language} of the series expansion of these functions. These solve the DE, so they remain invariant to the application of the operator. The key question, is "is it more natural to consider a pair of coefficients functions rather than a single function"?
+We have 
+$$
+\mathrm{Ai}(x) = \sum_{n=0}^\infty  \frac{3^{n-\frac{2}{3}} \left(\frac{1}{3}\right)_n x^{3 n}}{\Gamma
+    \left(\frac{2}{3}\right) (3 n)!}-\frac{3^{n-\frac{1}{3}}
+    \left(\frac{2}{3}\right)_n x^{3 n+1}}{\Gamma \left(\frac{1}{3}\right) (3
+    n+1)!}
+$$
+which very clearly justifies a general expansion of the form
+$$
+f(x) = \sum_{k=0}^\infty a_{k}x^{3 k} + b_{k} x^{3k+1}
+$$
+with 
+$$
+a_n = \frac{3^{n-\frac{2}{3}} \left(\frac{1}{3}\right)_n}{\Gamma
+    \left(\frac{2}{3}\right) (3 n)!}
+$$
+and 
+$$
+b_n = -\frac{3^{n-\frac{1}{3}}
+    \left(\frac{2}{3}\right)_n}{\Gamma \left(\frac{1}{3}\right) (3
+    n+1)!}
+$$
+we need two coefficients because it is a second order operator. A natural integral transform is then
+$$
+\int_0^\infty (1+x)x^{3s}\mathrm{Ai}(x) \; dx = A_s + B_s
+$$
+or possibly
+$$
+\int_0^\infty (1+x)x^{3s-1}\mathrm{Ai}(x) \; dx = A_s + B_s
+$$
+due to the Haar measure. This diverges at $s=0$, in a similar way to the gamma function. We could potentially call this the Airy gamma function... and the integral transform would be the Airy Mellin transform? What is clear, is that a contour integral; representation of the Airy function should not necessarily be of the standard Mellin-Barnes form 
+$$
+f(x) = \int_{c-i\infty}^{c+ i \infty} x^{-s} \phi(s)\; ds
+$$
+but instead something like
+$$
+f(x) = \int_{c-i\infty}^{c+ i \infty} x^{-3s} \phi_1(s) + x^{-3s -1}\phi_2(s)\; ds
+$$
+or
+$$
+f(x) = \int_{c-i\infty}^{c+ i \infty} \left(1+\frac{1}{x}\right)x^{-3s} \phi(s)\; ds
+$$
+the Mellin transform is given by
+$$
+   \frac{3^{\frac{2 s}{3}-\frac{7}{6}} \Gamma
+    \left(\frac{s}{3}+\frac{1}{3}\right) \Gamma \left(\frac{s}{3}\right)}{2 \pi
+    }
+$$
+and this works very well. But there may be something a little more consistent for harder functions.
+
+
+\section{Bessel Operator}
+[Check the sign on Bessel equation above]... Solutions are normally $J_a(x)$ and $Y_a(x)$.
+$$
+S_1(x) \to c_1 \log (x)+c_2
+$$
+$$
+S_2(x) \to -\frac{1}{6} a^2 c_3 \log ^3(x)-\frac{1}{2} a^2 c_2 \log ^2(x)+\frac{c_2 x^2}{4}-\frac{c_3 x^2}{4}+\frac{1}{4} c_3 x^2 \log (x)+c_1 \log (x)+c_4
+$$
+$$
+\left\{\left\{f(x)\to \frac{-48 x^2 \left(a^2 (c_5-c_4)+c_2-c_3\right)+8 a^2 \left(c_5 x^2+4 c_3\right) \log ^3(x)+24 a^2 \left((c_4-c_5) x^2+4 c_2\right) \log ^2(x)-3 x^2 \log (x) \left(16 a^2 (c_4-c_5)+c_5 x^2+16
+    c_3\right)-\frac{8}{5} a^4 c_5 \log ^5(x)-8 a^4 c_4 \log ^4(x)+192 \left(a^2-1\right) c_1 \log (x)-\frac{3}{2} (2 c_4-3 c_5) x^4}{192 \left(a^2-1\right)}+c_6\right\}\right\}
+$$
+this is a crazy expansion, and we see a lot of structure in the constants. This makes sense because Bessel $Y_0$ does look like $\log (x)$ close to the origin, and Bessel $J_0(x)$ must have a constant of zero on the log term.
+
+
+By using a series we can document the solutions a little (note the coefficients do change, and do depend on $a$) but the base 'polynomial' type expressions are below
+$$
+c_1
+$$
+$$
+c_2 \log x
+$$
+$$
+c_3 \left(x^2-2 a^2 \log ^2(x)\right)
+$$
+$$
+c_4 \left(-2 a^2 \log ^3(x)-3 x^2+3 x^2 \log (x)\right)
+$$
+$$
+c_5 \left(48 a^2 x^2+24 a^2 x^2 \log ^2(x)-48 a^2 x^2 \log (x)-8 a^4 \log ^4(x)-3 x^4\right)
+$$
+$$
+c_6 \left(-480 a^2 x^2+80 a^2 x^2 \log ^3(x)-240 a^2 x^2 \log ^2(x)+480 a^2 x^2 \log (x)-16 a^4 \log ^5(x)+45 x^4-30 x^4 \log (x)\right)
+$$
+
+
+\section{Schrödinger Operator}
+If we consider the general form of the Schrödinger operator
+$$
+D_{schrodinger} = -\frac{\hbar^2}{2 m E}D_x^2 + \frac{V(x)}{E}
+$$
+we can consider the functions that are annihilated by $n$ applications of the operator. This will form the natural basis for the series expansion of the wavefunction but will not in general be solvable. We have 
+$$
+S_1(x) = c_1 + c_2 x + \int_q^x \int_q^{x_1} A V(x_2) \; dx_2 dx_1
+$$
+with $A = (2 E m)/\hbar^2$. We then have 
+$$
+S_2(x) = c_1 + c_2 x + c_3 x^2 + c_4 x^3 + \int_q^x \int_q^{x_1}\int_q^{x_2}\int_q^{x_3} - A^2 D^{Schro}_{x_4} V(x_4) \; dx_4 dx_3 dx_2 dx_1
+$$
+the most questionable part is the lower limit on the integral $q$. We might then postulate that the series expansion of the wavefunction will take on a paired analytic expansion, along with an integral series...
+
+\subsection{Example}
+Harmonic oscillator gives (check the factors of E!!! probably a bit off...)
+$$
+S_1 \to \frac{m^2 \omega ^2 x^4}{12 h^2}+c_2 x+c_1
+$$
+$$
+S_2 \to -\frac{ m^2 \omega ^2 \left(e m x^6-15 h^2 x^4\right)}{180 h^4}+c_4 x^3+c_3 x^2+c_2 x + c_1
+$$
+$$
+S_3 \to \frac{ m^3 \omega ^2 \left(e m x^8-28 h^2 x^6\right)}{5040 h^6}+c_6 x^5+c_5 x^4+c_4 x^3+c_3 x^2+c_2 x+c_1
+$$
+$$
+S_4 \to  -\frac{m^4 \omega ^2 x^8 \left(e m x^2-45 h^2\right)}{226800 h^8}+c_8 x^7+c_7 x^6+c_6 x^5+c_5 x^4+c_4 x^3+c_3 x^2+c_2 x+c_1
+$$
+here we possibly have hexagonal numbers $15,28,54,...$ we need to solve for the general term
+$$
+T_n(x) = \underbrace{\int_0^x \cdots \int_0^x}_{2n} \sum_{k=1}^n \frac{(-1)^{k+1} E^{k-1} 2^k m^k V^{(2n-2k)}(x)}{\hbar^{2k}}  \; \underbrace{dx \cdot dx}_{2n}
+$$
+then the series expansion will be of the form 
+$$
+\psi(x) = \sum_{n=0}^\infty T_n(x) + a_n x^{2n} + b_n x^{2n+1}
+$$
+the critical thing here is that we \emph{don't} add coefficients for the potential derived term. This term is only annihilated with exactly the coefficients shown. This could indicate that every wavefunction is separable in terms of an analytic free solution and a potential derived fixed solution. I.e. $\psi(x) = \phi(x) + \phi_V(x)$
+
+Repeated application of the DSchro operator to the potential results in a continued fraction or expansion such as 
+$$
+D^n_{Schro}[V(x)] = \sum_{k=0}^n (-1)^k \frac{\hbar^{2k} V^{(2k)}(x)}{(2m)^k [E^k]_?}
+$$
+but the final term! has an edit, which is correctly written as
+$$
+D^n_{Schro}[V(x)] = \left(\sum_{k=0}^{n-1} (-1)^k \frac{\hbar^{2k} V^{(2k)}(x)}{(2m)^k E^k}\right) + (-1)^n \frac{\hbar^{2n} V^{(2n)}(x)}{(2m)^n E^{n-1}}
+$$
+
+the rule is that 
+$$
+D_{Schro}^n T_n(x) = 0
+$$
+
+\section{Above might be wrong}
+\begin{verbatim}
+DSchro[f_,x_]:= -h^2/2/m/E D[f,{x,2}] + V[x] f/E
+\end{verbatim}
+try again... Mathematica can't solve it, but in principle the same rules apply. We now have a much more sensible answer for the harmonic oscillator, parabolic cylinder functions
+$$
+S_1(x) \to c_2 D_{-\frac{1}{2}}\left(\frac{i \sqrt{2} \sqrt{m} \sqrt{\omega } x}{\sqrt{h}}\right)+c_1 D_{-\frac{1}{2}}\left(\frac{\sqrt{2} \sqrt{m} \sqrt{\omega } x}{\sqrt{h}}\right)
+$$
+
+\section{Operator Chain}
+We could imagine a chain of different operators being applied to generate a series, this would lead to an expansion in terms of different functions.
+
+\section{Asymptotics}
+To determine a function's expansion in terms of other $S_n(x)$ type functions, what limiting rule can we use?
+
+\subsection{Particle Physics}
+The natural series expansion for an object is one where repeated application of the annihilation operator shifts the expansion.
+
+\subsection{Shift operator}
+$x D_x \to ? = \theta_x$
+
+\section{Polylogarithms and Elliptic Derivatives}
+If we study the derivative $D^K=D^{1/2,1/2,1}$ we find that 
+$$
+D_x^K \mathrm{Li}_1(x) = D_x^K \mathrm{Li}_1(1-x) = 4
+$$
+this operator also reduces higher order polylogarithms!
+
+\section{Calculus of Variations}
+Consider 
+$$
+F[\phi(x)] = \exp\left(\int \phi(x) h(x) \; dx\right)
+$$
+$$
+\frac{\delta F[\phi(x)]}{\delta \phi(y)} = \delta_{\phi(y)}F[\phi(x)] = h(y) \exp\left(\int \phi(x) h(x) \; dx\right)
+$$
+and the notion that $F$ is an eigenfunctional of $\delta_{\phi(y)}$. Something like a Schwinger-Dyson equation. The extension to the hypergeometric functional derivative, would be 
+$$
+\delta^{a,b;c}_{\phi(y)} \,_2F_1\left(a,b;c;\int \phi(x) h(x) \; dx\right) = h(y) \,_2F_1\left(a,b;c;\int \phi(x) h(x) \; dx\right)
+$$
+the key here is that we don't assume a power series according to the regular derivative, but instead according to the Airy derivative, but we can retain all of the nice properties of generating functions. If we consider recurrence relations in this space, then we solve it by phrasing in terms of the Airy derivative, and solve a different differential equation.
+
+
+\section{Iterative DE}
+If we loop 
+$$
+f'(x) = 0 \to g_1(x)
+$$
+$$
+f'(x) = g_1(x) \to g_2(x)
+$$
+etc. we get the series expansion for $\exp(x)$, setting all the coefficients to $1$. If we loop on 
+$$
+f''(x) = 0
+$$
+we get a choice of the two integration coefficients. If we set the constant to $1$ and the other to $0$, then we get $\cos(x)$, if we do it the other way round we get $\sin(x)$, if we keep both as $1$ we get $\exp(x)$, which still satisfies this equation, if we set both to $0$ we get $0$ which is a trivial solution. If we alternate the constant fixing, this does generate a series, but does not satisfy the original operator, but twice the application of the original operator. (Probably due to cycles). If we repeat with Airy 
+$$
+\frac{1}{x}f''(x) = 0
+$$
+we get with constant $[1] \to 1$ and $[x] \to 0$ A176730, which is related to airy function $\mathrm{Ai}$. If we do it the other way round we get  A176731 related to $\mathrm{Bi}$. If we do both we get A014402, which relates to Ai.
+
+\section{Continuous Graphs and cycles}
+We extend a graph to a continuous measure using a cyclic closure. 
+For $N$ nodes, we assign a set of points (angles) on the circle $\{x_k\}_{k=0}^N$ as $\{\frac{2 \pi k}{N}\}_{k=0}^N$. The edges are encoded as distributions on each point for angular steps to take 
+$$
+P_{x_0}(\theta) = [0,\frac{1}{2},\frac{1}{2}]
+$$
+meaning from $x_0$, we have $0$ probability to take a step of size $0$, and half to take a step of size $2 \pi/3$ or $4 \pi /3$.
+In general we have a matrix with a finite number of nodes $P_{x_i}(\theta)_j$ and we can update the nodes as 
+$$
+x_i \to x_i + \theta_i \bmod 2\pi
+$$
+with 
+$$
+\theta_i \sim P_{x_i}(\theta)
+$$
+\subsection{Infinite Graph}
+the above formalism depends on the indexing of the nodes, i.e. which node is attached to which point. We could consider extending to an infinite case, where the set of nodes ends up being the interval $\circ=[0,2\pi)$, and we have a probability distribution at each angle, that this angle will be shifted by any other angle in $\circ$. This looks like 
+$$
+P(\theta_1,\theta_2) = \cdots
+$$
+we assume the arrangement of this infinite graph is then somehow spatially organised in a meaningful way. One trivial function will look something like
+$$
+P(\theta_1,\theta_2) = \lim_{\varepsilon \to 0}\delta(\theta_2 - \theta_1 - \varepsilon)
+$$
+in this way, every point at $\theta_1$ will shift to a point $\theta_2$ by $\varepsilon$, slowly proceeding along the chain of the infinite graph. This then describes an infinite, single link digraph. If we want an undirected graph, we need to allow the points to go backwards by $\varepsilon$ as well, which may be seen as advancing by $2 \pi - \varepsilon$ in a modular sense. If we throw any probability function down for $P(\theta_1,\theta_2)$, we will likely describe an infinite, (weighted), digraph. If we insist that for every forward step, it is just as likely to make the reverse step, then it will be an undirected graph. The weights are less clear, the probability to make steps could be either mediated by an abundance of connections with unit weight, or by some form of path weighting.
+
+A key concept is 'flow'. If we start with a density over the interval, then using the probability function, we can calculate the probability flow after a single random step from each node to a neighbour. This will take the form of an integral transform
+$$
+\rho(\theta_2) = \int_0^{2 \pi} \rho(\theta_1)P(\theta_1,\theta_2) \; d \theta_1
+$$ 
+$$
+\rho(\theta_3) = \int_0^{2 \pi}\int_0^{2 \pi} \rho(\theta_1)P(\theta_1,\theta_2)P(\theta_2,\theta_3) \; d \theta_1 d \theta_2
+$$ 
+
+It would be interesting to think of a square image as encoding a graph in the cyclic way above, but it would probably be as meaningful as creating an adjacency matrix from an image... 
+
+One distribution to consider is based on the von-Mises distribution as
+$$
+P(\theta_1,\theta_2|\kappa) = \frac{e^{\kappa \cos(\theta_1-\theta_2)}}{4 \pi^2 I_0(\kappa)}
+$$
+such that 
+$$
+\int_0^{2 \pi}\int_0^{2 \pi} P(\theta_1,\theta_2) \; d \theta_1 d \theta_2 = 1
+$$
+
+we also seem to have distributions such as 
+$$
+\frac{k e^{\sin^{-1} \cos(z-\mu)}}{4 \sinh(\frac{\pi k}{2})}
+$$
+
+we seem to have $q = e^{\pi k}-1$
+$$
+\int_0^\pi z^1 \frac{k e^{\sin^{-1} \cos(z-\mu)}}{4 \sinh(\frac{\pi k}{2})} = \frac{1}{2 k} - \frac{\pi}{2q}
+$$
+$$
+\int_0^\pi z^2 \frac{k e^{\sin^{-1} \cos(z-\mu)}}{4 \sinh(\frac{\pi k}{2})} = \frac{2}{2 k^2} - \frac{2\pi}{2kq} - \frac{\pi^2}{2q}
+$$
+$$
+\int_0^\pi z^3 \frac{k e^{\sin^{-1} \cos(z-\mu)}}{4 \sinh(\frac{\pi k}{2})} = \frac{6}{2 k^3} - \frac{6\pi}{2k^2q} - \frac{3\pi^2}{2kq} - \frac{\pi^3}{2q}
+$$
+$$
+\int_0^\pi z^4 \frac{k e^{\sin^{-1} \cos(z-\mu)}}{4 \sinh(\frac{\pi k}{2})} = \frac{24}{2 k^5} - \frac{24\pi}{2k^3q} - \frac{12\pi^2}{2k^2q} - \frac{4\pi^3}{2kq} - \frac{\pi^4}{2q}
+$$
+implying
+$$
+\int_0^\pi z^n \frac{k e^{\sin^{-1} \cos(z-\mu)}}{4 \sinh(\frac{\pi k}{2})} = \frac{n!}{2}\left(\frac{1}{k^{n+1}} - \frac{1}{q}\sum_{k=1}^n \frac{\pi^k}{k! k^{n-k}}\right)
+$$
+
+for the uniform distribution we have 
+$$
+\int_0^\pi \frac{z^n}{2 \pi} \; dz = \frac{\pi^n}{2(n+1)}
+$$
+
+\section{Operator Polynomials}
+Consider $DD[f] \to f'(x) + f(x)$
+\begin{verbatim}
+Table[DSolve[Nest[DD,f[x],k]==Pochhammer[x,k],f[x],x][[1]][[1]][[2]],{k,0,5}] /. C[t_] -> 0 // Column
+\end{verbatim}
+for example 
+\begin{verbatim}
+Table[DSolve[Nest[DD,f[x],k]==x^k,f[x],x][[1]][[1]][[2]],{k,0,5}] /. C[t_] -> 0 // Column
+\end{verbatim}
+gives a relation to A278071. They appear to be 
+\begin{verbatim}
+Table[x^n HypergeometricPFQ[{n, -n}, {}, 1/x],{n,0,5}] // Expand
+\end{verbatim}
+
+Notation (operator,target)
+$$
+G[D_x,x^k] \to \frac{n! x^{2n}}{(2n)!}
+$$
+$$
+G[1+D_x,x^k] \to x^n\,_2F_0(n,-n;;\frac{1}{x})
+$$
+$$
+G[D_x,(x)^k] \to ??
+$$
+related to A103505
+
+
+\section{Cyclic Graph Steps}
+Consider the matrix $\mathbf{M}$ whose elements $m_{ij}$ dictate whether a node $i$ can take $j$ steps through the index sequence. We should index steps and nodes from $0$. This matrix is interpreted as a single move matrix, and could be written $\mathbf{M}_1$. We also have a double move matrix $\mathbf{M}_2$ whose elements $m_{2ij}$ will dictate whether node $i$ can progress $j$ steps through the index, using two graph moves (i.e. traversing two edges).
+
+The question is whether $\mathbf{M}_2$ can be constructed via an operation on $\mathbf{M}_1$? It seems that 
+$$
+m_{2 ij} = \sum_{k=0}^{N-1} m_{1 i k} m_{1k(j-k)}
+$$
+where $(j-k)$ is interpreted modulo $N$. This might be easily written as 
+$$
+M_2 = M_1 S M_1
+$$
+where $S$ is a matrix which rot-shifts each row by its index to the left. The shifting by row transform will look like 
+$$
+R_0 A S^0 +R_1 A S^1 + \cdots
+$$
+where $R_i$ singles out the row $i$ from $A$ (one of the trace elements of the identity only), and $S$ is a circular shift matrix (similar to derivative but with a 1 in the top/bottom corner). We can then write 
+$$
+M_2 = M_1 \sum_{k=0}^{N-1} R_k M_1 S^k
+$$
+
+\subsection{}
+This raises a question about 'differentiation' and whether a finite matrix version with a circular notion is ever useful to describe reality? This is a fascinating operator 
+$$
+O=
+\begin{bmatrix}
+0 & 1 & 0 & \cdots & 0 \\
+0 & 0 & 2 & \cdots & 0 \\
+\vdots & \vdots & \vdots & & \\
+c & 0 & 0 & \cdots & 0
+\end{bmatrix}
+$$
+$c=1,1/2,1/6,1/24,\cdots$. Depending on the size of the matrix. For a $4$ by $4$ matrix, it is $1/6$. so for an $n\times n$ matrix is is $1/(n-1)!= 1/\Gamma(n)$. This has the property that $O^n v_n = v_n$. That is, the vector of weights on a polynomial of rank $n-1$, is an eigenvector of the $n^{th}$ power of the operator.
+$$
+O_2 = \begin{bmatrix} 0 & 1 \\ 1 & 0 \end{bmatrix}
+$$
+$$
+O_2^2 = I_2
+$$
+$$
+O_3 = \begin{bmatrix} 0 & 1 & 0 \\ 0 & 0 & 2 \\ 1/2 & 0 & 0 \end{bmatrix}
+$$
+$$
+O_3^2 = \begin{bmatrix} 0 & 0 & 2 \\ 1 & 0 & 0 \\ 0 & 1/2 & 0 \end{bmatrix}
+$$
+$$
+O_3^3 = I_3
+$$
+
+\subsection{Solutions}
+We have the eigenvector of $O_2$ is any vector whose elements are the same. The eigenvector of $O_3$ meets $a_1 = a_2, a_2 = 2a_3, a_3 = a_1/2$, which are consistent. If $a_1 = 1$, then we have the sequence $1,1,1/2$, this indicates that for any matrix the sequence will be $1/n!$. So the truncation of $e^x$ is the eigenfunction of this operator (at all sampling lengths), which is consistent with the infinite case!
+
+One important question ,is whether this consistency carries across for truncations of other differential operators. For example the operator 
+$$
+x D^2_x + D_x 
+$$
+whose solution is $I_0(2 \sqrt{x})$ or $2K_0(\sqrt{x})$. 
+$$
+I_0(2 \sqrt{x}) =  1+x+\frac{x^2}{4}+\frac{x^3}{36}+\frac{x^4}{576}+\frac{x^5}{14400}+\frac{x^6}
+    {518400}+\frac{x^7}{25401600}+\frac{x^8}{1625702400}+\frac{x^9}{131681894400
+    }+\frac{x^{10}}{13168189440000}+O\left(x^{11}\right)
+$$
+we must consider how the operator $x$ functions to a coefficient vector, and possibly adapt this to the \textbf{cyclic} case! Normally this is a simple shift.. but now we use a cyclic shift that maps the largest power of x to the smallest (constant) position. This means we include a $1$ in the upper right corner of the matrix for example
+$$
+X_3 = \begin{bmatrix}
+0 & 0 & 1 \\ 1 & 0 & 0 \\ 0 & 1 & 0
+\end{bmatrix}    
+$$
+this converts the equation $[x D^2_x + D_x]v = v $ into 
+$$
+\begin{bmatrix}
+0 & 0 & 1 \\ 1 & 0 & 0 \\ 0 & 1 & 0
+\end{bmatrix}     \begin{bmatrix} 0 & 0 & 2 \\ 1 & 0 & 0 \\ 0 & 1/2 & 0 \end{bmatrix} \begin{bmatrix}
+a_0 \\ a_1 \\ a_2
+\end{bmatrix} + \begin{bmatrix} 0 & 1 & 0 \\ 0 & 0 & 2 \\ 1/2 & 0 & 0 \end{bmatrix}\begin{bmatrix}
+a_0 \\ a_1 \\ a_2
+\end{bmatrix}=\begin{bmatrix}
+a_0 \\ a_1 \\ a_2
+\end{bmatrix}
+$$
+
+$$
+\begin{bmatrix}
+0 & 0 & 1 \\ 1 & 0 & 0 \\ 0 & 1 & 0
+\end{bmatrix}    \begin{bmatrix}
+2 a_2 \\ a_0 \\ a_1/2
+\end{bmatrix} + \begin{bmatrix}
+a_1 \\ 2 a_2 \\ a_0/2
+\end{bmatrix}=\begin{bmatrix}
+a_0 \\ a_1 \\ a_2
+\end{bmatrix}
+$$
+
+$$
+\begin{bmatrix}
+a_1/2 \\ 2a_2 \\ a_0
+\end{bmatrix} + \begin{bmatrix}
+a_1 \\ 2 a_2 \\ a_0/2
+\end{bmatrix}=\begin{bmatrix}
+a_0 \\ a_1 \\ a_2
+\end{bmatrix}
+$$
+
+in this case the only solution is $\mathbf{a}=\mathbf{0}$. If we instead let the shift equation destroy a term we get
+$$
+\begin{bmatrix}
+0 & 0 & 0 \\ 1 & 0 & 0 \\ 0 & 1 & 0
+\end{bmatrix}    \begin{bmatrix}
+2 a_2 \\ a_0 \\ a_1/2
+\end{bmatrix} + \begin{bmatrix}
+a_1 \\ 2 a_2 \\ a_0/2
+\end{bmatrix}=\begin{bmatrix}
+a_0 \\ a_1 \\ a_2
+\end{bmatrix}
+$$
+
+$$
+\begin{bmatrix}
+0 \\ 2 a_2 \\ a_0
+\end{bmatrix} + \begin{bmatrix}
+a_1 \\ 2 a_2 \\ a_0/2
+\end{bmatrix}=\begin{bmatrix}
+a_0 \\ a_1 \\ a_2
+\end{bmatrix}
+$$
+if we ignore the last equation and set $a_0=1$, we can get $a = 1,1,1/4$ as in the series expansion of $I_0(2 \sqrt{x})$. Reasons for ignoring might be that the problem is finite and does not actually cycle. This holds out for the next iteration as $1/36$ as well. 
+
+To solve more advanced equations we then need to know how to represent terms. For example
+$$
+z(1-z)f''(z)+[c-(a+b+1)z]f'(z)-abf(z) = 0
+$$
+can be expanded to be in terms of $z$ and constants only.
+
+\subsection{Fractional Derivatives}
+Question: Does it work? For a given size, can we find the 'series expansion' for a fractional differential equation? 
+For example the square root of $O_4$ is 
+$$
+   \left(
+   \begin{array}{cccc}
+    \frac{1}{4} \left(\sqrt{2}+(1+i)\right) & \frac{1}{4}
+      \left(\sqrt{2}+(1-i)\right) & \frac{1}{2} \left(-\sqrt{2}+(1+i)\right) &
+      -\frac{3}{2} \left(\sqrt{2}+(-1+i)\right) \\
+    \frac{1}{4} \left(-\sqrt{2}+(1-i)\right) & \frac{1}{4}
+      \left(\sqrt{2}+(1+i)\right) & \frac{1}{2} \left(\sqrt{2}+(1-i)\right) &
+      -\frac{3}{2} \left(\sqrt{2}+(-1-i)\right) \\
+    \frac{1}{8} \left(-\sqrt{2}+(1+i)\right) & \frac{1}{8}
+      \left(-\sqrt{2}+(1-i)\right) & \frac{1}{4} \left(\sqrt{2}+(1+i)\right) &
+      \frac{3}{4} \left(\sqrt{2}+(1-i)\right) \\
+    \frac{1}{24} \left(\sqrt{2}+(1-i)\right) & \frac{1}{24}
+      \left(-\sqrt{2}+(1+i)\right) & \frac{1}{12} \left(-\sqrt{2}+(1-i)\right) &
+      \frac{1}{4} \left(\sqrt{2}+(1+i)\right) \\
+   \end{array}
+   \right)
+$$
+trying to solve $D^{1/2} v = v$ gives $v=(1,1,1/2,1/6,)$, which implies the exponential function is also invariant to the sqrt.
+
+We can also consider 'functions' of $X$, for example solve 
+$$
+a D_x^2 v + V(x)v = \lambda v 
+$$
+
+
+\subsection{Multiple Dimensions}
+For higher dimensions we will have a coefficient matrix, or tensor and the operators will form larger objects, higher dimensional tensors. 
+
+\subsection{Infinite Cycle Graph}
+If we draw a digraph, which an arrow from $a \to b$ indicates $b|a$, then we have for nodes labelled $1,2,3,4,\cdots$, 
+$$
+\begin{bmatrix}
+1,1,1,1,1,1,1,\cdots \\
+0,1,0,1,0,1,0,\cdots \\
+0,0,1,0,0,1,0,\cdots \\
+0,0,0,1,0,0,0,\cdots \\
+\end{bmatrix}
+$$
+which is clearly the divisor matrix. Rows are the index of the node. The columns are "is allowed to take $j$" steps round the circle. The circle here is infinite. It is possible to include zero as well, where it is unclear if $0$ can loop to itself, and it cannot be a divisor of any other number. In addition, every number is a divisor of itself, and thus the first column is consistently $1$ for $i>0$.
+$$
+\begin{bmatrix}
+?,0,0,0,0,0,0,0,\cdots \\
+1,1,1,1,1,1,1,1,\cdots \\
+1,0,1,0,1,0,1,0,\cdots \\
+1,0,0,1,0,0,1,0,\cdots \\
+1,0,0,0,1,0,0,0,\cdots \\
+\end{bmatrix}
+$$
+the cyclic 'square' of this matrix is also related to $\sigma_1(n)$, because elements indicate "number of ways $a$ gets to $b$ using two steps". We can disclude zero as a node, but include as a number of steps and get
+$$
+\begin{bmatrix}
+1,1,1,1,1,1,1,1,\cdots \\
+1,0,1,0,1,0,1,0,\cdots \\
+1,0,0,1,0,0,1,0,\cdots \\
+1,0,0,0,1,0,0,0,\cdots \\
+\end{bmatrix}
+$$
+then for two steps we have 
+$$
+\begin{bmatrix}
+1,2,2,3,2,4,2, \cdots \\
+1,0,2,0,2,0,3, \cdots
+\end{bmatrix}
+$$
+
+
+
+
+\bibliography{bibliography}{}
+\bibliographystyle{plain}
+
+
+\end{document}

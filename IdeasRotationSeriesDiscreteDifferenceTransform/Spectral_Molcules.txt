@@ -1,0 +1,7 @@
+Molecules are objects in the real space.
+
+Often there is great interpretation in the spectrum of a real quantity. I.e. the complemntary function for a disitribution etc.
+These exist through the Fourier transform, or some other transform.
+
+Is there a wel ldefined notion of the spectrum of a molecule? What properties does it have and are some of them easier to access in this space?
+Is this useful for further methods?

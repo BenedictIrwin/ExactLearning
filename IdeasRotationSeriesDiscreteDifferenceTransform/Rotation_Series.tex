@@ -1,0 +1,120 @@
+\documentclass{article}
+
+\usepackage{authblk}
+\usepackage{url}
+\usepackage[square,numbers]{natbib}
+\usepackage{color,amssymb,amsmath}
+\usepackage{graphicx}
+\usepackage[margin=1in]{geometry}
+%\usepackage{graphicx}
+%\SectionNumbersOn
+%\AbstractOn
+
+\title{Rotation Series}
+%\author{Benedict W. J.~Irwin}
+
+
+\date{\today}
+\begin{document}
+
+%\email{ben.irwin@optibrium.com}
+%\affiliation{Optibrium, F5-6 Blenheim House, Cambridge Innovation Park, Denny End Road, Cambridge, CB25 9PB, United Kingdom}
+%\alsoaffiliation{Theory of Condensed Matter, Cavendish Laboratories, University of Cambridge, Cambridge, United Kingdom}
+
+\author[1,2]{Benedict W. J.~Irwin}
+\affil[1]{Theory of Condensed Matter, Cavendish Laboratories, University of Cambridge, Cambridge, United Kingdom}
+\affil[2]{Optibrium, F5-6 Blenheim House, Cambridge Innovation Park, Denny End Road, Cambridge, CB25 9PB, United Kingdom}
+\affil[ ]{\textit {ben.irwin@optibrium.com}}
+
+
+\maketitle
+\begin{abstract}
+Rotation Series
+
+To Do: Make graphics to explain the rotation of a function, check that we can ignore the additivity... The inverse of the power series is not necessarily the series of the inverses of the elements. Need a visualisation of the series, break it apart into individual terms, rotate each term and sum them back up! Should work.
+\end{abstract}
+
+\section{Abstract}
+Consider an operation that rotates a function on the x and y axes, we can reduce this to two functions
+$$
+X(x,t) = x \cos(t) + f(x) \sin(t) 
+$$
+and
+$$
+F(x,t) = x \sin(t) + f(x) \cos(t)
+$$
+then we consider a parametric plot of $F(X)$ at a given $t$. When $t=0$ or $2 \pi$, this gives a plot of $f(x)$, when $t=\pi$ we have $-f(-x)$, but when $t=\pi/2$, we have $x(f)$, which is essentially the inverse $f^{-1}(x)$. Then $t$ allows us to interpolate between these.\\
+
+We then realise there is a whole spectrum of inverse like functions. Consider a power series representation for $f(x)$. We can use series reversion to invert the series as an expansion for the inverse function $f^{-1}(x)$. What may no be immediately obvious is that we can rotate each coefficient individually and reclaim the rotated power series.
+
+When we rotate a coefficient times a power $q x^k$ we get a new generalised basis function $\phi_k(t,q)$, such that $\phi_k(n 2\pi,q)=q x^k$ for integer $n$. We solve for the series reversion inverses of $X$ and $F$. 
+
+
+
+
+
+
+Using $q$ to represent the coefficient of the power term we have:
+
+$$
+q \to A^{-1}(x) = \sec(t)(x-q \sin(t)) 
+$$
+$$
+q x \to A^{-1}(x) = \frac{x}{\cos(t) + q \sin(t)}
+$$
+$$
+q x^2 \to A^{-1}(x) =   x \sec (t)-q x^2 \tan (t) \sec ^2(t)+2 q^2 x^3 \tan ^2(t) \sec ^3(t)-5 x^4
+    \left(q^3 \tan ^3(t) \sec ^4(t)\right)+14 q^4 x^5 \tan ^4(t) \sec
+    ^5(t)+O\left(x^6\right)
+$$
+which we can see is 
+$$
+A^{-1}_2(x) = \sec(t) x \sum_{k=0}^\infty \frac{(-1)^{k}}{1+k} \binom{2k}{k} q^{k}\tan^{k}(t)\sec^{k}(t) x^{k}
+$$
+with Catalan number coefficients
+
+$$
+q x^3 \to  A^{-1}(x) =   x \sec (t)-q x^3 \tan (t) \sec ^3(t)+3 q^2 x^5 \tan ^2(t) \sec
+    ^5(t)- 12 q^3 \tan^3(t) x^7 \sec^7(t) 
+$$
+$$
+A^{-1}_3(x) = \sec(t) x \sum_{k=0}^\infty \frac{(-1)^{k}}{1+2k} \binom{3k}{k} q^{k}\tan^{k}(t)\sec^{2k}(t) x^{2k}
+$$
+we guess then that 
+$$
+A^{-1}_n(x) = \sec(t) x \sum_{k=0}^\infty \frac{(-1)^{k}}{1+(n-1)k} \binom{nk}{k} q^{k}\tan^{k}(t)\sec^{(n-1)k}(t) x^{(n-1)k}
+$$
+$$
+A_4(x) = \sec(t)x \,_3F_2\left(\frac{1}{4},\frac{1}{2},\frac{3}{4};\frac{2}{3},\frac{4}{3};-\frac{4^4}{3^3} q x^3 \tan (t) \sec ^3(t)\right)
+$$
+these are unweildy expressions for large $n$ as the number of arguments in the hypergeometric function grow. We can however consider the Mellin transform of the function for example 
+$$
+\mathcal{M}[A_4(x)](s) = \frac{2^{\frac{2}{3} (-s-1)-\frac{4 s}{3}-\frac{5}{6}} 3^s \Gamma
+    \left(\frac{2}{3}\right) \Gamma \left(\frac{4}{3}\right) \Gamma
+    \left(-\frac{2 s}{3}-\frac{1}{6}\right) \Gamma
+    \left(\frac{1}{6}-\frac{s}{3}\right) \Gamma
+    \left(\frac{s}{3}+\frac{1}{3}\right) \sec (t) \left(q \tan (t) \sec
+    ^3(t)\right)^{\frac{1}{3} (-s-1)}}{\Gamma \left(\frac{1}{4}\right) \Gamma
+    \left(\frac{3}{4}\right) \Gamma \left(\frac{1}{3}-\frac{s}{3}\right) \Gamma
+    \left(1-\frac{s}{3}\right)}
+$$
+in general we have 
+$$
+I_x[x + a x^m] \to \frac{a^{\frac{s}{m-1}}\Gamma(1-\frac{m s}{m - 1})\Gamma(\frac{s}{m-1})}{(m-1)\Gamma(2-s)}
+$$
+%Cite as: Benedict Irwin. Inverse Transform with Mellin like Feature. Authorea. June 03, 2020.
+%DOI: 10.22541/au.159118745.54347879
+
+
+This means we can smoothly parametrise the coefficients of the series expansion of a function as it rotates around the $x-y$ axis. In terms of the Mellin-transform, this reports the coefficient (with negative sign) through the RMT. This may interpolate the coefficients of the analytic function, and (the reflection of) its inverse.
+
+
+\section{Operators}
+Consider a clockwise operator $R_\theta$ which rotates a function by $\theta$. We clearly have the examples $R_{\frac{\pi}{2}}[x^2] = \pm \sqrt{x}$, $R_\pi[x^2] = -x^2$.
+
+
+\bibliography{bibliography}{}
+\bibliographystyle{plain}
+
+
+\end{document}
