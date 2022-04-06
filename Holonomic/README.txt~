@@ -1,0 +1,25 @@
+
+Adaptation for holonomic functions in general... 
+
+We assume the function being modelled follows
+
+P_n(x) f^(n)(x) + ... + P_0(x) f(x) = 0 i.e. Annihilation operator.. with
+derivatives..
+
+The Mellin transform is then
+
+P_n(s) phi(s-n) + ... P_0(s) phi(s) + ... + P_k(s) phi(s+k) = 0 
+
+We write as a matrix equation
+
+[phi(s-n) ... phi(s) ... phi(k)] . M . [1 s s^2 s^3 ...]
+
+And solve numerically for M? That is we can numerically get a bunch of phi
+from the distribution, then we can just try to solve for M that is consistent
+over a bunch of S values... 
+
+Example:
+
+[phi(s-1) phi(s)][[1,-1],[1,0]][1,s] = 0 Which is Exp[-x] -> Gamma[s]
+
+
