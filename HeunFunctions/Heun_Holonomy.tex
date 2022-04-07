@@ -1,0 +1,295 @@
+\documentclass{article}
+
+\usepackage{authblk}
+\usepackage{url}
+\usepackage[square,numbers]{natbib}
+\usepackage{color,amssymb,amsmath}
+\usepackage{graphicx}
+\usepackage[margin=1in]{geometry}
+%\usepackage{graphicx}
+%\SectionNumbersOn
+%\AbstractOn
+
+\title{Heun Functions, Holonomic Expression}
+%\author{Benedict W. J.~Irwin}
+
+
+\date{\today}
+\begin{document}
+
+\author[1,2]{Benedict W. J.~Irwin}
+
+\maketitle
+
+\begin{abstract}
+The Heun function
+\end{abstract}
+
+
+\section{Motivation}
+Extending exact learning to Heun functions.
+
+\section{Introduction}
+Consider the Heun differential equation.
+$$
+\frac{d^2w}{dz^2}+ 
+\left[\frac{\gamma}{z}+ \frac{\delta}{z-1} + \frac{\epsilon}{z-a} \right] 
+\frac {dw}{dz} 
++ \frac {\alpha \beta z -q} {z(z-1)(z-a)} w = 0
+$$
+putting this in the form of an annihilating operator from holonomic function theory we have
+$$
+z(z-1)(z-a)\frac{d^2w}{dz^2}+ 
+\left[\gamma (z-1)(z-a)+ \delta z (z-a) + \epsilon z(z-1) \right] 
+\frac {dw}{dz} 
++ (\alpha \beta z -q) w = 0
+$$
+such that the coefficients of each derivative are polynomials in $z$. We have the constraint $\epsilon = \alpha + \beta - \gamma - \delta + 1$. The solution doesn't exist for nonpositive integer gamma.
+We can translate the left hand side into a quadratic form. First
+$$
+\begin{bmatrix}
+w & w' & w''
+\end{bmatrix}
+\begin{bmatrix}
+\alpha  \beta  z-q \\
+\delta  z (z-a)+\gamma  (z-1) (z-a)+(z-1) z (\alpha +\beta -\delta -\gamma +1) \\
+(z-1) z (z-a)
+\end{bmatrix}
+=0
+$$
+then
+$$
+\begin{bmatrix}
+w & w' & w''
+\end{bmatrix}
+\begin{bmatrix}
+-q & \alpha \beta & 0 & 0\\
+a \gamma & -a \delta -a \gamma -\alpha -\beta +\delta -1 & \alpha +\beta +1 & 0 \\
+0 & a & -a -1 & 1
+\end{bmatrix}
+\begin{bmatrix}
+1 \\ z \\ z^2 \\ z^3
+\end{bmatrix}
+= 0
+$$
+Alternatively, we can take the Mellin transform of the differential equation to turn it into a shift equation. If $\mathcal{M}[w](s) = \phi(s)$ then we have 
+$$
+(-a \gamma  s+a \gamma +a s^2-a s) \phi(s-1) + (a \delta  s+a \gamma  s-a s^2-a s+\alpha  s+\beta  s-\delta  s-q-s^2) \phi(s) + (\alpha  \beta -\alpha  s-\alpha -\beta  s-\beta +s^2+2 s+1) \phi(s+1) == 0
+$$
+which is
+$$
+\begin{bmatrix}
+\phi(s-1) & \phi(s) & \phi(s+1)
+\end{bmatrix}
+\begin{bmatrix}
+a \gamma &  -a (\gamma +1) & a\\
+-q & a (\delta +\gamma -1)+\alpha +\beta -\delta & -a-1\\
+\alpha  \beta -\alpha -\beta +1 &  -\alpha -\beta +2 & 1
+\end{bmatrix}
+\begin{bmatrix}
+1 \\ s \\ s^2 
+\end{bmatrix}
+= 0
+$$
+this has the nice property of being a smaller, square problem ($3 \times 3$).
+
+We might consider that
+$$
+\frac{dM}{da} = \begin{bmatrix}
+\gamma &  - \gamma -1 & 1\\
+0 & \delta +\gamma -1 & -1\\
+0 &  0 & 0
+\end{bmatrix}
+$$
+$$
+\frac{dM}{dq} = \begin{bmatrix}
+0 & 0 & 0\\
+-1 & 0 & 0 \\
+0 & 0 & 0
+\end{bmatrix}
+$$
+$$
+\frac{dM}{d\alpha} = \begin{bmatrix}
+0 & 0 & 0\\
+0 & 1 & 0 \\
+\beta -1 & -1 & 0
+\end{bmatrix}
+$$
+$$
+\frac{dM}{d\beta} = \begin{bmatrix}
+0 & 0 & 0\\
+0 & 1 & 0 \\
+\alpha - 1 & -1 & 0
+\end{bmatrix}
+$$
+$$
+\frac{dM}{d\gamma} = \begin{bmatrix}
+a & -a & 0\\
+0 & a & 0 \\
+0 & 0 & 0
+\end{bmatrix}
+$$
+$$
+\frac{dM}{d\delta} = \begin{bmatrix}
+0 & 0 & 0\\
+0 & a-1 & 0 \\
+0 & 0 & 0
+\end{bmatrix}
+$$
+
+Beyond this we have existing elements
+$$
+\frac{d}{d\gamma}\frac{dM}{da},\frac{d}{d\delta}\frac{dM}{da},\frac{d}{d\beta}\frac{dM}{d\alpha},\frac{d}{d\alpha}\frac{dM}{d\beta},\frac{d}{da}\frac{dM}{d\gamma},\frac{d}{da}\frac{dM}{d\delta}
+$$
+for partial derivatives, as we would expect the order does not matter...
+$$
+\frac{d}{d\beta}\frac{dM}{d\alpha} = \frac{d}{d\alpha}\frac{dM}{d\beta} = \begin{bmatrix}
+0 & 0 & 0\\
+0 & 0 & 0 \\
+1 & 0 & 0
+\end{bmatrix}
+$$
+$$
+\frac{d}{d\gamma}\frac{dM}{da} = \frac{d}{da}\frac{dM}{d\gamma} = \begin{bmatrix}
+1 & -1 & 0\\
+0 & 1 & 0 \\
+0 & 0 & 0
+\end{bmatrix}
+$$
+$$
+\frac{d}{d\delta}\frac{dM}{da} = \frac{d}{da}\frac{dM}{d\delta} = \begin{bmatrix}
+0 & 0 & 0\\
+0 & 1 & 0 \\
+0 & 0 & 0
+\end{bmatrix}
+$$
+
+In general (perhaps more advanced functions than Heun) we can imagine this matrix  is just filled with polynomials in all of the coefficient terms/parameters.
+
+We write with $f(x) = x^2$
+$$
+L = f(\phi . M . s)
+$$
+then 
+$$
+\frac{\partial L}{\partial a} = \frac{\partial f}{\partial x}\frac{\partial x}{\partial a} = \frac{\partial f}{\partial x}\phi \frac{\partial M}{\partial a} s = 2 (\phi M s)(\phi M_a s)
+$$
+from here we can set up an iterative scheme like $a \to a - \eta D_a L$
+
+
+
+
+
+\subsection{Derivative of Mellin Transform}
+Recall that 
+$$
+\mathcal{M}[\log^k(x) f(x)](s) = E[\log^k(x) x^{s-1}] \to \phi^{(k)}(s)
+$$
+we can consider the derivative of the Mellin space (shift) annihilation operator. 
+$$
+\begin{bmatrix}
+\phi(s-1) & \phi(s) & \phi(s+1) & \phi'(s)
+\end{bmatrix}
+\begin{bmatrix}
+-a (\gamma -2 s+1)\\
+a (\delta +\gamma -2 s-1)+\alpha +\beta -\delta -2 s\\
+ -\alpha -\beta +2 s+2\\
+a \delta  s+a \gamma  s-a s^2-a s+\alpha  s+\beta  s-\delta  s-q-s^2
+\end{bmatrix}
+$$
+which is
+$$
+\begin{bmatrix}
+\phi(s-1) & \phi(s) & \phi(s+1) & \phi'(s)
+\end{bmatrix}
+\begin{bmatrix}
+ -a (\gamma +1) & 2a & 0\\
+a (\delta +\gamma -1)+\alpha +\beta -\delta & -2 (a+1) & 0\\
+-a (\gamma +1) & 2 & 0\\
+-q & a (\delta +\gamma -1)+\alpha +\beta -\delta & -a-1
+\end{bmatrix}
+\begin{bmatrix}
+1 \\ s \\ s^2
+\end{bmatrix}
+$$
+We might also consider writing that as a sum of quadratic forms, one for $\phi$ and one for $\phi'$.
+
+\section{Application}
+We can consider writing a piece of code that answers the question "Is this numeric function representable in terms of Heun functions?". We sample the function, and evaluate the moments. We could possibly look at both derivatives and moments/log moments. We solve for the matrix in the centre of the quadratic form in terms of input coefficients $a,q,\alpha,\beta,\gamma,\delta$.
+
+We might consider using the property of Mellin transforms in general to include a factor $\eta$ in the argument of the Heun function.
+
+There is a solution to 
+\begin{verbatim}
+RSolve[ 
+  -(a (gamma - s) (-1 + s) phi[s-1]) 
+  - (q - (alpha + beta - delta + a (-1 + delta + gamma)) s + (1 + a) s ) phi[s] 
+  + (1 - alpha + s) (1 - beta + s) phi[1+s] == 0
+, phi[s],s]
+\end{verbatim}
+in terms of different root
+
+\section{Confluent Types}
+General (G)
+$$\frac{d^2w}{dz^2} + \left[\frac{\gamma}{z}+ \frac{\delta}{z-1} + \frac{\epsilon}{z-a} \right] \frac{dw}{dz} + \frac{\alpha \beta z -q}{z(z-1)(z-a)} w = 0$$
+Confluent (C)
+$$\frac{d^2w}{dz^2} + \left[\frac{\gamma}{z}+ \frac{\delta}{z-1} + \epsilon \right] \frac{dw}{dz} + \frac{\alpha z -q}{z(z-1)} w = 0$$
+Doubly Confluent (D)
+$$\frac{d^2w}{dz^2} + \left[\frac{\delta}{z^2}+ \frac{\gamma}{z} + 1 \right] \frac{dw}{dz} + \frac{\alpha z -q}{z^2} w = 0$$
+Biconfluent (B)
+$$\frac{d^2w}{dz^2} - \left[\frac{\gamma}{z}+ \delta + z \right] \frac{dw}{dz} + \frac{\alpha z -q}{z} w = 0$$
+Triconfluent (T)
+$$\frac{d^2w}{dz^2} + \left(\gamma + z \right) z \frac{dw}{dz} + \left(\alpha z -q\right) w = 0$$
+
+
+\section{Problems We Can try to Solve}
+The Heun Functions  are useful in some further quantum mechanical problems.
+HeunC - "spheroidal wave equation", in Mathematica documentation. However, the solution is not purely HeunC and has extra exponential terms. 
+HeunB - "Solve the class of confinement potentials for the radial Schrödinger equation in terms of HeunB functions", also "The quantum-mechanical doubly anharmonic oscillator potential is: ..." which is $V(x) = a x^2 + b x^4 + c x^6$ type function. This is one of the most interesting examples... Applicable to exact learning.
+
+HeunT - "The classical anharmonic oscillator equation is solved in terms of HeunT"...
+
+The issue is that the solutions are products of functions.
+$$
+ \left\{\left\{\psi (x)\to c_2 x e^{\frac{\sqrt{\eta } x^4}{4}+\frac{\lambda  x^2}{4 \sqrt{\eta }}} \text{HeunB}\left[-\frac{\text{EE}}{4}-\frac{3 \lambda }{8 \sqrt{\eta }},\frac{12 \eta ^{3/2}-4 \eta  \mu +\lambda
+    ^2}{16 \eta }+\frac{\sqrt{\eta }}{2},\frac{3}{2},\frac{\lambda }{2 \sqrt{\eta }},\sqrt{\eta },x^2\right]+c_1 e^{\frac{\sqrt{\eta } x^4}{4}+\frac{\lambda  x^2}{4 \sqrt{\eta }}} \text{HeunB}\left[-\frac{\text{EE}}{4}-\frac{\lambda }{8
+    \sqrt{\eta }},-\frac{-12 \eta ^{3/2}+4 \eta  \mu -\lambda ^2}{16 \eta },\frac{1}{2},\frac{\lambda }{2 \sqrt{\eta }},\sqrt{\eta },x^2\right]\right\}\right\}
+$$
+
+\section{Same treatment for Hypergeometric Function}
+
+\section{Same treatment for Generalised Hypergeometric Function}
+
+
+\section{Same treatment for Meijer-G Function}
+The Meijer-G function is also the solution to a differential equation, and we can treat this in the same way (as an annihilation operator).
+$$
+\left[ (-1)^{p - m - n} \;z \prod_{j = 1}^p \left( z \frac{d}{dz} - a_j + 1 \right) - \prod_{j = 1}^q \left( z \frac{d}{dz} - b_j \right) \right] G(z) = 0
+$$
+
+
+\section{Holonomic Schrodinger Equation}
+$$
+- f''(x) + (V(x)-E)f(x) = 0
+$$
+take the Mellin transform... Consider only cases where $V(x)$ is a polynomial... for (a + b x + ... e x^4) we seem to have $-f''[x] + (a + b x + c x^2 + d x^3 + e x^4 - E)f[x] == 0$ leading to HeunT functions (with exponential part again)... 
+
+This will strongly end up with arguments being related to eigenvalues etc...
+
+The general case is just differential root object, but in terms of Mellin transforms we want to see how the series coefficients (for V(x) evolve into the matrix representation. We might also consider including powers $1/x$ and $1/x^2$ etc. or general terms $x^\alpha$, because these are relatively easily accommodated into the Mellin representation?
+
+The final layer of generality would be to expand the potential in terms of 
+$$
+V(x) = \sum{k=0}^\infty\sum_{l=0}^\infty \log^k(x) x^l c(k,l) 
+$$
+
+
+\section{Further Considerations}
+Heine–Stieltjes polynomials
+
+
+\bibliography{bibliography}{}
+\bibliographystyle{plain}
+
+
+\end{document}
