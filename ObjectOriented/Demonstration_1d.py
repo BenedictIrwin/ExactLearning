@@ -1,5 +1,19 @@
 from ObjectOriented import *
 
+#### Working Example... ####
+EE = ExactEstimator("Beta_Distribution", folder = "Beta_Distribution")
+EE.set_fingerprint( gen_fpdict(['c','shift-gamma','neg-shift-gamma']))
+n_bfgs = 10
+for i in range(n_bfgs): 
+  EE.BFGS(order=2)
+  print("{}%".format(100*(i+1)/n_bfgs),flush=True)
+EE.speculate(k = 4)
+############################
+
+EE.cascade_search()
+
+exit()
+
 ##
 EE = ExactEstimator("Disk_Line_Picking", folder = "Disk_Line_Picking")
 #EE = ExactEstimator("Chi_Distribution", folder = "Chi_Distribution")
@@ -28,19 +42,6 @@ EE.cascade_search()
 exit()
 
 
-#### Working Example... ####
-EE = ExactEstimator("Beta_Distribution", folder = "Beta_Distribution")
-EE.set_fingerprint( gen_fpdict(['c','shift-gamma','neg-shift-gamma']))
-n_bfgs = 10
-for i in range(n_bfgs): 
-  EE.BFGS(order=2)
-  print("{}%".format(100*(i+1)/n_bfgs),flush=True)
-EE.speculate(k = 4)
-############################
-
-EE.cascade_search()
-
-exit()
 
 #### Working Example... ####
 EE = ExactEstimator("Linear_Ramp", folder = "Linear_Ramp")
