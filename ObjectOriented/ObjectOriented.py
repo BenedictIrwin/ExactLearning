@@ -531,9 +531,22 @@ class ExactEstimator:
 
     ## Data
     self.s_values    = np.load("{}/s_values_{}.npy".format(folder,tag))
+
+    ## Get the dimension of the s_values
+    if(len(self.s_values.shape) == 1):
+      self.n_s_dims = 1
+    else:
+      if(len(self.s_values.shape) > 2):
+        print("Error: Tensor values moments detected! dim s = {}".format(self.s_values.shape))
+        exit()
+      self.n_s_dims = self.s_values.shape[-1]
+
+
+    ## Consider deleting
     self.sample_array = np.arange(self.s_values.shape[0])  ## This is for sampling from the samples
+
     self.moments     = np.load("{}/moments_{}.npy".format(folder,tag))
-    self.logmoments  = np.log(self.moments)
+    #self.logmoments  = np.log(self.moments)
 
     ## Load in the ratio dq/q which is expected to be a sum of digamma functions
     self.ratio = np.load("{}/logderivative_{}.npy".format(folder,tag))
@@ -555,8 +568,8 @@ class ExactEstimator:
     self.imag_s = np.imag(self.s_values)
     self.real_m = np.real(self.moments)
     self.imag_m = np.imag(self.moments)
-    self.real_logm = np.real(self.logmoments)
-    self.imag_logm = np.imag(self.logmoments)
+    #self.real_logm = np.real(self.logmoments)
+    #self.imag_logm = np.imag(self.logmoments)
     
     ## Calculate the error margins 
     real_log_upper = np.real(np.log(self.moments + self.real_error))

@@ -34,7 +34,9 @@ This can be used for automated hypothesis generation, compiling tables of identi
 We give many examples.
 We also attach a substantial theory document in the supplementary information.
 
-Goal : 1D and 2D / 3D examples.... Can we just fit a Lauricella function or similar...
+Goal : 1D Examples
+Goal : 2D Examples
+Goal:   3,4,5,6,7D example.... Can we just fit a Lauricella function or similar...
 
 
 Goal : Sparse data distributions?
@@ -44,6 +46,8 @@ Goal : CDF etc.
 
 Goal : Tons of working examples.
 Goal : Cumulant GF connection.
+
+Eventual Goal: Modes of operation -> holonomic, products of functions ... etc.
 
 \end{abstract}
 
@@ -107,10 +111,72 @@ $$
 \mathcal{M}_D\left[\prod_{k=1}^n f_k \left(\alpha_k \prod_{l=1}^n x_l^{a_{kl}}\right) \right]=\frac{\prod_{k=1}^n \alpha_k^{-(A^\top)_k^{-1} \mathbf{s}}}{|\det(A)|} \prod_{k=1}^n g_k((A^\top)_k^{-1} \mathbf{s})
 $$
 
+\section{Note}
+Consider taking derivatives of each function...
+Derivatives can be taken with respect to each variable $x_1, \cdots, x_n$, on each function $f_k$, so we end up with something like
+
+$$
+\mathcal{M}_D\left[\prod_{k=1}^n f^{(\mathbf{q})}_k \left(\alpha_k \prod_{l=1}^n x_l^{a_{kl}}\right) \right]= \cdots
+$$
+where $\mathbf{q} = (0,1,0,2,1)$ would mean $\partial_2 \partial_4^2 \partial_5$
+
+The normal Mellin transform rule is 
+$$
+\mathcal{M}[f'(x)](s) = (1-s)\phi(s-1)
+$$
+and
+$$
+\mathcal{M}[f^{(k)}(x)](s) = \frac{(-1)^k \Gamma(s)}{\Gamma(s-k)}\phi(s-k)
+$$
+and we do find an analogy to this, but now there is a vector $\mathbf{q}$, such that
+$$
+\mathcal{M}_D\left[\prod_{k=1}^n f^{(\mathbf{q}_k)}_k \left(\alpha_k \prod_{l=1}^n x_l^{a_{kl}}\right) \right](\mathbf{s})= \frac{\prod_{k=1}^n \alpha_k^{-(A^\top)_k^{-1} \mathbf{s}}}{|\det(\mathbf{A})|} \prod_{k=1}^n  g_k((\mathbf{A}^\top)_k^{-1} (\mathbf{s-q}_k))
+$$
+where we need to insert meaning to the vectorised version of a polynomial...[IT IS A PRODUCT for EACH elemtn of the vector, i.e. polynomial of different orders] and check that $\Sigma q$ is indeed the sum of the elements of the derivative vector.
+
+All of the $\mathbf{q}_k$ together make a matrix $\mathbf{Q}$ which is the derivative order of each variable for each function.
+
+If we have the original (undifferentiated version)
+$$
+\phi(\mathbf{s})
+$$
+then when we differentiate with a matrix $\mathbf{Q}$, where rows are the derivative order for each variable in one function. If we take the column sums we get a vector $\chi$. Then the new result is similar to $\phi(\mathbf{s-\chi})$, and the remaining terms are a series of factors that seem to depend on the rows $(A^\top)_k^{-1}$ and the Pochhamer type terms 
+$$
+\frac{(-1)^{q_k}\Gamma(\mathbf{s})}{\Gamma(\mathbf{s-q}_k)}
+$$
+
+
 Example
 $$
 f(x_1,x_2) = e^{-x_1+x_2}e^{-x_1 - x_2^2}
 $$
+
+Actually, we might be going too far with a matrix $Q$ and instead we could consider a bunch of partial derivatives applied to the whole function by the chain rule 
+$$
+\partial_{x_1}^{q_1} \cdots \partial_{x_n}^{q_n}
+$$
+this should look along the lines of
+$$
+\mathcal{M}_D\left[\partial_{x_1}^{q_1} \cdots \partial_{x_n}^{q_n}\prod_{k=1}^n f_k \left(\alpha_k \prod_{l=1}^n x_l^{a_{kl}}\right) \right](\mathbf{s})= \frac{\prod_{k=1}^n \alpha_k^{-(A^\top)_k^{-1} (\mathbf{s-q})}}{|\det(\mathbf{A})|} \left[\prod_{k=1}^n  g_k((\mathbf{A}^\top)_k^{-1} (\mathbf{s-q}))\right]\left[\prod_{k=1}^n \frac{(-1)^{s_k}\Gamma(s_k)}{\Gamma(s_k-q_k)}\right]
+$$
+and may ultimately be more useful because the function will only be evaluated numerically in some scenarios. We might then consider that because the Pochhammer type structure is predictable and general but the $\alpha_k$ type coefficients are not, if we could extract a form for the matrix $A$ by simply pinging off derivatives, without knowing the functions $g_k$, then once we had the matrix, we could removed the determinant factor, and try to reverse engineer the functions as a power series in the original domain, or as the coefficients for exact learning in the Mellin domain.
+
+Beyond this, we can include additional polynomial type terms as
+$$
+\mathcal{M}_D\left[  \mathbf{x}^{\mathbf{b}}\partial_{\mathbf{x}}^{\mathbf{q}} \prod_{k=1}^n f_k \left(\alpha_k \prod_{l=1}^n x_l^{a_{kl}}\right) \right](\mathbf{s})= \frac{\prod_{k=1}^n \alpha_k^{-(A^\top)_k^{-1} (\mathbf{s-q})}}{|\det(\mathbf{A})|} \left[\prod_{k=1}^n  g_k((\mathbf{A}^\top)_k^{-1} (\mathbf{s-q}))\right]\left[\prod_{k=1}^n \frac{(-1)^{s_k}\Gamma(s_k)}{\Gamma(s_k-q_k)}\right]
+$$
+
+
+
+
+However, for matrix $Q$, there may be a useful interpretation in finding some complicated identity for an expression in terms of the derivatives of building blocks.
+
+
+We could imagine a scenario where we have a multivariate and holonomic relationship on such a function, to create an annihilation operator.
+
+
+
+
 
 \section{Sampling Strategy}
 Some fingerprints are an analytic continuation from the convergent region of the sampling, i.e. sometimes moments don't exist. The theoretical expression and the sampled value may diverge beyond a certain boundary, and can be numerically slow to coniverge (for limited sample sizes) near the boundary. This effect makes certain values of $s$ inaccurate. However, it is easy to predict the values that are wrong... 
@@ -228,7 +294,6 @@ Linear Ramp & & yes \\
 \end{tabular}
 
 
-
 \subsection{Advanced 1D Cases}
 
 \subsubsection{Disk Line Picking}
@@ -245,8 +310,38 @@ $$
     (-\text{s1}-\text{s2})}
 $$
 
+We determine the sample region. Where the expectation calculation diverges, the log of the expectation approaches a plane (at the edge of the Newton polytope type bounding region [cite multidimMellin]).
+
+We can set a sample weight to be 
+$$
+w_i = \min_{p} |E[\mathbf{x^{s_i}}] - e^{\mathbf{a}_p \cdot \mathbf{s} + c_p}|
+$$
+that is for all of the unique planes $p$ we fit/detect. Plane detection can potentially be carried out using a nearest neighbours scheme. We could potentially also use:
+$$
+w_i = \exp\left(\min_{p} |\log E[\mathbf{x^{s_i}}] - \mathbf{a}_p \cdot \mathbf{s} + c_p| \right)
+$$
+to somehow more strongly penalise them.
+
+We should remember that at $\mathbf{s} =[1,1]$ we know the expectation value is pinned to $1$ for normalised distributions, and we have the factor of $N$ in the average.
+
+
+
+
+\subsubsection{Another}
+$$
+(x_1 x_2)^2 e^{-x_1^2x_2^2}e^{-x1}
+$$
+
 
 \subsection{3D Examples}
+Consider the three dimensional density
+$$
+f(x) = e^{-a x_1 x_3/x_2}e^{-b x_1 x_2^2/x_3^2}e^{- c x_3^2 x_2/x_1^2}
+$$
+
+\subsection{7D Example}
+[Try to get something neat in this space...]
+Remember the composition of multiple density functions.
 
 
 \section{Sparse Distributions}
@@ -254,9 +349,21 @@ $$
 \section{Solving Problems}
 
 \subsection{Schr\"odinger Equation}
+One example is to find the analytic solutions to the time independent Schr\"odinger equation (TISE) from a numerical solution. The TISE is
+$$
+- \frac{1}{2}\frac{d^2}{dx^2} \psi_n(x) + V(x)\psi_n(x) = E_n \psi_n(x)
+$$
+
+
 
 \subsubsection{Harmonic Oscillator}
-$V(x) = \alpha x^2$
+
+
+with a harmonic potential 
+$V(x) = \alpha x^2$.
+
+
+
 Multiple energy levels to consider...
 
 \subsection{Anharmonic Oscilator}
