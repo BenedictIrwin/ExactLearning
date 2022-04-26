@@ -552,15 +552,14 @@ class ExactEstimator:
     self.ratio = {}
     self.ratio2 = {}
 
-    print(self.n_s_dims)
     ### Now that we have multi-dim data, there are many possible derivatives to have.
-    for i in range(1,self.n_s_dims+1):
+    for i in range(self.n_s_dims):
       loadstring ="{}/logderivative_{}_{}.npy".format(folder,i,tag) 
       print(loadstring)
       self.ratio[i] = np.load(loadstring)
 
-    for i in range(1,self.n_s_dims+1):
-      for j in range(1,self.n_s_dims+1):
+    for i in range(self.n_s_dims):
+      for j in range(self.n_s_dims):
         if(j<i): continue
         loadstring ="{}/logderivative_{}{}_{}.npy".format(folder,i,j,tag) 
         print(loadstring)
@@ -870,7 +869,7 @@ class ExactEstimator:
     return x_final, loss
   
   ## Vectorised difference function
-  def partial_real_log_loss(self, p, order, states,  values):
+  def partial_real_log_loss(self,p, order, states,  values):
     full = states*values + deal(p, states)
     if(order == 0): 
       A = fingerprint(*full)[0]
@@ -888,7 +887,7 @@ class ExactEstimator:
  
   ## WE CAN PROBABLY TIDY THIS UP USING DEFAULT ARGUMENTS
   ## Vectorised difference function
-  def partial_complex_log_loss(self, p, order, states, values):
+  def partial_complex_log_loss(self,p,order, states, values):
     full = states*values + deal(p, states)
     if(order == 0): 
       A = fingerprint(*full)

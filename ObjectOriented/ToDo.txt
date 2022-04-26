@@ -1,0 +1,11 @@
+Consider following the slope of logE down into the sampling basin and expanding around there... 
+Also consider following the slope up, to get further (but stable) points and a better asymptotic estimate of the contents of gamma functions.
+
+how adding log(x_k) terms will affect everything... 
+
+Some kind of generalisation, where we have
+
+gamma(f(s)), and the level set f(s) = 0 defines a curve through moment space, if we could detect such a curve, would it be possible to estimate anything? Series expansion? etc.
+
+
+Automate (hyper-)plane fitting to higher dims.

@@ -1,6 +1,6 @@
 import numpy as np
 from matplotlib import pyplot as plt 
-from scipy.special import gamma
+from scipy.special import gamma, digamma
 
 def prob_mass(x,y): return np.exp(- x/y)*np.exp(- x*y**2)
 ## Sample points for x1,x2
@@ -39,8 +39,8 @@ plt.show()
 ## Sample at s points
 #s = np.array([[1,1],[1,1.9],[2,1],[1.5,1.5]])
 #s = np.random.uniform(low=1, high = 2, size = [100,2])
-s1 = np.random.uniform(low=0, high = 4, size = [1000])
-s2 = np.random.uniform(low=-4*s1, high = 2*2*s1, size = [1000])
+s1 = np.random.uniform(low=0, high = 5, size = [1000])
+s2 = np.random.uniform(low=-7, high = 7, size = [1000])
 
 s = np.array([s1,s2]).T
 
@@ -120,7 +120,7 @@ ax.scatter(points_2[:,0],points_2[:,1],np.log(E[ids_2]),c = 'green')
 from sklearn.linear_model import LinearRegression
 
 
-reg = LinearRegression()
+reg = LinearRegression(fit_intercept = False)
 reg.fit(points_1, np.log(E[ids_1]))
 print("R_sq",reg.score(points_1, np.log(E[ids_1])))
 print("coeff ",reg.coef_)
@@ -141,7 +141,7 @@ s1s1_1 = np.linspace(0,4,100)
 s2s2_1 = (-reg.intercept_ - reg.coef_[0]*s1s1_1)/reg.coef_[1]
 ax.plot(s1s1_1,s2s2_1,'r-')
 
-reg = LinearRegression()
+reg = LinearRegression(fit_intercept = False)
 reg.fit(points_2, np.log(E[ids_2]))
 print("R_sq",reg.score(points_2, np.log(E[ids_2])))
 print("coeff ",reg.coef_)
@@ -209,6 +209,73 @@ for d,p in zip(diff,problem):
 am = np.argmax(diff)
 print(s[am])
 
+###### Do something to filter them here
+print("WARNING: Missing parts")
+###
+###
+###### Save out the moments as required by Exact Estimator
+
+if(True):
+  print("WARNING! Generation currently bypassed, outputting exact moments for testing purposes!")
+  
+  s1 = np.random.uniform(low=0, high = 5, size = [100])
+  s2 = np.random.uniform(low=-s1, high = 2*s1, size = [100])
+  
+  q  = moments(s1,s2)
+  #print(mom)
+  print(mom.shape)
+ 
+  s = np.array([s1,s2]).T
+
+  def moments(s1,s2): 
+    return np.sqrt(3) * gamma( (2*s1 - s2)/3) * gamma( (s1+s2)/3) / (2 * np.pi)
+  def d_1_moments(s1,s2): 
+    return (gamma((2*s1 - s2)/3)*gamma((s1 + s2)/3)*(2*digamma((2*s1 - s2)/3) + digamma((s1 + s2)/3)))/(2*np.sqrt(3)*np.pi) 
+  def d_2_moments(s1,s2): 
+    return (gamma((2*s1 - s2)/3)*gamma((s1 + s2)/3)*(-digamma((2*s1 - s2)/3) + digamma((s1 + s2)/3)))/(2*np.sqrt(3)*np.pi)
+  ##np.save("")
+ 
+  #def d_11_moments(s1,s2): return (Gamma[(2*s1 - s2)/3]*Gamma[(s1 + s2)/3]*((2*PolyGamma[0, (2*s1 - s2)/3] + PolyGamma[0, (s1 + s2)/3])^2 + 4*PolyGamma[1, (2*s1 - s2)/3] + PolyGamma[1, (s1 + s2)/3]))/(6*Sqrt[3]*Pi) 
+  #def d_12_moments(s1,s2): return (Gamma[(2*s1 - s2)/3]*Gamma[(s1 + s2)/3]*(-2*PolyGamma[0, (2*s1 - s2)/3]^2 + PolyGamma[0, (2*s1 - s2)/3]*PolyGamma[0, (s1 + s2)/3] + PolyGamma[0, (s1 + s2)/3]^2 - 2*PolyGamma[1, (2*s1 - s2)/3] + PolyGamma[1, (s1 + s2)/3]))/(6*Sqrt[3]*Pi)
+  #def d_22_moments(s1,s2): return (Gamma[(2*s1 - s2)/3]*Gamma[(s1 + s2)/3]*((PolyGamma[0, (2*s1 - s2)/3] - PolyGamma[0, (s1 + s2)/3])^2 + PolyGamma[1, (2*s1 - s2)/3] + PolyGamma[1, (s1 + s2)/3]))/(6*Sqrt[3]*Pi)
+
+## Try this
+dq_1 = d_1_moments(s1,s2)
+dq_2 = d_2_moments(s1,s2)
+
+####### SAVING OUTPUTS ######
+keyword = "2DMixedExp"
+## Save out exact learning data (complex moments)
+np.save("s_values_{}".format(keyword),s)
+np.save("moments_{}".format(keyword),q)
+#np.save("logmoments_{}".format(keyword),np.log(q))
+#np.save("derivative_{}".format(keyword),dq)
+
+### Save a few derivatives?
+np.save("logderivative_1_{}".format(keyword),dq_1/q)
+np.save("logderivative_2_{}".format(keyword),dq_2/q)
+
+## Save a few?
+print("Warning: missing parts!")
+#np.save("logderivative2_11_{}".format(keyword),ddq_11/q)
+#np.save("logderivative2_12_{}".format(keyword),ddq_12/q)
+#np.save("logderivative2_22_{}".format(keyword),ddq_22/q)
+
+
+
+##### Also sampling? Derivatives?
+
+### log(x1)
+### log(x2)
+### log(x1)log(x2) --> actually second order... 
+
+### This gets unweildly for many dimensions
+
+
+### Also want to pass along information w.r.t the approximate bounds and stuff
+### I.e. we have detected there are ... (say 3) lines that define a convex hull of convergent sampling points.
+### Return domain, and also the fact there are likely to be 3 gammas (on top), and approximate constants.
+print("WARNING: Missing parts")
 
 
 
