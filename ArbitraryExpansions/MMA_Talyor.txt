@@ -1,0 +1,35 @@
+AD[f_,n_]:= (ArcSin[D[Sin[f],{x,n}]]/.x->0)                                                                                                                                                        
+AProd[L_]:= ArcSin[Product[Sin[i],{i,L}]]
+ASum[L_]:= ArcSin[Sum[Sin[i],{i,L}]
+ASum[Table[AProd[{AD[Cos[x],k],ArcSin[x^k/k!]}],{k,0,10}]] // InputForm
+### Where Sin/Arcsin can be any pair of functions/inverses
+
+
+#### From D. Widder paper ~ 1920 ## Generalised basis function u[k,x] full method...
+
+u[k_,x_]:= x^k
+
+Lf[f_,n_]:=If[n==0,f[x],Wronskian[Join[Table[u[k,x],{k,0,n-1}],{f[x]}],x]/W[n-1]]/.x->t                                                                                                             
+
+In[79]:= W[n_]:= If[n==0,1,Wronskian[Table[u[k,x],{k,0,n}],x]]                                                                                                                                               
+
+In[80]:= phi[k_,x_]:= If[k==0,1,If[k==1,W[1]/W[0]^2,W[k]W[k-2]/W[k-1]^2]]                                                                                                                                    
+
+In[81]:= g[n_,x_,t_]:=If[n==0,phi[0,x]/phi[0,t],1/Product[phi[k,t],{k,0,n}]Integrate[Product[phi[k,t0],{k,0,n}]g[n-1,x,t0],{t0,t,x}]]                                                                        
+
+In[82]:= Sum[Lf[Cos,n]g[n,x,t],{n,0,10}]/.t->0
+
+
+#### Example just defining phi upfront which may make more sense....
+
+In[151]:= phi[k_,x_]:= 1              
+In[151]:= phi[k_,x_]:= 1,1,2,3,4,5,6, or exp(-k x) etc.
+                                                                                                                                                                       
+
+In[81]:= g[n_,x_,t_]:=If[n==0,phi[0,x]/phi[0,t],1/Product[phi[k,t],{k,0,n}]Integrate[Product[phi[k,t0],{k,0,n}]g[n-1,x,t0],{t0,t,x}]] 
+
+In[152]:= W[n_]:= If[n==0,1,Wronskian[Table[g[k,x,t],{k,0,n}],x]]                                                                                                                                            
+
+In[153]:= Lf[f_,n_]:=If[n==0,f[x],Wronskian[Join[Table[g[k,x,t],{k,0,n-1}],{f[x]}],x]/W[n-1]]/.x->t                                                                                                          
+
+In[154]:= Sum[Lf[Cos,n]g[n,x,t],{n,0,4}]/.t->0 // FullSimplify // InputForm

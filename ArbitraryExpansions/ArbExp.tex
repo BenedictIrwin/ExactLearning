@@ -1,0 +1,119 @@
+\documentclass{article}
+
+\usepackage{authblk}
+\usepackage{url}
+\usepackage[square,numbers]{natbib}
+\usepackage{amssymb,amsmath}
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{setspace}
+\doublespacing
+
+%\SectionNumbersOn
+%\AbstractOn
+
+\title{Arbitrary Series Expansions}
+%\author{Benedict W. J.~Irwin}
+
+\date{\today}
+\begin{document}
+%\bibliographystyle{harvard}
+
+\author[1]{Benedict W. J.~Irwin}
+\affil[1]{Machine Intelligence Group, Microsoft Research, Cambridge}
+\affil[]{\textit {beirwin@microsoft.com}}
+
+
+\maketitle
+
+\begin{abstract}
+We define a highly generalised Taylor series. This is generalised in terms of 1) the underlying calculus (additive, multiplicative, ...) and 2) the underlying basis function for the expansion.
+\end{abstract}
+
+\section{Main}
+Define the generalised sum, product and derivative with respect to forward and backward functions $\phi$ and $\phi^{-1}$ respectively, who are complementary inverses.
+
+\begin{align}
+a \oplus b = \phi^{-1}( \phi(a) + \phi(b) ) \\
+a \otimes b = \phi^{-1}( \phi(a) \times \phi(b) ) \\
+D_{\phi,x} f(x) = \phi^{-1}( D_x \phi(f(x)) )
+\end{align}
+
+These have extensions for $\Sigma$ and $\Pi$ big operators.
+
+One can show a $\phi$-generalised Taylor series for a function is
+$$
+f(x+x_0) = \bigoplus_{k=0}^{\infty} \left[D^{k}_{\phi, x}f(x) \right]_{x=x_0} \otimes \phi^{-1}\left( \frac{(x-x_0)^k}{k!}\right)
+$$
+
+However, this expansion is limited to a power series, using a monomial basis... 
+
+D.Widden showed an extension to the Taylor series as
+$$
+f(x) = \sum_{k=0}^\infty \left[L_k f(x)\right]_{x=t} g_k(x,t)
+$$
+where defining an input basis function $\varphi_k(x)$, we have
+\begin{align}
+g_k(x,t) = \frac{\int_t^x \prod_{l=0}^k \varphi_l(s)g_{k-1}(x,s)\;ds}{\prod_{l=0}^k \varphi_l(t)} \\
+L_k f(x) = \frac{W[\{g_0(x,t),\cdots,g_{k-1}(x,t),f(x)\}]}{W[\{g_0(x,t),\cdots,g_{k-1}(x,t)\}]}
+\end{align}
+where $W$ is the Wronskian.
+
+\section{Next}
+We conjecture it is possible to simply combine these two extensions, primarily by modifying both the definition of the Wronskian (or derivative) and the integral to that of the alternative calculus. We denote this final expansion as
+
+$$
+f(x) = \bigoplus_{k=0}^{\infty} \left[L^*_k f(x)\right]_{x=t} \otimes g^*_k(x,t)
+$$
+where
+\begin{align}
+g^*_k(x,t) = \frac{\int_t^x \prod_{l=0}^k \varphi_l(s)g_{k-1}(x,s)\;ds}{\prod_{l=0}^k \varphi_l(t)} \\
+L^*_k f(x) = \frac{W^*[\{g^*_0(x,t),\cdots,g^*_{k-1}(x,t),f(x)\}]}{W^*[\{g^*_0(x,t),\cdots,g^*_{k-1}(x,t)\}]}
+\end{align}
+we now use a modified Wronskian $W^*$ which is defined as 
+$$
+W^*_{n}[\{f_0(x), \cdots, f_n(x)\}] = \begin{vmatrix}
+f_0(x) & \cdots & f_n(x) \\
+f^*_0(x) & \cdots & f^*_n(x) \\
+\vdots & & \vdots \\
+f^{*(n)}_0(x) & \cdots & f^{*(n)}_n(x)
+\end{vmatrix}
+$$
+
+we also have to consider changing 1) the definition of the integral itself, 2) consider using the modified product in place of the product for the functions $\varphi_k$ in the definition of $g_k(x,t)$.
+
+We could even end up having to define a modified determinant, which would be most unfortunate.
+
+For regular calculus $\phi_k(x) = 1$ and we have 
+$$
+W_3(x,t) = \det
+\left(
+                   \begin{array}{cccc}
+                    1 & x-t & \frac{1}{2} (t-x)^2 & -\frac{1}{6} (t-x)^3 \\
+                    0 & 1 & x-t & \frac{1}{2} (t-x)^2 \\
+                    0 & 0 & 1 & x-t \\
+                    0 & 0 & 0 & 1 \\
+                   \end{array}
+                   \right)
+$$
+whereas 
+$$
+\left(
+                   \begin{array}{cccc}
+                    1 & -\sin ^{-1}(\sin (t-x)) & \sin ^{-1}\left(\sin \left(\frac{1}{2} (t-x)^2\right)\right) & -\sin ^{-1}\left(\sin \left(\frac{1}{6} (t-x)^3\right)\right) \\
+                    0 & \sin ^{-1}(\cos (t-x)) & \sin ^{-1}\left((x-t) \cos \left(\frac{1}{2} (t-x)^2\right)\right) & \csc ^{-1}\left(\frac{2 \sec \left(\frac{1}{6} (t-x)^3\right)}{(t-x)^2}\right) \\
+                    0 & \sin ^{-1}(\sin (t-x)) & \sin ^{-1}\left(\cos \left(\frac{1}{2} (t-x)^2\right)-(t-x)^2 \sin \left(\frac{1}{2} (t-x)^2\right)\right) & -\sin ^{-1}\left((t-x) \cos \left(\frac{1}{6}
+                      (t-x)^3\right)-\frac{1}{4} (t-x)^4 \sin \left(\frac{1}{6} (t-x)^3\right)\right) \\
+                    0 & -\sin ^{-1}(\cos (t-x)) & -\sin ^{-1}\left(3 (x-t) \sin \left(\frac{1}{2} (t-x)^2\right)+(x-t)^3 \cos \left(\frac{1}{2} (t-x)^2\right)\right) & -\sin ^{-1}\left(\frac{3}{2} (t-x)^3
+                      \sin \left(\frac{1}{6} (t-x)^3\right)+\frac{1}{8} \left((t-x)^6-8\right) \cos \left(\frac{1}{6} (t-x)^3\right)\right) \\
+                   \end{array}
+                   \right)
+$$
+
+
+
+\bibliography{bibliography}{}
+\bibliographystyle{unsrt}
+
+
+\end{document}

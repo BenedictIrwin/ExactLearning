@@ -27,7 +27,12 @@
 \maketitle
 
 \begin{abstract}
-We present a working machine learning method that can reverse engineer a wide class of numerical functions and write out an exact mathematical expression.
+Human mathematicians are very good at abstract reasoning. Computers are very good at large calculations. It has long been a goal to let computers deal in the abstract and symbolic patterns of mathematics.
+
+Don't worry about too much peripheral stuff... i.e. neural networks etc. Easily do follow up papers...
+
+
+We present a working machine learning method that can reverse engineer a wide class of numerical functions and write out exact mathematical expressions describing the underlying data.
 
 This can be used for automated hypothesis generation, compiling tables of identities, assisting researchers as they work in an augmented fashion and ultimately one step closer to artificial intelligence working an reasoning with the space of analytic functions and performing exact, analytic mathematical tasks, attempting to understand complex data in high dimensions for example from particle physics/etc..
 
@@ -106,10 +111,24 @@ Log-convex for many functions.
 Solutions of differential equations. holonomic functions, annihilation operator, Mellin transform. etc.
 
 \section{Multidimensional Examples}
-Consider
+For general analytic multivariate functions, the moments/series coefficients can be exposed through the Ramanujan Master Theorem as
 $$
-\mathcal{M}_D\left[\prod_{k=1}^n f_k \left(\alpha_k \prod_{l=1}^n x_l^{a_{kl}}\right) \right]=\frac{\prod_{k=1}^n \alpha_k^{-(A^\top)_k^{-1} \mathbf{s}}}{|\det(A)|} \prod_{k=1}^n g_k((A^\top)_k^{-1} \mathbf{s})
+RMT
 $$
+Where the multivariate function can be expressed as a product of univariate functions with known Mellin transforms and with argument as a multivariate monomial term, it is possible to construct a general rule of thumb where the order of integration in the Mellin transform does not matter. As this was derived experimentally by the author, we call this Irwin's Master Theorem for lack of a better name.
+$$
+\mathcal{M}_D\left[\prod_{k=1}^n f_k \left(\alpha_k \prod_{l=1}^n x_l^{a_{kl}}\right) \right]=\frac{\prod_{k=1}^n \alpha_k^{-(A^\top)_k^{-1} \mathbf{s}}}{|\det(\mathbf{A})|} \prod_{k=1}^n g_k((A^\top)_k^{-1} \mathbf{s})
+$$
+
+Here $\mathbf{A}$ is a matrix with elements $a_{kl}$. If $\mathbf{A}$ is singular, the expression does not exist. A non-square, singular value equivalent expression may exist. [See Appendix Section XYZ for an example.]. This rule of thumb, allows us to check the algorithm is working.
+
+For an increasingly generalised example of this we have 
+$$
+\mathcal{M}_D\left[  \mathbf{x}^{\mathbf{b}}\partial_{\mathbf{x}}^{\mathbf{q}} \prod_{k=1}^n f_k \left(\alpha_k \prod_{l=1}^n x_l^{a_{kl}}\right) \right](\mathbf{s})= \frac{\prod_{k=1}^n \alpha_k^{-(A^\top)_k^{-1} (\mathbf{s-q})}}{|\det(\mathbf{A})|} \left[\prod_{k=1}^n  g_k((\mathbf{A}^\top)_k^{-1} (\mathbf{s-q}))\right]\left[\prod_{k=1}^n \frac{(-1)^{s_k}\Gamma(s_k)}{\Gamma(s_k-q_k)}\right]
+$$
+
+
+
 
 \section{Note}
 Consider taking derivatives of each function...
@@ -176,12 +195,413 @@ We could imagine a scenario where we have a multivariate and holonomic relations
 
 
 
+\subsection{Super General}
+Consider analogy
+$$
+\int \phi^{-1}\left(\phi\left(f_1\left(\phi^{-1}\left( a_{11}\phi(x_1) + a_{12}\phi(x_2) + a_{13} \phi(x_3) \right)\right) \right) + \phi() + \phi() \right)
+$$
+for generalisation of Mellin transform for $\phi$. Link this up to the Fourier transform for example, or an additive type/ general case when $\phi = 1$...
+
+$$
+\int \int \int f_1(a_{11} x_1 + a_{12} x_2 + a_{13} x_3) + f_2(a_{21} x_1 + a_{22} x_2 + a_{23} x_3) + f_3( a_{31} x_1 + a_{32} x_2 + a_{33} x_3) \; dx_1 d x_2 d x_3
+$$
+invoke Jacobian change of variables, $u_1 = \alpha x_1 + \beta x_2 + \gamma x_3$ ... 
+
+Try to find this out for the general case of any functions!
+
+N-D FourierTransform of a product of Gaussians, with argument linear in $x_1,x_2,x_3$, all coefficients in a big matrix, ends up being a large expression with terms equal to matrix (det, trace, elements ,minors) etc.
+
+
+
+$$
+A_2 = \begin{bmatrix}
+a&b \\ c& d
+\end{bmatrix}
+$$
+
+$$
+A_3 = \begin{bmatrix}
+a & b & c \\
+d & e & f \\
+g & h & i
+\end{bmatrix}
+$$
+$$
+F_2 = 
+\frac{\exp \left(-\frac{(a_2 \cdot a_2 )t_1^2 + (a_1 \cdot a_1 ) t_2^2 -2 (a_1 \cdot a_2) t_1 t_2}{4 (\det A)^2}\right)}{2 \sqrt{a_1 \cdot a_1}
+    \sqrt{\frac{(\det A)^2}{a_1 \cdot a_1 }}}
+$$
+    
+$$
+F_3 = \frac{AA}{BB}
+$$
+
+$$
+AA = \exp(-pp/dd)
+$$
+$$
+dd = 4 (\det A)^2
+$$
+
+\begin{align}
+pp = \\
+\text{t3}^2 \left(a^2 \left(e^2+h^2\right)+(e g-d h)^2\right)
+-2 \text{t3} \left(a^2 \text{t2} (e f+h i)+\text{t1} (e g-d h) (e i-f h)+\text{t2} (e g-d h) (f g-d i)\right)\\
++a^2 f^2 \text{t2}^2 \\
++a^2 i^2 \text{t2}^2 \\
++2 c \text{t3} \left(a \text{t2} (d e+g h) -a \text{t1} \left(e^2+h^2\right)-b \text{t2} \left(d^2+g^2\right)+b \text{t1} (d e+g h)\right)
+\end{align}
+
+\begin{align}
+-2 c (b\text{t1}-a \text{t2}) (-\text{t2} (d f+g i)+e f \text{t1}+h i \text{t1})
++2 a b \left(\text{t3} (d f \text{t2}+e f \text{t1}+g i \text{t2}+h i \text{t1})
+-\left(\text{t3}^2 (d e+g h)\right)
+-\text{t1}
+    \text{t2} \left(f^2+i^2\right)\right) 
+    +b^2 \left(\text{t3}^2 \left(d^2+g^2\right)-2 \text{t1} \text{t3} (d f+g i)+\text{t1}^2 \left(f^2+i^2\right)\right)+c^2 \left(\text{t2}^2 \left(d^2+g^2\right)
+    -2\text{t1} \text{t2} (d e+g h)+\text{t1}^2 \left(e^2+h^2\right)\right)\\
+\end{align}
+ \begin{align}
+    +d^2 i^2 \text{t2}^2\\
+    -2 d e i^2 \text{t1} \text{t2}\\
+    -2 d f g i \text{t2}^2\\
+    +2 d f h i \text{t1} \text{t2}\\
+    +e^2 i^2 \text{t1}^2\\
+    + 2 e f g i \text{t1} \text{t2} \\
+    -2 e f h i \text{t1}^2 \\
+    +f^2 g^2 \text{t2}^2 \\
+    -2 f^2 g h \text{t1} \text{t2} \\
+    +f^2 h^2 \text{t1}^2
+\end{align}    
+
+$$    
+BB = 2 \sqrt{2} \sqrt{a_1 \cdot a_1}
+    \sqrt{\frac{tt}{a_1 \cdot a_1}} \sqrt{\frac{(\det A)^2}{tt}}
+$$
+$$
+tt = a^2 \left(e^2+h^2\right)-2 a b (d e+g h)+b^2 \left(d^2+g^2\right)+(e g-d h)^2
+$$
+
+The polynomial has coefficients 
+$$
+[t_1^2] = b^2 \left(f^2+i^2\right)-2 b c (e f+h i)+c^2 \left(e^2+h^2\right)+(f h-e i)^2
+$$
+$$
+[t_2^2] = a^2 \left(f^2+i^2\right)-2 a c (d f+g i)+c^2 \left(d^2+g^2\right)+(f g-d i)^2
+$$
+$$
+[t_3^2] = a^2 \left(e^2+h^2\right)-2 a b (d e+g h)+b^2 \left(d^2+g^2\right)+(e g-d h)^2
+$$
+and 
+$$
+[t_1 t_2] =-2 \left(-c (a e f+a h i+b d f+b g i)+a b \left(f^2+i^2\right)+c^2 (d e+g h)+(f g-d i) (f h-e i)\right)
+$$
+$$
+[t_2 t_3] = -2 \left(a^2 (e f+h i)-a b (d f+g i)-a c (d e+g h)+b c \left(d^2+g^2\right)+(e g-d h) (f g-d i)\right)
+$$
+$$
+[t_3 t_1] = 2 b (a e f+a h i+c d e+c g h)-2 \left(a c \left(e^2+h^2\right)+(e g-d h) (e i-f h)\right)-2 b^2 (d f+g i)
+$$
+
+
+We apparently have the coefficient for $t_1^2$ is the sum of the first row of $(A^{-1})^2$, and
+
+I.e. we have a term
+$$
+\begin{bmatrix}
+t_1^2 & t_2^2 & t_3^2
+\end{bmatrix}
+\cdot A^{-2}
+\cdot
+\begin{bmatrix}
+1 \\ 1 \\ 1
+\end{bmatrix}
+$$
+
+This was Hadamard product/.
+
+
+Define
+$$
+K = |\det A| A^{-1}
+$$
+let $k_i$ be the $ith$ row of $K$.
+Then we end up with coefficients for $t_i t_j$ as 
+$$
+[t_i t_j] = k_i \cdot k_j + k_j \cdot k_i
+$$
+and
+$$
+[t_i t_i] = k_i \cdot k_i
+$$
+
+
+It is equal to 
+$$
+\mathbf{t} \cdot \mathbf{A A}^\top \cdot \mathbf{t}
+$$
+or if we keep the matrix as $(A^\top)^{-1}$ then it is
+$$
+\mathbf{t} \cdot \mathbf{A^\top A} \cdot \mathbf{t}
+$$
+
+So the product of $n$ Gaussian Fourier transforms looks like 
+$$
+\mathcal{F}_{n}\left[ \prod_{k=1}^n e^{-(\mathbf{a}_k\cdot\mathbf{x})^2} \right] = \frac{\exp\left(- \frac{\mathbf{t} \cdot \mathbf{((A^\top)^{-1})^\top (A^\top)^{-1}} \cdot \mathbf{t}}{4} \right)}{2^{n/2}|\det \mathbf{A}|}
+$$
+
+What this means, is the product on the left ends up being a fully correlated "Multivariate" Gaussian. And the fourier transform is of course, still a multivariate Gaussian, so we just have a new form for the covariance matrix, i.e. a decomposition.
+
+This is great, because it helps us understand the multivariate pdf in terms of the Ramanujan master theorem etc...
+
+\subsection{Next}
+Next we can explore the generality of it, when dealing with a product of arbitrary mixture of functions... In a similar vein to the Mellin transforms.
+
+Mixing $e^{-x}$ and $e^{-x^2}$ we get as expected a mixture
+
+$$
+\frac{\sqrt{\pi } e^{\frac{c^2}{4 a^2}-\frac{i c \text{t1}}{2 a^2}-\frac{\text{t1}^2}{4 a^2}} \delta \left(-\frac{i b c}{a}+i d-\frac{b \text{t1}}{a}+\text{t2}\right)}{\sqrt{a^2}}
+$$
+
+Inspecting the $(A^\top)^{-1}$
+
+$$
+(A^\top)^{-1} = \left(
+                   \begin{array}{cc}
+                    \frac{d}{a d-b c} & -\frac{c}{a d-b c} \\
+                    -\frac{b}{a d-b c} & \frac{a}{a d-b c} \\
+                   \end{array}
+                   \right)
+$$
+ $$
+            ((A^\top)^{-1})^\top (A^\top)^{-1} =      \left(
+                   \begin{array}{cc}
+                    \frac{b^2}{(a d-b c)^2}+\frac{d^2}{(a d-b c)^2} & -\frac{a b}{(a d-b c)^2}-\frac{c d}{(a d-b c)^2} \\
+                    -\frac{a b}{(a d-b c)^2}-\frac{c d}{(a d-b c)^2} & \frac{a^2}{(a d-b c)^2}+\frac{c^2}{(a d-b c)^2} \\
+                   \end{array}
+                   \right)
+                   $$
+                   
+Weirdly in this case the determinant appears to be been reduced to a single factor of $a$. We have the argument of the delta function having the bottom row of the matrix times $\mathbf{t}$, which is good to see.     
+
+The argument of the exponential appears to be 
+$$
+(-i t_1 + \frac{c}{2 a})(-i t_1 + \frac{c}{2 a})
+$$         
+
+If we swap the mixture we get 
+$$
+\frac{\sqrt{\pi } e^{\frac{a^2}{4 c^2}-\frac{i a \text{t1}}{2 c^2}-\frac{\text{t1}^2}{4 c^2}} \delta \left(i b-\frac{i a d}{c}-\frac{d \text{t1}}{c}+\text{t2}\right)}{\sqrt{c^2}}
+$$
+
+When they are both simple exponentials we have 
+$$
+2 \pi  \delta (i a+i c+\text{t1}) \delta (i b+i d+\text{t2})
+$$
+so we apparently have some blending in going on. We might try another function.
+
+\subsubsection{Example}
+
+
+
+Because $\mathcal{M}[f(x)](s) = \mathcal{B}[f(e^{-x})](s)$ we can simply convert to bilateral Laplace transform
+$$
+\mathcal{M}_D\left[\prod_{k=1}^n f_k \left(\alpha_k \prod_{l=1}^n x_l^{a_{kl}}\right) \right](\mathbf{s})=\frac{\prod_{k=1}^n \alpha_k^{-(A^\top)_k^{-1} \mathbf{s}}}{|\det(\mathbf{A})|} \prod_{k=1}^n g_k((A^\top)_k^{-1} \mathbf{s})
+$$
+$$
+\mathcal{B}_D\left[\prod_{k=1}^n f_k \left(\alpha_k \prod_{l=1}^n e^{-a_{kl}x_l}\right) \right](\mathbf{s})=\frac{\prod_{k=1}^n \alpha_k^{-(A^\top)_k^{-1} \mathbf{s}}}{|\det(\mathbf{A})|} \prod_{k=1}^n g_k((A^\top)_k^{-1} \mathbf{s})
+$$
+
+Consider a transform
+$$
+H_n = \int_0^1 \frac{1-x^n}{1-x} \; dx = \mathcal{T}\left[\frac{1}{1-x}\right]
+$$
+
+We have 
+$$
+\mathcal{T}[1] = \frac{n}{1+n}
+$$
+
+We might speculate that 
+$$
+\int_0^1\int_0^1\frac{(1-x^n)(1-y^n)}{(1- a x + b y)(1 - c x + d y)} \; dx dy \to H_{n_1} H_{n_2}
+$$
+type expression
+
+Consider
+$$
+\int_0^1\int_0^1\frac{(1-x^{a n_1 + b n_2})(1-y^{c n_1 + d n 2})}{(1 - x)(1 - y)} \; dx dy = H_{a n_1 + b n_2}H_{c n_1 + d n 2}
+$$
+let
+$$
+u^{k_1} = x^{a n_1 + b n_2}
+$$
+$$
+dx = \frac{k_1}{a n_1 + b n_2}u^{\frac{k_1}{a n_1 + b n_2} -1} du
+$$
+
+$$
+H_{a n_1 + b n_2}H_{c n_1 + d n 2} = \frac{k_1 k_1}{(a n_1 + b n_2)(c n_1 + d n_2)} \int_0^1\int_0^1\frac{(1-u^{k_1})(1-v^{k_2})}{(1 - u^{\frac{k_1}{a n_1 + b n_2}})(1 - v^{\frac{k_2}{c n_1 + d n_2}})} \; u^{\frac{k_1}{a n_1 + b n_2} -1}  v^{\frac{k_2}{c n_1 + d n_2} -1} du dv
+$$
+
+Rather we might consider
+$$
+H_{\frac{a n_2 - b n_1}{\det A}}H_{\frac{d n_1 - c n 2}{\det A}} = \int_0^1\int_0^1\frac{(1-x^{\frac{a n_2 - b n_1}{\det A}})(1-y^{\frac{d n_1 - c n 2}{\det A}})}{(1 - x)(1 - y)} \; dx dy
+$$
+
+Note that 
+$$
+\int_0^1 \frac{1}{b}\frac{(1 - x^{a/b - 1})}{(1 - x^{1/b})} = \psi_0(a) - \psi_0(b)
+$$
+
+
+It seems the inverse transform is 'just' 
+$$
+-\sum_{res} x^{-s-1} \mathcal{T}[f(x)](s)
+$$
+such that 
+$$
+-\sum_{res} x^{-s-1} H_s = \frac{1}{1-x}
+$$
+
+It might be better to use
+$$
+-\sum_{res} x^{-s} \psi_0(s) = \frac{1}{1-x}
+$$
+
+This clearly relates to a harmonic equivalent of the hypergeometric series etc...
+
+
+\section{Idea of Continous Power Series...}
+Imagine 
+$$
+\frac{1}{n} \sum_{k=0}^n x^{k/n}
+$$
+as $n \to \infty$ we get 
+$$
+\int_0^1 x^k \; dk = \frac{x-1}{\log(x)}
+$$
+also
+$$
+\int_0^\infty x^k \; dk = \frac{-1}{\log(x)}
+$$
+
+
+There is no form for $n \to \infty$
+$$
+\frac{e^{x^{\frac{1}{n}}} \left((n+1) \Gamma \left(n+1,x^{\frac{1}{n}}\right)-((n+1) \Gamma (n+1))+\Gamma (n+2)\right)}{n \Gamma (n+2)}
+$$
+which is from the exponential equivalent
+$$
+\int_0^1 \frac{x^k}{\Gamma(k+1)} \; dk
+$$
+
+How do we get the coefficient 'function' out of the integral? For this 'continuous' Z-transform type thing... What is the continuous inverse transform? I.e. a type of residue to extract a function? 
+
+Normally coefficients are linked to derivatives... Do the fractional derivatives help? 
+
+We get the fractional derivative of 
+$$
+D_\alpha \frac{x-1}{\log(x)} = \frac{0^{-a-1} (\text{Ei}(2 \log (x))-\text{li}(x))}{\Gamma (-a)}
+$$
+which is clearly related to 
+$$
+\int_0^1 \frac{x^k}{k+1} \; dk = \frac{\text{Ei}(2 \log (x))-\text{li}(x)}{x}
+$$
+
+We can basically invent a functional inverse-Z transform such that 
+$$
+\mathcal{Z}^{-1}_F \left[\frac{(\frac{1}{x}-1)}{\log(\frac{1}{x})}\right] = 1
+$$
+and the forward is basically 
+$$
+\mathcal{Z}_F[g(k)] = \int_0^1 g(k) x^k \; dk
+$$
+
+now we have 
+$$
+\int_0^1 k^n x^k \; dx = \fbox{$(-\log (x))^{-n-1} (\Gamma (n+1)-\Gamma (n+1,-\log (x)))\text{ if }\Re(\log (x))<0\land \Re(n)>-1$}
+$$
+and 
+$$
+\int_0^\infty k^n x^k \; dk =  \fbox{$\Gamma (n+1) (-\log (x))^{-n-1}\text{ if }\Re(\log (x))<0\land \Re(n)>-1$}
+$$
+which has a special feeling (in terms of Mellin transform) for
+$$
+\mathcal{Z}_F[k^{n-1}] = \int_0^\infty k^{n-1} x^k \; dk = \fbox{$\Gamma (n) (-\log (x))^{-n}\text{ if }\Re(\log (x))<0\land \Re(n)>0$}
+$$
+and also
+$$
+\mathcal{Z}_F[k^{-n-1}] = \int_0^\infty k^{n-1} x^k \; dk = \fbox{$\Gamma (-n) (-\log (x))^n\text{ if }\Re(n)<0\land \Re(\log (x))<0$}
+$$
+
+We have 
+$$
+\int_0^\infty \sin(2 \pi k) x^k \; dk = \fbox{$\frac{2 \pi }{\log ^2(x)+4 \pi ^2}\text{ if }\Re(\log (x))<0$}
+$$
+
+So we would have that 
+$$
+\mathcal{Z}^{-1}_F \left[ \frac{2 \pi}{\log^2(\frac{1}{x}) + 4 \pi^2}\right] = \sin(2 \pi k)
+$$
+integrating this does seem to give sinintegral type results... So we may be close.. as 
+$$
+z D_z Si(2 \pi z) = \sin(2 \pi z)
+$$
+
+it turns out that we literally take the function, substitute $f(x) \to f(e^x)$ and take the inverse Laplace transform! That gets the coefficients.
+
+
+
+Another curious one is 
+$$
+\int_0^\infty \log(k) x^k \; dk = \frac{\gamma + \log(-\log(x))}{\log(x)}
+$$
+
+
+Summary...
+
+If we want to represent a function as a kind of continuous power series
+$$
+f(x) = \int_0^\infty f(k) x^k \; dx
+$$
+then we either solve the forward integral (Laplace transform of $f$) and substitute log in there, or substitute $e^x$ in our function and take the inverse Laplace transform... 
+
+In general then we might expect that where
+$$
+\int_0^\infty \cdots \int_0^\infty f(\mathbf{k}) \mathbf{x^k} \; d \mathbf{k} = g(\mathbf{x})
+$$
+$$
+f(k) = \mathcal{L}_D^{-1}[g(x)]
+$$
+
+
+
+
+
+
+\subsection{MGF}
+Transforms from distribution to MGF, for cumulants, there is an extra log involved?
+$$
+\mathcal{I}[f(x)](t) = \mathcal{M}^{-1}[\Gamma(s) \mathcal{M}[f(x)](1-s)](-t)
+$$
+$$
+\mathcal{I}^{-1}[g(t)](x) = \mathcal{M}^{-1}\left[ \frac{\mathcal{M}[g(-t)](1-s)}{\Gamma(1-s)}\right]
+$$
+$$
+K(t) = \log M_X(t)
+$$
 
 
 \section{Sampling Strategy}
-Some fingerprints are an analytic continuation from the convergent region of the sampling, i.e. sometimes moments don't exist. The theoretical expression and the sampled value may diverge beyond a certain boundary, and can be numerically slow to coniverge (for limited sample sizes) near the boundary. This effect makes certain values of $s$ inaccurate. However, it is easy to predict the values that are wrong... 
+Some fingerprints are an analytic continuation from the convergent region of the sampling, i.e. sometimes moments don't exist. The theoretical expression and the sampled value may diverge beyond a certain boundary, and can be numerically slow to  converge (for limited sample sizes) near the boundary. This effect makes certain values of $s$ inaccurate. However, it is easy to predict the values that are wrong... 
 
-In the sample we have $x_min$ and $x_max$, thesmal
+In the sample we have $x_min$ and $x_max$, the largest and smallest values in the sample distribution.
+
+[Author Mark van Hoij discusses local information from asymptotic expansions around '... singularities']
+
+In this way, the predictable behaviour of the divergent expressions for a sample at non-convergent values of moments, leads to $log E[\mathbf{x}^{\mathbf{s-1}}]$ forming a hyperplane which when extrapolated back to the boundary of the domain of convergence (Newton polytope) in multivariate moment space, is precisely the inequality that becomes the argument of one or more of the gamma functions in the expression for the multivariate moments.
+
 
 
 \section{Using Gradients}
@@ -231,6 +651,11 @@ For distributions with infinite number of moments (light tails), we expect posit
 I.e. bound distribution etc.
 
 
+\section{The Global Dictionary}
+To efficiently search the space of functions, we then compile a global dictionary of common (generalised) expressions of the moments of distributions. 
+
+
+\subsection{Automated Numeric-Symbolic Computation Pipeline}
 
 \section{The Exact Learning Python Package}
 The exact learning method revolves around having a sensible list of fingerprint signatures, which are then queried as a potential match to some numerical data. Because the signatures are analytically quite specific, only a few moments are needed to verify a distribution. This results in a loss function being minimized, and if the final loss drops suddenly to an all time low (usually of order $10^{-5}$), the algorithm will attempt to analytically resolve the match. 
@@ -301,13 +726,15 @@ Linear Ramp & & yes \\
 \subsubsection{Square Line Picking}
 
 \subsection{2D Examples}
-Consider the two dimensional density
+Consider the two dimensional probability density function
 $$
-f(x) = e^{-a x_1/x_2}e^{-b x_1 x_2^2}
+f(x_1,x_2) = e^{-a x_1/x_2}e^{-b x_1 x_2^2}
 $$
+
+By the 'Irwin Master Theorem' we would expect a solution
 $$
- \frac{1}{3} a^{-\text{s1}} \Gamma \left(\frac{2 \text{s1}}{3}-\frac{\text{s2}}{3}\right) \Gamma \left(\frac{\text{s1}+\text{s2}}{3}\right) \left(\frac{b}{a}\right)^{\frac{1}{3}
-    (-\text{s1}-\text{s2})}
+ \frac{1}{3} a^{-s_1} \Gamma \left(\frac{2 s_1}{3}-\frac{s_2}{3}\right) \Gamma \left(\frac{s_1+s_2}{3}\right) \left(\frac{b}{a}\right)^{\frac{1}{3}
+    (-s_1-s_2)}
 $$
 
 We determine the sample region. Where the expectation calculation diverges, the log of the expectation approaches a plane (at the edge of the Newton polytope type bounding region [cite multidimMellin]).
