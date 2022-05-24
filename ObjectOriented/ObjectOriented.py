@@ -543,27 +543,32 @@ class ExactEstimator:
 
 
     ## Consider deleting
-    self.sample_array = np.arange(self.s_values.shape[0])  ## This is for sampling from the samples
+    ##self.sample_array = np.arange(self.s_values.shape[0])  ## This is for sampling from the samples
 
     self.moments     = np.load("{}/moments_{}.npy".format(folder,tag))
     #self.logmoments  = np.log(self.moments)
 
-
+    ## Dictionaries to store dq/q
     self.ratio = {}
     self.ratio2 = {}
 
     print(self.n_s_dims)
+
     ### Now that we have multi-dim data, there are many possible derivatives to have.
     for i in range(1,self.n_s_dims+1):
       loadstring ="{}/logderivative_{}_{}.npy".format(folder,i,tag) 
       print(loadstring)
-      self.ratio[i] = np.load(loadstring)
+      self.ratio["{}".format(i)] = np.load(loadstring)
 
+    ### Second order
     for i in range(1,self.n_s_dims+1):
       for j in range(1,self.n_s_dims+1):
         if(j<i): continue
         loadstring ="{}/logderivative_{}{}_{}.npy".format(folder,i,j,tag) 
         print(loadstring)
+        self.ratio2["{}{}".format(i,j)] = np.load(loadstring)
+
+    ### Third Order?
 
     print("Warning: second order not actually loaded!")
     print("Warning: Do detect max order etc.")
@@ -874,7 +879,7 @@ class ExactEstimator:
     full = states*values + deal(p, states)
     if(order == 0): 
       A = fingerprint(*full)[0]
-      B = np.abs(np.real(A)-self.real_logm)
+      B = np.abs(np.real(A)-np.real(np.log(self.moments)))
       B = np.maximum(0.0,B-self.real_log_diff)
     if(order == 1): 
       A = logderivative(*full)[0]
@@ -892,9 +897,9 @@ class ExactEstimator:
     full = states*values + deal(p, states)
     if(order == 0): 
       A = fingerprint(*full)
-      B = np.abs(np.real(A)-self.real_logm)
+      B = np.abs(np.real(A)-np.real(np.log(self.moments)))
       B = np.maximum(0.0,B-self.real_log_diff)
-      C = np.abs(wrap(np.imag(A)-self.imag_logm))
+      C = np.abs(wrap(np.imag(A)-np.imag(np.log(self.moments))))
       C = np.maximum(0.0,C-self.imag_log_diff)
     if(order == 1): 
       A = logderivative(*full)
@@ -915,6 +920,9 @@ class ExactEstimator:
     #if(p0==None): p0=np.random.random(self.N_terms)
     if(p0==None): p0=np.random.uniform(low=-1,high=1,size=self.N_terms)
     if(self.fit_mode=="log"):
+      if(self.n_s_dims > 1):
+        print("ND In Progress!")
+        exit()
       f1 = self.real_log_loss
       f2 = self.complex_log_loss
     if(self.fit_mode == "normal"):
@@ -971,15 +979,15 @@ class ExactEstimator:
   def real_log_loss(self,p, order):
     if(order == 0): 
       A = fingerprint(*p)[0]
-      B = np.abs(np.real(A)-self.real_logm)
+      B = np.abs(np.real(A)-np.real(np.log(self.moments)))
       B = np.maximum(0.0,B-self.real_log_diff)
     if(order == 1): 
       A = logderivative(*p)[0]
-      B = np.abs(np.real(A)-np.real(self.ratio))
+      B = np.abs(np.real(A)-np.real(self.ratio["1"]))
       #B = np.maximum(0.0,B-self.real_log_diff)
     if(order == 2): 
       A = logderivative2(*p)[0]# - logderivative(*p)[0]**2
-      B = np.abs(np.real(A)-np.real(self.ratio2)+np.real(self.ratio**2))
+      B = np.abs(np.real(A)-np.real(self.ratio2["11"])+np.real(self.ratio["1"]**2))
       #B = np.maximum(0.0,B-self.real_log_diff)
     return np.mean(B)
   
@@ -987,18 +995,18 @@ class ExactEstimator:
   def complex_log_loss(self,p,order):
     if(order == 0): 
       A = fingerprint(*p)
-      B = np.abs(np.real(A)-self.real_logm)
+      B = np.abs(np.real(A)-np.real(np.log(self.moments)))
       B = np.maximum(0.0,B-self.real_log_diff)
-      C = np.abs(wrap(np.imag(A)-self.imag_logm))
+      C = np.abs(wrap(np.imag(A)-np.imag(np.log(self.moments))))
       C = np.maximum(0.0,C-self.imag_log_diff)
     if(order == 1): 
       A = logderivative(*p)
-      B = np.abs(np.real(A)-np.real(self.ratio))
-      C = np.abs(wrap(np.imag(A)-np.imag(self.ratio)))
+      B = np.abs(np.real(A)-np.real(self.ratio["1"]))
+      C = np.abs(wrap(np.imag(A)-np.imag(self.ratio["1"])))
     if(order == 2): 
       A = logderivative2(*p)# - logderivative(*p)**2
-      B = np.abs(np.real(A)-np.real(self.ratio2)+np.real(self.ratio**2))
-      C = np.abs(wrap(np.imag(A)-np.imag(self.ratio2)+np.imag(self.ratio**2)))
+      B = np.abs(np.real(A)-np.real(self.ratio2["11"])+np.real(self.ratio["1"]**2))
+      C = np.abs(wrap(np.imag(A)-np.imag(self.ratio2["11"])+np.imag(self.ratio["1"]**2)))
     return np.mean(B+C)
 
   def set_mode(self,mode): 
