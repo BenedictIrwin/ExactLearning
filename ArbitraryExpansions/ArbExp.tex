@@ -112,7 +112,248 @@ $$
 
 
 \section{Arbitrary Convolutions}
+We have additive $z=x+y$, convolution of distributions
+$$
+p(z) = \int_{-\infty}^\infty p(x)p(z-x)\;dx
+$$
+and multiplicative $z = x y$
+$$
+p(z) = \int_{-\infty}^\infty p(x)p\left(\frac{z}{x}\right)\; \frac{dx}{|x|}
+$$
 
+here
+$$
+\frac{1}{|x|} = \int_{-\infty}^\infty \delta(z - xy) \; dy
+$$
+to generalise this we use
+$$
+p(z) = \int_{-\infty}^\infty p(x)p\left(\phi^{-1}(\phi(z)) \ominus \phi(x)\right)\; \frac{dx}{\mu(x,z)}
+$$
+where 
+$$
+\mu(x,z) = \int_{-\infty}^\infty \delta(y - \phi^{-1}(\phi(z)) \ominus \phi(x))\; dy
+$$
+using the identity
+$$
+\delta(g(x)) = \sum_{\rho_g} \frac{\delta(x - \rho)}{|g'(\rho)|}
+$$
+
+\section{Arbitrary Number Theory/Divisors}
+We can imagine redefining
+$$
+\sum_{d|n} \mu(n)
+$$
+with the idea that 
+$$
+\phi^{-1}(6) \oslash \phi^{-1}(2) = \phi^{-1}(3)
+$$
+
+
+\section{Attempt to systematically generalise Mellin transform}
+
+Gamma as an infinite product 
+$$
+\Gamma(z) = \frac{1}{z} \prod_{n=1}^\infty \frac{(1 + \frac{1}{n})^z}{1 + \frac{z}{n}}
+$$
+but also 
+$$
+\Gamma(z) = \int_0^\infty x^{z-1} e^{-x}\; dx
+$$
+
+Extension of factorial
+$$
+\prod \to 1 \cdot 2 \cdot 3 \cdot 4 \to \exp\left( \log(1) + \log(2) + \log(3) + \log(4)  \right) \to \bigoplus_\phi
+$$
+
+$$
+\Gamma(n+1) \to n! = \prod_{k=1}^n k = \bigoplus_{\exp \to \log | k = 1}^n k = n!_{\exp \to \log} \to n!_{\phi}
+$$
+Then the 'factorials' for the identity transform are the triangular numbers...
+
+For 
+$$
+n!_{\tanh^{-1} \to \tanh}
+$$
+we have an expression in terms of ArcTanh of QPolyGamma functions.
+$$
+ \left\{1,-\tanh ^{-1}\left(\frac{2-2 e^6}{1+e^2+e^4+e^6}\right),-\tanh ^{-1}\left(\frac{3-2 e^2+3 e^4-3 e^6+2 e^8-3 e^{10}}{1+e^4+e^6+e^{10}}\right),-\tanh ^{-1}\left(\psi _e^{(0)}\left(1-\frac{i \pi }{2}\right)-\psi _e^{(0)}\left(5-\frac{i \pi
+    }{2}\right)+\psi _e^{(0)}\left(1+\frac{i \pi }{2}\right)-\psi _e^{(0)}\left(5+\frac{i \pi }{2}\right)+4\right)\right\}
+$$
+we can imagine these rational polynomial in $e$ expressions have a nice form somewhere...
+
+We seem to have 
+$$
+n!_{x^2 \to \sqrt{x}} = H_{n,-\frac{1}{2}}^2
+$$
+an strong link to zeta functions. And for the first root
+$$
+n!_{x^k \to x^{1/k}} = H_{n,-\frac{1}{k}}^k
+$$
+of which when $k \to 1$ we get the triangular numbers
+$$
+n!_{Id \to Id} = \frac{n(n+1)}{2}
+$$
+so we can look for the integral definition and infinite product definition of generalised harmonic numbers for inspiration
+$$
+H_n = \int_0^1 \frac{1 - x^n}{1-x} \; dx
+$$
+we want 
+$$
+H_{n,m} = \sum_{k=1}^n \frac{1}{k^m}
+$$
+For positive integers $r$
+$$
+H_z^r = \frac{(-1)^{r-1}}{(r-1)!}\int_0^1 \frac{(t^z-1)\log^{r-1}(t)}{t-1} \; dt
+$$
+which looks linked to the derivative of the Mellin transform in order to accumulate the powers of $\log$ in the integrand.
+
+
+
+\subsection{Triangular Numbers Infinite product}
+So consider we try to edit the infinite product for gamma and 'undo' the $\exp \to \log$ aspect of it.
+
+$$
+\Gamma(z) = \exp\left( \log\frac{1}{z} + \sum_{n=1}^\infty \log \frac{(1 + \frac{1}{n})^z}{1 + \frac{z}{n}} \right)
+$$
+try
+$$
+\Delta_?(z) = \frac{1}{z} + \sum_{n=1}^\infty \frac{(1 + \frac{1}{n})^z}{1 + \frac{z}{n}}
+$$
+seems to diverge... do we need a regularised sum? Cesaro/Ramanujan? It might be that the exponentiation is actually an example of $\phi^{-1}$ i.e.e $\exp$ being triggered...
+$$
+(1+ \frac{1}{n})^z = \exp( z \log( 1 + \frac{1}{n}))
+$$
+
+We also have the Wierstrauss version of the infinite product formula
+$$
+\Gamma(z) =  \frac{e^{- \gamma z}}{z}\prod_{n=1}^\infty (1 + \frac{z}{n})^{-1} e^{z/n}
+$$
+
+
+\subsection{Simple Polynomials}
+Consider
+$P(x) = a x^2 + b x + c$
+we can get the inverse as a root.
+
+We end up with the factorial like 
+$$
+\frac{4 \sqrt{a} b \left(\zeta \left(-\frac{1}{2},\frac{b^2}{4 a}-c+1\right)-\zeta \left(-\frac{1}{2},\frac{b^2}{4 a}-c+n+1\right)\right)+\left(2 \sqrt{a} \left(\zeta \left(-\frac{1}{2},\frac{b^2}{4 a}-c+n+1\right)-\zeta \left(-\frac{1}{2},\frac{b^2}{4
+    a}-c+1\right)\right)+b n\right)^2+4 a c-2 b^2 n}{4 a}
+$$
+with first 3 terms like 
+$$
+     \left\{1,\frac{-\sqrt{a} b \left(\sqrt{\frac{b^2}{a}-4 c+4}+\sqrt{\frac{b^2}{a}-4 c+8}\right)+a \left(\sqrt{\frac{b^2}{a}-4 c+4} \sqrt{\frac{b^2}{a}-4 c+8}-2 c+6\right)+b^2}{2 a},\frac{\left(\sqrt{a} \left(\zeta \left(-\frac{1}{2},\frac{b^2}{4
+    a}-c+1\right)-\zeta \left(-\frac{1}{2},\frac{b^2}{4 a}-c+4\right)\right)-2 b\right) \left(\zeta \left(-\frac{1}{2},\frac{b^2}{4 a}-c+1\right)-\zeta \left(-\frac{1}{2},\frac{b^2}{4 a}-c+4\right)\right)}{\sqrt{a}}+\frac{3 b^2}{4 a}+c\right\}
+$$
+which is nice that 1 is a first term. We should be able to get this to collapse into the $x^2, \sqrt{x}$ case by setting the coefficients correctly. This appears to work, but arrives in a new angle in terms of zeta functions.
+
+\subsection{General Series Reversion?}
+We can the consider the case where we have a forward function that has an analytic series expansion and the backward function who has coefficients determinable by a series reversion of the forward function. 
+
+Of course the generalised form of the inverse coefficients is complicated (i.e. Morse\&Fesbach), but in principle this sets a route for calculating the generalised factorials of arbitrary series expansions. 
+
+For some functions (i.e. fifth order polynomial) we would then end up with a hypergeometric function as the root. This brings us closer to understanding the origin of the hypergeometric functions that arrive in the moments of certain functions? 
+
+\subsection{Circle}
+A circular transform might be a common thing, with $\sqrt{x} \sqrt{1-x}$ we get inverse function 
+$$
+\frac{1}{2} \pm \frac{\sqrt{1 - 4 x^2
+}}{2}
+$$
+The 'factorials' look like nested surd/radicals.
+
+
+For the reverse of the product calculus we get a simple almost linear thing
+$$
+n!_{\log \to \exp} \sim n + 1 - \log(e-1)
+$$
+$$
+n!_{W(x) \to x\exp(x)} \sim n + 1 - \log(e-1)
+$$
+
+A beautiful result is 
+$$
+n!_{1-\frac{1}{x} \to \frac{1}{1-x}} = \frac{1}{1 - n + H_n}
+$$
+$$
+n!_{\frac{1}{1+x} \to \frac{1}{x}-1 } = \frac{1}{1 -                                                                                   n + H_n}
+$$
+and probably more fundamental is 
+$$
+n!_{\frac{1}{x} \to \frac{1}{x}} = \frac{1}{H_n}
+$$
+
+$$
+n!_{1-e^x \to \log(1-x)} = 1 - \frac{1}{\Gamma(1-n)}
+$$
+
+\section{Flexible Transform}
+Consider $\lambda \in [0,1]$
+$$
+\phi(x) = \lambda x + (1-\lambda) \log(x)
+$$
+$$
+\phi^{-1}(x) = \lambda x + (1-\lambda) \exp(x)
+$$
+so when lambda is $1$ we have addition, and $\lambda=0$ is multiplication.
+
+but also the true inverses like
+$$
+\phi_{\log}^{-1} = -\frac{(\lambda -1) W\left(-\frac{\lambda  \left(e^x\right)^{-\frac{1}{\lambda -1}}}{\lambda -1}\right)}{\lambda }
+$$
+
+For this we have 
+$$
+\lim_{\lambda \to 0} \phi_{\log}^{-1} = e^x
+$$
+and we would expect 
+
+
+
+$$
+\phi_{\exp}^{-1} = \frac{x}{\lambda }-W\left(-\frac{(\lambda -1) e^{\frac{x}{\lambda }}}{\lambda }\right)
+$$
+For this we have $x$ when $\lambda = 1$, and we would expect $\log(x)$, in the other limit.
+
+
+This is very cool. For example, we can ask questions like, that value of lambda interpolates $1+1 = 2$ and $1*1 = 1$, for something like $1 \oplus 1 = \sqrt{2}$
+
+For $\lambda = 1/2$ we have $1 \oplus 1 =  \frac{1}{2} \left(W\left(e^2\right)-2\right) W\left(e^2\right)+2 \approx 1.65521$
+
+There is some cool stuff going on here... But will need to consider carefully what is actually going on, and whether it is useful outside of the two points $0,1$... Is it a fuzzy and/or for probabilities for example? Can we use it inside an integral transform or differential equation to somehow interpolate between different solutions i.e. Gamma function and triangular numbers? 
+
+I.e. if we define a generalised recurrence relation that 
+$$
+f(x + 1) = \phi^{-1}( \phi(f(x)) + \phi(x)) 
+$$
+this can interpolate between $f(x+1) = x f(x)$ i.e. gamma function and $f(x+1) = f(x) + x$ i.e. triangular number.... 
+
+$$
+\lambda  \left(W\left(-\frac{(\lambda -1) e^{\frac{f(x)}{\lambda }}}{\lambda }\right)+W\left(-\frac{(\lambda -1) e^{\frac{x}{\lambda }}}{\lambda }\right) \left(\frac{\lambda  W\left(-\frac{(\lambda -1) e^{\frac{f(x)}{\lambda }}}{\lambda
+    }\right)}{\lambda -1}+1\right)\right)+f(x+1)=f(x)+x
+$$
+    
+We would also have an interpolation between the derivative and the logarithmic derivative?
+
+\section{Alternative Gamma}
+There are other integrals that look a bit more like an $\exp \to \log$ integral...
+
+$$
+\Gamma(z) = \exp\left(\int_0^1 \frac{x^z-z(x-1)-1}{(x-1)\log(x)} \; dx\right)
+$$
+$$
+\Gamma(z) = e^{-\gamma z}\exp\left(\int_0^1 \frac{x^z-\log(x^z)-1}{(x-1)\log(x)} \; dx\right)
+$$
+
+we want this to be in a 'product integral' type form
+$$
+I = \exp\left(\int_0^1 \log f(x) \; dx\right)
+$$
+
+Of course one definition for triangular numbers is simply 
+$$
+\Delta(n) = \int_0^1 (n+n^2)x \; dx
+$$
 
 
 
