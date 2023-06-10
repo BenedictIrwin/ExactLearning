@@ -1,6 +1,6 @@
 \documentclass{article}
 
-\usepackage{authblk}
+%\usepackage{authblk}
 \usepackage{url}
 \usepackage[square,numbers]{natbib}
 \usepackage{amssymb,amsmath}
@@ -12,74 +12,38 @@
 %\SectionNumbersOn
 %\AbstractOn
 
-\title{Exact Learning}
+%\title{Exact Learning}
 %\author{Benedict W. J.~Irwin}
 
-\date{\today}
+%\date{\today}
 \begin{document}
 %\bibliographystyle{harvard}
 
-\author[1]{Benedict W. J.~Irwin}
-\affil[1]{}
-\affil[]{\textit {b_irwin@hotmail.co.uk}}
+%\author[1]{Benedict W. J.~Irwin}
+%\affil[1]{}
+%\affil[]{\textit {b_irwin@hotmail.co.uk}}
 
 
-\maketitle
+%\maketitle
 
-\begin{abstract}
-Human mathematicians are very good at abstract reasoning. Computers are very good at large calculations. It has long been a goal to let computers deal in the abstract and symbolic patterns of mathematics.
+\section{Exact Learning: Bigger Picture}
+\textbf{Exact Learning} relates to a body of work by \textbf{Benedict W. J. Irwin} developed primarily during his PhD in the Theory of Condensed Matter group (TCM) at Cavendish Laboratories in the University of Cambridge. The work was submitted to "Cell Press - Patterns", "Nature Machine Intelligence", "Nature - Computer Science", each time receiving good reviews from all reviewers, but the editor mysteriously pulled the plug as they were uncertain over this somewhat 'high risk' piece of work. I improved it each time. I tried to float this work at my time at Microsoft Research - Machine Intelligence Group, but it did not gain traction. It feels like the biggest idea I have had and there is something unsettling about carrying it around unfinished...  \\
 
-Don't worry about too much peripheral stuff... i.e. neural networks etc. Easily do follow up papers...
-
-
-We present a working machine learning method that can reverse engineer a wide class of numerical functions and write out exact mathematical expressions describing the underlying data.
-
-This can be used for automated hypothesis generation, compiling tables of identities, assisting researchers as they work in an augmented fashion and ultimately one step closer to artificial intelligence working an reasoning with the space of analytic functions and performing exact, analytic mathematical tasks, attempting to understand complex data in high dimensions for example from particle physics/etc..
-
-We give many examples.
-We also attach a substantial theory document in the supplementary information.
-
-Goal : 1D Examples
-Goal : 2D Examples
-Goal:   3,4,5,6,7D example.... Can we just fit a Lauricella function or similar...
+[Links to papers:]
+Concise abstract: We present a collection of mathematical tools and emphasise a fundamental representation of analytic functions. Connecting these concepts leads to a framework for `exact learning', where an unknown numeric distribution could in principle be assigned an exact mathematical description. This is a new perspective on machine learning with potential applications in all domains of the mathematical sciences and the generalised representations presented here have not yet been widely considered in the context of machine learning and data analysis. The moments of a multivariate function or distribution are extracted using a Mellin transform and the generalised form of the coefficients is trained assuming a highly generalised Mellin-Barnes integral representation. The fit functions use many fewer parameters contemporary machine learning methods and any implementation that connects these concepts successfully will likely carry across to non-exact problems and provide approximate solutions. We compare the equations for the exact learning method with those for a neural network which leads to a new perspective on understanding what a neural network may be learning and how to interpret the parameters of those networks.
 
 
-Goal : Sparse data distributions?
-Goal : Fitting with barely any samples/moments.
-Goal : Connection of MGF to PDF/coefficients
-Goal : CDF etc.
+\textbf{How do we find the mathematical rules behind our data}, the rules that describe our world and universe? Many scientific fields have plots, curves and distributions that are not yet assigned an equation. Lots of fundamental processes have surprisingly simple formulae. Historically, relationships could be derived either empirically or theoretically, by those with the time and patience. Perhaps now, many calculations have become too hard for the average human, only 'geniuses', (or lucky individuals) could make breakthroughs, and now perhaps the kind of breakthroughs made by such geniuses are weaker and weaker, and serendipity plays a stronger role. Has humanity mopped up the low hanging 'analytic' fruit? \\
 
-Goal : Tons of working examples.
-Goal : Cumulant GF connection.
+\textbf{Computation} became a superior tool. We could simulate, sample and stochastically probe and approximate the universe. With more compute power we could undertake higher and higher precision calculations, integrations, larger and more complex systems. But computation and the representations used to make them numerically stable and quick and cheap often lost the pure 'exactness' of the solution. Yes, I can perfectly describe my molecular wavefunction to 7 d.p. of precision, but only over 'this' mesh or grid, or arbitrary set of basis functions etc. \\
 
-Eventual Goal: Modes of operation -> holonomic, products of functions ... etc.
+With the advent of \textbf{machine learning} (ML), \textbf{artificial intelligence} (AI), computers and algorithms are set to play an increasing part in the discovery of new scientific advances: taking over the large, complex and rote aspects and allowing humans to have a higher-level creative role in the driving seat. Even now, large language models and image, text and generative models are starting to dominate attention in most forms of media. The so-called 'fifth paradigm' would be some kind of automated acceleration of scientific progress, modelling of complex, chaotic and hard to model systems. Overcoming the cost and time limitations of all those big simulations we used to run. \\
 
-\end{abstract}
+The current weakness of AI/ML methods is '\textbf{exact}' and rigorous information. This information is often mathematical in some form, and higher order abstractions must be handled very carefully to be combined and propagated into truthful discoveries. Often the ML algorithms are less interpretable than the simulations, and the representations are not chosen to preserve exactness, but to backpropagate gradients and remain stable under function composition. ML scientists and researchers are focussing ever more carefully on frameworks to handle abstract information, including category theory, and parallels between graph computation and dynamic programming. Additionally, methods to encode information are numerous, graph convolutions, point clouds and other geometric structures (even Clifford-Algebras, Lie-groups); modelling vector fields, differential equations (for example weather modelling, (magneto-)hydrodynamics for fluids/fusion/space plasmas, quantum mechanics, materials modelling). Often the ML methods themselves have statistical representations that are not particularly well understood, deeper probabilistic methods, chained Bayesian methods, probabilistic neural-networks, diffusion modelling. Perhaps there is something more 'exact' going on inside the network itself.  \\
 
-%\tableofcontents
+Symbolic regression is an interesting field, in which an algorithm attempts to construct an analytic (closed form) model of some data. Many algorithms attempt this through a kind of 'tree' of 'primitive' objects, and cut-and-paste small atomic expressions, with parameters together along with operations like $+, \times, -, \cdots$, as well as more complex expressions handling multiple arguments. Algorithms such as AIFeynman exist. While very good at finding physics equations, they may be handcrafted to represent the corpus of expressions they are fitted to and not necessarily fundamentally expressive. 
 
-\section{Bigger Picture}
-How do we find the mathematical rules behind our data? Many scientific fields have plots, curves and distributions that are not yet assigned an equation. We develop a framework to learn \underline{exact} mathematical solutions from numerical output. This could help researchers solve problems without having to solve equations.
-In the long-term, developing such methods could lead to fundamental discoveries about our natural world. Can we learn complicated rules of physics and chemistry by spotting known functions in the data, and from this derive new theories?
-We find an analogy between this method and the equations for neural networks that are already used today that gives a new perspective on the meaning of network parameters in existing models and could lead to advances in understandable AI. 
-
-
-
-
-
-We present a collection of mathematical tools and emphasise a fundamental representation of analytic functions. Connecting these concepts leads to a framework for `exact learning', where an unknown numeric distribution could in principle be assigned an exact mathematical description. This is a new perspective on machine learning with potential applications in all domains of the mathematical sciences and the generalised representations presented here have not yet been widely considered in the context of machine learning and data analysis. The moments of a multivariate function or distribution are extracted using a Mellin transform and the generalised form of the coefficients is trained assuming a highly generalised Mellin-Barnes integral representation. The fit functions use many fewer parameters contemporary machine learning methods and any implementation that connects these concepts successfully will likely carry across to non-exact problems and provide approximate solutions. We compare the equations for the exact learning method with those for a neural network which leads to a new perspective on understanding what a neural network may be learning and how to interpret the parameters of those networks.
-
-
-\section{Introduction}
-This document summarises around eight years of work and represents a large development on top of an earlier preprint which laid down the foundations and mathematical concepts for exact learning. As this work was never published, we have attached it as the supplementary information of this document. However, for brevity we will only focus on new developments in the main text that allowed the idea to actually work in practice. 
-
-
-
-
-
-
-
-First we reintroduce the motivation and goals of exact learning:
+A nice simple analogy was a piece of work called : [symbolic calculator etc...] First we reintroduce the motivation and goals of exact learning:
 
 
 We will consider how in a broad sense `machine-learning-like-techniques' (i.e. advanced function fitting), can help with these `exact learning' type problems. Specifically for this work, the problem description is: 
@@ -93,6 +57,14 @@ The concession we are willing to take on this quite general goal is:
 
 The key change in goal B) is the introduction of a `\emph{fingerprint}' of an arbitrary function as a well behaved and meaningful intermediate that can identify a distribution \footnote{We have focused on distributions for the time being for simplicity, but extensions to this method will cover functions which are not bound at infinity}. The word fingerprint is local to this text and should not be considered a general term. The goals A) and B) can be seen as reverse engineering processes for \emph{functions}. It might be helpful to first consider the analogy of reverse engineering for a simpler object such as a \emph{number}, something that is performed by tools such as Simon Plouffe's `inverse symbolic calculator' \cite{Plouffe1986} and other `inverse equation solvers' \cite{Munafo}. In these tools a user can enter a high precision number - e.g. 14.687633495788080676 - and the algorithm would return a plausible closed form solution - e.g. $\pi^2 + e\sqrt{\pi}$. Once the user has the solution, the hope is that a human expert could use that extra information to come up with further insights which would assist in the scientific understanding of both the solution and problem.\\ 
 
+In exact learning, we to develop a framework to learn \underline{exact} mathematical solutions from numerical output. This description is something like 'symbolic regression', the distinctive aspect is how we go about doing that. Exact learning is built on fundamental properties and relationships of analytic functions, series expansions, holonomic functions and special functions, integer sequences and series and generating functions. The language to describe it is unfortunately very complicated and I couldn't do it justice in this three page document. Following hints, in the physics, the same language is used in aspects of particle physics, string theory, cosmology, the solutions to most analytic differential equations and even some number theory. 
+
+The gist of it is as follows: 
+
+"If a function/solution to a suitably exact mathematical problem is a pure enough fundamental object, we assume it subscribes to a very general hierarchy of functions (one of which is defined in the paper)" through an integral transform, there exists a closed form method to extract coefficients of that function. By simultaneously learning all the coefficients using the 'nice' representation provided by the algorithm we can pinpoint in on an exact solution if the data quality is high enough."
+
+The first representation I found was really concerned with multiplicative convolutions, probability distributions, Mellin transforms, and hypergeometric functions (and their generalisations). I have since noticed that further generalisations exist for different spaces and supports and a much more general framework may exist in terms of Riemann-Hilbert problems.
+
 Figure \ref{fig:Outline} depicts an overview of the `exact learning' procedure for a \emph{function}. Throughout this work we cover the necessary tools to understand the steps in the blue boxes on the right-hand side of this figure. Goal A) corresponds to the bottom left box, and goal B) is the bottom right box. The numeric data are collected from a natural source such as a very high-quality experiment, but more likely a numerical solution to a computational problem, or equation, or simulation. The solution is numerically transformed to `fingerprint space' (blue) by using an integral transform. The regularity of the representation of many analytic functions in this space assists with the fitting of the `fingerprint' using machine learning techniques to an assumed, highly generalised form. To get back to the mathematical expression of the solved function an inverse transformation is taken from the  fingerprint space to the function space. For examples of problems that might be interesting to solve using this method, please refer to the supplementary information. \\
 
 \begin{figure}[h]
@@ -100,6 +72,57 @@ Figure \ref{fig:Outline} depicts an overview of the `exact learning' procedure f
 \caption{An example of the exact learning process, in this case with an example of the kernel of the massless Feynman bubble calculation given by Gonzalez et al. \cite{Gonzalez2015}. (Top left), A high precision numerical function is found as the solution to a problem that likely has an analytic solution, but the closed form is hard to derive mathematically. A numeric Mellin transform is made from the `function domain' (yellow) into the `fingerprint domain' (blue) for a number of chosen exponent vectors $\mathbf{s}=(s_1,\cdots,s_2)$. A highly generalised closed form for the fingerprint is chosen and then machine learning (function fitting) is used to track down the parameters of the function fingerprint ($\mathbf{a,b,c,d}$). With further analysis and interpretation of the solved parameters the fingerprint could be used to derive the closed form for the function that generated the original numeric data using the generalised Ramanujan master theorem (GMRT).}
 \label{fig:Outline}
 \end{figure}
+
+\section{List of Questions}
+
+\textbf{What led you to this?}: [Obsession with OEIS, tables of functions and integral transforms, Mellin transforms, Wolfram Mathworld and tables of functions and identities, hypergeometric functions, problems on Math StackExchange]. Explain how useful OEIS is... Generating functions. AI/ materials modelling. Kind of a unique perspective. 
+
+\textbf{What have other people said about this to date?}: I've presented this in various formats to groups in University of Cambridge, Microsoft Research, even in the interview for my current job. Most people are amazed by how unique and different the work is. Some have claimed it is of limited interest, along the lines of "What is the use of an equation" if I can simulate numerically. Perhaps it is merely to stimulate my inner-stamp collector but I have always like being able to order, encode and categorise things. Others have been dismissive of the expressive power of the function hierarchy, but I have thought about it for years and believe there is something special here. Papers linked have shown it is expressive enough to reconstruct generating functions from statistical ensembles. [Not to mention the nested method...]
+
+\textbf{Will it work in high dimensions? Curse of dimensionality}: This is always a concern. Actually many statistical methods fail to help in high dimensional spaces. Holonomic function algorithms have been notably good at handling high (N ~ 50) dimensions. I have been working on extensions for higher dimensional spaces and I do belive there is a very good efficiency to be gained [High dimensional polytope].
+
+\textbf{What is the biggest frustration in developing this}: Current machine learning tools/libraries such as TensorFlow, PyTorch do not support complex number extensions of special functions including gamma, di-gamma functions. Extended math libraries like mpmath are slow and hard to communicate with, evaluation of special functions support. Lack of time.
+
+\textbf{What kind of problems might this possibly solve?}: Anything pure. One of the first sets of simple problems that fascinated me was 'probabilistic geometry'. Problems such as draw a line section at random in a 1x1 square, it will take a length from 0 to $\sqrt{2}$, what is the distribution? What about a cube? Or hypercube? Or hypersphere? This leads to constants such as Robbin's Constant [mathworld link]. But other such things exist, like packing spheres into shapes (a bit like atoms in a lattice), or random walks on a graph, that start to border on fundamental scientific model of nature. What about closed form expressions of eigenvalues of matrices? Closed for expressions of solutions to functional equations? Or inverse functions, or numerical lookups that are in some form optimal? Solutions to differential equations, inverse Monte-Carlo problems. etc. One major group is identifying the closed form of a probability distribution.  [Elaborate on the Mellin transform]. [Intepretation of deep neural networks.]
+
+[Helium atom]: .....
+
+\textbf{How fundamental could this be? Isn't there a limit}: Yes, there are numerous constraints. ... [Noise, mixed solutions, ]
+
+\textbf{How scalable is this algorithm?}: There is currently a pair of bottle necks, (looking up coefficients, and precision, quantization issues), solving via gradients (although looks like iterative schemes may exist). Other issues might be the new representations for other spaces... especially for undefined integral transforms. 
+
+\textbf{What if I don't study physics, or maths and want to use this?}: There is some scope for meta applications... [Applied to algorithms themselves.], [example of the kernel of a functional being quite a simple expression.]
+
+\textbf{You're promising a lot here... How can I trust you?}: I could give you a presentation, you could read the paper. Beyond that, many of the ideas are still in my brain and I'd need some time to lay them out. I might be a bit mad. 
+
+\textbf{Why is this of interest to Bell Labs?} To be honest, I'm not entirely sure what you do on a day to day basis and what the primary concerns of the business are, but by my friend Ryo Koblitz who works in Bell-Labs introduced this prize to me, and he at least has some ideas towards this. I can imagine, for arbitrary information networks, or modelling applications on signals you may well be interested in statistical problems, emergent properties of the network shape etc. All of those are in the realm of analytic solutions. Information flow, propagation etc. Beyond that it could well feed into discovery research [materials etc.]. Softer applications would be routines to collect and identify functional expressions and relationships, and possibly even selling or distributing that database or code. For me it's about discovery and prestige. Could we make the algorithm that made a fundamental physics discovery (i.e. solve Helium wave function) however abstract the solution might appear to be. Alternatively fundamental AI research, having the first solution that can solve maths problems. 
+
+\textbf{What are your dreams for this method?}: I feel there is a strong connection to high-energy physics, and particle physics data. It might be a useful strategy to reverse engineer more complex rules of nature. I'd love to apply it to quantum mechanics problems (discover more exactly solvable potentials etc.). I'd also really like to extend this from finding exact solutions of 'functions' to exact solutions of 'functionals' i.e. often large integral expressions. These can be formulated as a [series ? ], certain problems are open, such as the /textbf{exact} exchange-correlation functional from density-function theory, arguably the most used quantum mechanical simulation method for materials and drug discovery. Solving functionals is perfect for black-box modelling with rich input output structure, and this could describe most problems, (networks, signal processing, ...), and on a higher level algorithms and learning theory.
+
+
+Exact learning could help researchers solve problems without having to solve equations.
+In the long-term, developing such methods could lead to fundamental discoveries about our natural world. Can we learn complicated rules of physics and chemistry by spotting known functions in the data, and from this derive new theories?
+
+We find an analogy between this method and the equations for neural networks that are already used today that gives a new perspective on the meaning of network parameters in existing models and could lead to advances in understandable AI. 
+
+The author has produced some code in a GitHub repository. This code is capable of solving:
+
+\begin{enumerate}
+\item All named 1D continuous probability distributions
+\item Solutions to first order differential equations 
+\item Special function and polynomials.
+\end{enumerate}
+
+\end{document}
+
+
+
+\section{Introduction}
+This document summarises around eight years of work and represents a large development on top of an earlier preprint which laid down the foundations and mathematical concepts for exact learning. As this work was never published, we have attached it as the supplementary information of this document. However, for brevity we will only focus on new developments in the main text that allowed the idea to actually work in practice. 
+
+
+
+
 
 \section{Theoretical Justification}
 Unique moments : Discussion of three kind of moment problem $[0,\infty)$, $(-\infty,\infty)$ and $[a,b]$ with $[0,1]$ as a special case. Reference higher dimensional moment problem example. Try to link existence of CF via MGF via Mellin transform definition. Answer, if the moments converge, then the Mellin transform would converge, then the thing would exist, so they are unique... up to strip of holonomy?
@@ -808,4 +831,3 @@ Increased support for higher dimensional data.
 \bibliographystyle{unsrt}
 
 
-\end{document}
