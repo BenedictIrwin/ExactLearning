@@ -99,7 +99,7 @@ np.save("logmoments_{}".format(keyword),np.log(q))
 np.save("derivative_{}".format(keyword),dq)
 np.save("logderivative_1_{}".format(keyword),dq/q)
 np.save("logderivative_11_{}".format(keyword),ddq/q)
-np.save("logderivative_111_{}".format(keyword),ddq/q)
+np.save("logderivative_111_{}".format(keyword),dddq/q)
 
 
 
