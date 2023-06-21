@@ -1,0 +1,494 @@
+\documentclass{article}
+
+\usepackage{url}
+\usepackage[square,numbers]{natbib}
+\usepackage{amssymb,amsmath}
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{setspace}
+\doublespacing
+
+%\SectionNumbersOn
+%\AbstractOn
+
+\title{Arbitrary Series Expansions}
+%\author{Benedict W. J.~Irwin}
+
+\date{\today}
+\begin{document}
+We take some notes of windowed functions. 
+
+Assume a measured window on the interval $[a,b]$ looks like
+$$
+\mathcal{M}[f] \to \mathcal{M}[f \theta(b-x) \theta(x-a)]
+$$
+then 
+$$
+\mathcal{M}[\sin(x)](s) = \sin \left(\frac{\pi  s}{2}\right) \Gamma (s)  \to -\frac{1}{2} i \theta (b-a) \left(i^s (\Gamma (s,-i a)-\Gamma (s,-i b))+(-i)^s (\Gamma
+    (s,i b)-\Gamma (s,i a))\right)
+$$
+$$
+\mathcal{M}[\exp(-x)](s) = \Gamma(s) \to \Gamma(s,a) - \Gamma(s,b)
+$$
+$$
+\mathcal{M}[(1-x)^{-1}](s) = \pi  \cot (\pi  s) \to  B(b,s,0) - B(a,s,0)
+$$
+$$
+\mathcal{M}[(1+x)^{-1}](s) = \Gamma(s)\Gamma(1-s) \to (-1)^{-s} (B_{-b}(s,0)-B_{-a}(s,0))
+$$
+
+$$
+\mathcal{M}[_2F_1(p,q,r,-x)](s) =\frac{\Gamma (r) \Gamma (s) \Gamma (p-s) \Gamma (q-s)}{\Gamma (p) \Gamma (q) \Gamma
+    (r-s)} \to \frac{\theta (b-a) \left(b^s \, _3F_2(p,q,s;r,s+1;-b)-a^s \,
+    _3F_2(p,q,s;r,s+1;-a)\right)}{s}
+$$
+with $a < b$ this is 
+$$
+\mathcal{M}[_2F_1(p,q,r,-x)](s) =\frac{\Gamma (r) \Gamma (s) \Gamma (p-s) \Gamma (q-s)}{\Gamma (p) \Gamma (q) \Gamma
+    (r-s)} \to \frac{\left(b^s \, _3F_2(p,q,s;r,s+1;-b)-a^s \,
+    _3F_2(p,q,s;r,s+1;-a)\right)}{s}
+$$
+if we could take a derivative w.r.t. $a$ we would get
+$$
+-a^{s-1} \, _2F_1(p,q;r;-a)
+$$
+That is, the original function, modified by a factor of $-a^{s-1}$, likewise w.r.t $b$ gives
+$$
+b^{s-1} \, _2F_1(p,q;r;-b)
+$$
+This makes sense when we think of the derivative of the step function acting like a delta function in the expression 
+
+$$
+\frac{\partial}{\partial b} \int_0^\infty x^{s-1} f(x) \theta(b-x)\theta(x-a)\;dx
+$$
+
+\section{[a,b]}
+Consider an operation that is bound to interval $[a,b]$. We have
+$$
+c \oplus d =   a + \frac{(c-a)(d-a)}{b-a}
+$$
+$$
+\frac{(c \oplus d - a)(b-a)}{d-a} + a = c
+$$
+so we have the inverse
+$$
+x \ominus y = a + \frac{(x - a)(b-a)}{y-a}
+$$
+we see that when $a=0$
+$$
+c \oplus d =   \frac{cd}{b}
+$$
+
+\section{Arbitrary Convolutions}
+We have additive $z=x+y$, convolution of distributions
+$$
+p(z) = \int_{-\infty}^\infty p(x)p(z-x)\;dx
+$$
+and multiplicative $z = x y$
+$$
+p(z) = \int_{-\infty}^\infty p(x)p\left(\frac{z}{x}\right)\; \frac{dx}{|x|}
+$$
+
+here
+$$
+\frac{1}{|x|} = \int_{-\infty}^\infty \delta(z - xy) \; dy
+$$
+to generalise this we use
+$$
+p(z) = \int_{-\infty}^\infty p(x)p\left(\phi^{-1}(\phi(z)) \ominus \phi(x)\right)\; \frac{dx}{\mu(x,z)}
+$$
+where 
+$$
+\mu(x,z) = \int_{-\infty}^\infty \delta(y - \phi^{-1}(\phi(z)) \ominus \phi(x))\; dy
+$$
+using the identity
+$$
+\delta(g(x)) = \sum_{\rho_g} \frac{\delta(x - \rho)}{|g'(\rho)|}
+$$
+
+\section{Convolution Method}
+We can imagine trying to convolve the mystery function with $e^{-x}$ to help it decay and improve sampling.
+
+$$
+1/(1+x) \to \Gamma(s)\Gamma(1-s) \to e \Gamma(s) \Gamma(1-s,1) 
+$$
+$$
+1/(1-x) \to \to \frac{i \pi  \Gamma (1-s,-1)}{e \Gamma (1-s)}+\frac{\pi  \cot (\pi  s) \Gamma
+    (1-s,-1)}{e \Gamma (1-s)}-\frac{i \pi }{e}
+$$
+$$
+_2 F_1(a,b,c,-x) \to \pi ^2 \Gamma (c) \left(\frac{\csc (\pi  (b-a)) \csc (\pi  (s-a)) \,
+    _2\tilde{F}_2(a,a-c+1;a-b+1,a-s+1;1)}{\Gamma (b) \Gamma (c-a)}+\frac{\csc (\pi  (b-s))
+    \left(\frac{\csc (\pi  (b-a)) \, _2\tilde{F}_2(b,b-c+1;-a+b+1,b-s+1;1)}{\Gamma (c-b)}+\frac{\Gamma (s)
+    \csc (\pi  (a-s)) \, _2\tilde{F}_2(s,-c+s+1;-a+s+1,-b+s+1;1)}{\Gamma (b) \Gamma (c-s)}\right)}{\Gamma
+    (a)}\right)
+$$
+
+
+\section{1D Distributions}
+The following should all work:
+
+ChiSquareDistribution[k]	 distribution with k degrees of freedom
+$$
+\frac{2^{s-1} \Gamma \left(\frac{k}{2}+s-1\right)}{\Gamma \left(\frac{k}{2}\right)}
+$$
+
+
+InverseChiSquareDistribution[k]	inverse  distribution with k degrees of freedom
+$$
+ \frac{2^{1-s} \Gamma \left(\frac{k}{2}-s+1\right)}{\Gamma \left(\frac{k}{2}\right)}
+$$
+
+FRatioDistribution[n,m]	-ratio distribution with n numerator and m denominator degrees of freedom
+$$
+\frac{n^{n/2} m^{\frac{1}{2} (-m-n)+\frac{m}{2}}\left(\frac{n}{m}\right)^{-\frac{n}{2}-s+1} \Gamma \left(\frac{m}{2}-s+1\right) \Gamma\left(\frac{n}{2}+s-1\right)}{\Gamma \left(\frac{m+n}{2}\right) B\left(\frac{n}{2},\frac{m}{2}\right)}
+$$
+
+Student-t
+
+$$
+\frac{k^{\frac{s}{2}-\frac{1}{2}} \Gamma \left(\frac{s}{2}\right) \Gamma
+    \left(\frac{1}{2} (k-s+1)\right)}{2 \Gamma \left(\frac{k+1}{2}\right)
+    B\left(\frac{k}{2},\frac{1}{2}\right)}
+$$
+
+(nonlocal --> Future work)
+
+BetaDistribution 
+
+$$
+\frac{\Gamma (b) \Gamma (a+s-1)}{B(a,b) \Gamma (a+b+s-1)}
+$$
+
+ChiDistribution
+$$
+\frac{2^{\frac{1}{2} (k+s-3)-\frac{k}{2}+1} \Gamma \left(\frac{1}{2}
+    (k+s-1)\right)}{\Gamma \left(\frac{k}{2}\right)}
+$$
+
+Exponential Distribution
+$$
+k^{1-s} \Gamma (s)
+$$
+
+Gamma Distribution
+$$
+\frac{b^{s-1} \Gamma (a+s-1)}{\Gamma (a)}
+$$
+
+Inverse Gamma Distribution
+$$
+\frac{b^{s-1} \Gamma (a-s+1)}{\Gamma (a)}
+$$
+
+Maxwell Distribution
+$$
+\frac{2^{\frac{s+1}{2}} \left(\frac{1}{a^2}\right)^{-\frac{s}{2}-1} \Gamma
+    \left(\frac{s}{2}+1\right)}{\sqrt{\pi } a^3}
+$$
+    
+Pareto Distribution (needs work)
+$$
+\frac{a k^{s-1}}{a-s+1}
+$$
+this is 
+$$
+\frac{a k^{s-1} \Gamma (a-s+1)}{\Gamma (a-s+2)}
+$$
+
+CauchyDistribution (not trivial)
+$$
+-\frac{1}{2} i \csc (\pi  s) \left((-a-i b)^{s-1}+\frac{\left(\frac{1}{-a+i
+    b}\right)^{-s}}{a-i b}\right)
+$$
+
+Rayleigh Distribution
+$$
+2^{\frac{s-1}{2}} \left(\frac{1}{k^2}\right)^{\frac{1}{2}-\frac{s}{2}} \Gamma
+    \left(\frac{s+1}{2}\right)
+$$
+
+Normal Distribution (zero centred)
+$$
+\frac{2^{\frac{s}{2}-\frac{3}{2}} \left(\frac{1}{\sigma ^2}\right)^{-s/2} \Gamma
+    \left(\frac{s}{2}\right)}{\sqrt{\pi } \sigma }
+$$
+    
+Half-normal Distribution
+$$
+a \pi ^{\frac{s}{2}-1} \left(a^2\right)^{-s/2} \Gamma \left(\frac{s}{2}\right)
+$$    
+  
+Log-normal (an odd one)
+$$
+\sqrt{\frac{1}{\sigma ^2}} \sigma  e^{\frac{1}{2} (s-1)^2 \sigma ^2}
+$$
+
+Inverse Gaussian (hard, does yield BesselK with special parameters).
+
+Erlang
+$$
+\frac{b^{1-s} \Gamma (a+s-1)}{\Gamma (a)}
+$$
+
+Continuous Poisson  (Gamma(k,l)/Gamma(k))
+$$
+\frac{\Gamma(k+s)}{s \Gamma(k) }
+$$
+
+Uniform [0,1]
+$$
+s^{-1}
+$$
+
+ArcSin
+$$
+\frac{\Gamma \left(s-\frac{1}{2}\right)}{\sqrt{\pi } \Gamma (s)}
+$$
+
+Kumaraswamy Distribution (integer coefficients)
+$$
+\frac{\pi  \Gamma (\pi ) \Gamma \left(\frac{s+\gamma -1}{\gamma }\right)}{\Gamma
+    \left(\frac{s+\gamma  \pi +\gamma -1}{\gamma }\right)}
+$$
+
+
+
+Levy (not easy)
+Logistic (not easy)
+Weibull (not easy) seems to be simple \begin{verbatim}
+proofwiki.org/wiki/Raw_Moment_of_Weibull_Distribution]
+Noncentrals
+https://archive.lib.msu.edu/crcmath/math/math/f/f187.htm
+\end{verbatim} (not easy)
+Fischer-Tippet (consider fitting MGF Gamma through Laplace transform etc. Mascheroni integrals are like gamma but with log z)
+
+Non-central Beta Distribution (might be possible)
+
+Triangle Distribution [0,1] peaks at 1/2
+$$
+\frac{4-2^{2-s}}{s^2+s}
+$$
+
+Power Distribution (needs work)
+$$
+\frac{a k^{1-s}}{a+s-1}
+$$
+
+
+
+
+\begin{tabular}{|c|c|}
+Distribution & Ansatz \\
+\hline
+ChiSquare & $c c^s \Gamma$ \\
+InverseChiSquare & $c c^s \Gamma$\\
+FRatio & $c  c^s \Gamma \Gamma$ \\
+Student-t & $c  c^s \Gamma \Gamma$\\
+Beta & $c  \Gamma \Gamma^{-1}$\\
+Chi & $c c^s \Gamma$\\
+Exponential & $c  c^s \Gamma$ \\
+Gamma & $c  c^s \Gamma$ \\
+Inverse Gamma & $c c^s \Gamma$\\
+Maxwell & $c  c^s \Gamma$ \\
+Rayleigh & $c  c^s \Gamma$ \\
+Normal (zero mean) & $c c^s \Gamma$ \\
+Half Normal & $c c^s \Gamma$ \\
+LogNormal & $c c^s c^{s^2} $\\
+Erlang & $c c^s \Gamma$ \\
+Cont. Poisson & $c s^{c} \Gamma$ \\
+Pareto & $c c^s \Gamma \Gamma^{-1}$ \\
+Uniform [0,1] & $s^{c}$ \\
+ArcSin & $c \Gamma \Gamma^{-1}$\\
+Kumaraswamy & $c \Gamma \Gamma^{-1}$ \\
+Power & $c c^s \Gamma \Gamma^{-1}$\\
+Triangle & \\
+Cauchy & \\
+InverseGaussian & \\
+\end{tabular}
+
+\section{1-D Functions}
+
+Exp(-x)
+$$
+Gamma[s]
+$$
+
+exp(-es)
+$$
+Gamma[s] E^(-s)
+$$
+
+Sin[x]
+$$
+\frac{\pi \Gamma(s)}{\Gamma \left(1-\frac{s}{2}\right) \Gamma \left(\frac{s}{2}\right)}
+$$
+
+log(1+1/x) [Generate Conditions, same as log(1+x), diff strip of homology]
+$$
+\frac{\pi  \csc (\pi  s)}{s}
+$$
+
+Elliptic K
+$$
+\frac{\pi ^2 \Gamma \left(\frac{1}{2}-s\right) (\csc (\pi  s)-i \sec (\pi  s))}{2 \Gamma
+    (1-s)^2 \Gamma \left(s+\frac{1}{2}\right)}
+$$
+    
+J0(x)
+$$
+\frac{2^{s-1} \Gamma \left(\frac{s}{2}\right)}{\Gamma \left(1-\frac{s}{2}\right)}
+$$
+
+sin(x)/x
+$$
+ -\cos \left(\frac{\pi  s}{2}\right) \Gamma (s-1)
+$$
+
+ log (x) (-theta (1-| x| ))
+$$
+s^{-2}
+$$
+
+erf
+$$
+-\frac{\Gamma \left(\frac{s}{2}+\frac{1}{2}\right)}{\sqrt{\pi } s}
+$$
+
+z**c erf(a z)
+$$
+\frac{a \left(a^2\right)^{\frac{1}{2} (-c-s-1)} \Gamma
+    \left(\frac{c}{2}+\frac{s}{2}+\frac{1}{2}\right)}{\sqrt{\pi } (-c-s)}
+$$
+
+Sqrt[1/z]Erf[2/z]
+$$
+\frac{2^{s+\frac{1}{2}} \Gamma \left(\frac{3}{4}-\frac{s}{2}\right)}{\sqrt{\pi } (2
+    s-1)}
+$$
+
+
+    
+\begin{tabular}{|c|c|}
+Function & Ansatz \\
+\hline
+exp(-x) & $\Gamma$ \\
+log(1+1/x) & $ s^c \Gamma \Gamma$ \\
+Sin & $c \Gamma \Gamma^{-1} \ Gamma ^{-1}$ \\
+EllipticK & \\
+EllipticE & \\
+BesselJ0 & \\
+\end{tabular}
+
+\section{Factorial Moments of Discrete Distributions}
+$$\operatorname{E}[X^r] = \sum_{j=0}^r \left\{ {r \atop j} \right\} \operatorname{E}[(X)_j]$$ 
+with Stirling numbers of the second kind.
+
+
+Extend to complex $r$ in an integral transform
+
+Poisson distribution
+
+$$\operatorname{E}\bigl[(X)_r\bigr] =\lambda^r$$
+
+
+Binomial distribution
+
+$$\operatorname{E}\bigl[(X)_r\bigr] = \binom{n}{r} p^r r! = (n)_r p^r$$
+
+Hypergeometric distribution
+
+$$\operatorname{E}\bigl[(X)_r\bigr] = \frac{\binom{K}{r}\binom{n}{r}r!}{\binom{N}{r}} = \frac{(K)_r (n)_r}{(N)_r}$$
+
+Beta-binomial distribution
+
+$$\operatorname{E}\bigl[(X)_r\bigr] = \binom{n}{r}\frac{B(\alpha+r,\beta)r!}{B(\alpha,\beta)} =
+(n)_r \frac{B(\alpha+r,\beta)}{B(\alpha,\beta)}$$
+
+
+\section{Develop Holonomic}
+Some DE ansatz, and look for holonomic annihilation equation from numerical data, across a window?
+
+
+
+\section{Develop Window}
+Look at the  very simple case $e^{-x}$. We apply a window of $a$ so end up with a factor of $\theta(a-x)$ in the integrand. We can solve this simple case in general, and get a hypergeometric function in terms of $s,a$. Now we can fix $s$ i.e. $s=1$ and track. For this point we get 
+$$
+\frac{\sqrt{a^2} \sinh (a)+a+a (-\cosh (a))}{\sqrt{a^2}}
+$$
+which is a sigmoid, with long term limit $1=\Gamma(1)$ when $a \to \infty$ and this converges approximately when $a=5$. 
+
+One question is 'could exact learning be used recursively to identify this single case? The Mellin transform of the above is $-\Gamma(t)$, with conditions $-1 < Re(t) < 0$.
+
+For $s=2$ we have 
+$$
+\left(\frac{a}{\sqrt{a^2}}+a\right) \sinh (a)-\left(\left(\sqrt{a^2}+1\right) \cosh
+    (a)\right)+1
+$$
+which also tends to $1$, i.e. $\Gamma(2)$. The Mellin transform of this point gives 
+$$
+    -(1+t)\Gamma(t), -2 < Re(t) < 0
+$$
+
+For $s=3$ we have 
+$$
+\frac{2 \sqrt{a^2}+a \left(a^2+2 \sqrt{a^2}+2\right) \sinh (a)-\left(\left(2
+    a^2+\sqrt{a^2} \left(a^2+2\right)\right) \cosh (a)\right)}{a}
+$$
+which correcly tends to $2$, i.e. $\Gamma(3)$. The Mellin Transform of that function gives 
+$$
+- \Gamma(3+t)/t , -3 < Re(t) < 0
+$$
+The table looks like
+$$
+\left\{\sinh (a)-\cosh (a)+1,
+(a+1) \sinh (a)-((a+1) \cosh (a))+1,
+(a (a+2)+2) \sinh
+    (a)-((a (a+2)+2) \cosh (a))+2,
+    e^{-a} (-a (a (a+3)+6)-6)+6,
+    e^{-a} (-a (a (a (a+4)+12)+24)-24)+24,
+    e^{-a}
+    \left(120 \left(e^a-1\right)-a (a (a (a (a+5)+20)+60)+120)\right),
+    e^{-a} \left(720
+    \left(e^a-1\right)-a (a (a (a (a (a+6)+30)+120)+360)+720)\right),
+    e^{-a} \left(5040
+    \left(e^a-1\right)-a (a (a (a (a (a (a+7)+42)+210)+840)+2520)+5040)\right),
+    e^{-a} \left(40320
+    \left(e^a-1\right)-a (a (a (a (a (a (a (a+8)+56)+336)+1680)+6720)+20160)+40320)\right),
+    e^{-a}
+    \left(362880 \left(e^a-1\right)-a (a (a (a (a (a (a (a
+    (a+9)+72)+504)+3024)+15120)+60480)+181440)+362880)\right)\right\}
+$$
+These seem to be of the form polynomial in a times cosh and sinh and a constant
+
+
+\subsection{Bessel J}
+For Bessel J, 0 we end up with an s=1 form of 
+$$
+\left\{\frac{1}{2} a (\pi  \pmb{H}_0(a) J_1(a)+(2-\pi  \pmb{H}_1(a)) J_0(a))\right\}
+$$
+the limit is 1, and it does have a Mellin transform in terms of hyper-geometric functions. The function is highly oscillatory. This is interesting, because we might be able to average or smooth.
+
+For s=2 we get $a*BesselJ[1, a]$, which is nice and simple. It oscillates but might have an average limit of 0, or it is indeterminate. The s=2 limit of the correct Mellin transform for the original BesselJ0 tends to 0, so this oscillatory average may be OK.
+
+For s=3 it is terribly unstable, and the answer is supposed to be -1. But it wildly oscillates... We note that $d/da$ of the function is $a^2 BesselJ[0,a]$, i.e. which is then be expected. This would mean the curve at $s=s$ is the antiderivative, of $a^s BesselJ[0,a]$ or something.
+
+\subsection{sinc(x)}
+For Sinc function we expect Mellin Transform
+$$
+-\cos \left(\frac{\pi  s}{2}\right) \Gamma (s-1)
+$$
+But it oscillates and decays... for certain key points $s=2,3...$, we have purely oscillatory behaviour as the integration limit is increased, so $s=1$ we have sine integral which converges to $\pi/2$. So periodic solvers and Fourier series can be useful to determine certain key point asymptotics. 
+
+
+\subsection{Complex Moments}
+For complex inputs, we can see convergent numerical properties. So really tracking the nature of convergence with respect to the window length is very important for purity, values of $s$ with wild oscillatory behaviour can be avoided. Parts with stable periodicity can be exploited. 
+
+
+\subsection{Domain of Validity}
+This often gives a free factor, or set of equations.
+
+
+
+
+\end{document}
