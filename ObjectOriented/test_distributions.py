@@ -3,6 +3,8 @@ import scipy.special as ss
 from matplotlib import pyplot as plt
 from ObjectOriented import *
 import os
+from moments import MomentsBundle
+from estimator import ExactEstimator
 
 # from exact_learning.data import points_to_moments
 
@@ -23,6 +25,28 @@ with open("test_1d_distributions.txt","r") as f:
     plt.show()
 
     # Now call Exact Learning
+
+    # Define a problem
+    mb = MomentsBundle(name)
+    mb.ingest(x,f(x))
+
+    # Define a potential solution
+    ee = ExactEstimator(mb)
+
+    exit()
+
+    # OR
+    ee = ExactEstimator()
+    ee.set_fingerprint()
+    ee.fit(mb)
+
+
+
+    # Pass mb to an ExactEstimator Object 
+    # Do this for a clone, so we can improve it without disturbing the existing one
+
+
+    exit()
 
     # If it is not clear how, make a data converter
     # Any time we call plt.plot(x,y) we should be able to call

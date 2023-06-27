@@ -18,6 +18,10 @@ class MomentsBundle():
         self.s_domain = {'Re':[1,3],'Im':[-np.pi,np.pi]}
         self.max_moment_log_derivative_order = 3
 
+        # TODO: Generalise this
+        self.real_errors_exist = True
+        self.imag_errors_exist = True
+
         # Placeholder variables
         self.num_dims = None
         self.interpolating_function = None
