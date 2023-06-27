@@ -32,11 +32,6 @@ xx = np.linspace(0,1,100)
 ff = xx**(a-1)*(1-xx)**(b-1)/beta(a,b)
 plt.plot(xx,ff,'k-')
 
-#from scipy.stats import chi
-#xx = np.linspace(0,5,100)
-#yy = chi.pdf(xx, 10)
-#plt.plot(xx,yy,'-k')
-
 plt.show()
 
 

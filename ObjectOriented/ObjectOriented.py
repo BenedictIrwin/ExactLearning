@@ -8,14 +8,14 @@ from scipy.spatial import KDTree
 pwd = os.getcwd()
 string_list = "a b c d e f g h i j k l m n o p q r s t u v w x y z".split(" ")
 
-
-
-
 # from predefined_complexity import rationals_dict, integers_dict
 from predefined_complexity import *
 
-## This might need to be improved?
-def deal(p0,states):
+## TODO: What is this? Add Descriptions
+def deal(p0, states):
+  """
+  TODO:
+  """
   p0 = list(p0)
   itr = 0
   mx = len(states)
@@ -28,6 +28,9 @@ def deal(p0,states):
 
 ## A helper function to assign pk parameter labels to constant spaces and vice versa
 def parse_terms(terms):
+  """
+  TODO:
+  """
   terms = terms.replace("_s_","")
   terms = terms.replace("_VAR1_","")
   terms = terms.replace("_VAR2_","")
@@ -45,9 +48,11 @@ def parse_terms(terms):
   param_type_dict = { strings[k] : "p{}".format(k) for k in range(len(strings)) }
   return strings , ["p{}".format(k) for k in range(undercount//2)]
 
-## The exact learning estimator class
-## Not designed to take a lot of information
+
 class ExactEstimator:
+  """
+  Exact Estimator
+  """
   def __init__(self,tag, folder = ""):
     self.tag = tag
     self.folder = folder
@@ -193,10 +198,6 @@ class ExactEstimator:
           self.sample_array = np.arange(0,self.fingerprint_N)
           S = self.s_values[self.sample_array]
       f.write("  S = array({})\n".format(list(S)))
-
-      #print(S)
-      #print("{}".format(list(S)))
-      #exit()
 
       f.write("  ret = 0\n")
       for term in params:

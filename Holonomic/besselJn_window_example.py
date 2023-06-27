@@ -3,7 +3,7 @@ from scipy.interpolate import CubicSpline
 import numpy as np
 from matplotlib import pyplot as plt
 
-N = 10000
+N = 1000
 min = 0.1
 max = 40.0
 
@@ -40,6 +40,13 @@ ddy = ddy[clip_len:-clip_len]
 cy = cy[clip_len:-clip_len]
 cdy = cdy[clip_len:-clip_len]
 cddy = cddy[clip_len:-clip_len]
+
+# Save these out #######
+np.save('x',x)
+np.save('y',y)
+np.save('dy',cdy)
+np.save('ddy',cddy)
+########################
 
 plt.plot(x,y,label='y(x)')
 plt.plot(x,dy,label='dy(x)')
@@ -85,4 +92,6 @@ answer = np.einsum("jt,jt->t",answer,space)
 print(answer)
 print(np.sum(np.abs(answer)))
 print("Error per sample: ",np.sum(np.abs(answer))/N)
+
+print(Bessel)
 

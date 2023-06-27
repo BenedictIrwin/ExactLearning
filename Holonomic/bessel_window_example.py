@@ -48,11 +48,11 @@ derivs = np.array([y,ndy,nddy])
 space = np.array([x**0,x,x**2])
 
 # 3 x 3
+# Note this is only the n=0 matrix
 Bessel = np.array([[0,0,1],[0,1,0],[0,0,1]])
 
-print(derivs.shape)
-print(space.shape)
-print(Bessel.shape)
+# general_Bessel = np.array([[-a**2,0,1],[0,1,0],[0,0,1]])
+
 
 answer = np.einsum("it,ij->jt",derivs,Bessel)
 answer = np.einsum("jt,jt->t",answer,space)
