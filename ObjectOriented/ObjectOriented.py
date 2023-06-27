@@ -1,15 +1,17 @@
 import numpy as np
 import os
-import sys
-from exactlearning import wrap, plots
 from scipy.optimize import minimize
-from scipy.spatial import KDTree
+
 
 pwd = os.getcwd()
 string_list = "a b c d e f g h i j k l m n o p q r s t u v w x y z".split(" ")
 
 # from predefined_complexity import rationals_dict, integers_dict
 from predefined_complexity import *
+
+## A function to get the result in the principle branch
+def wr(x): return x - np.sign(x)*np.ceil(np.abs(twopi_rec*x)-0.5)*twopi
+wrap = np.vectorize(wr)
 
 ## TODO: What is this? Add Descriptions
 def deal(p0, states):
