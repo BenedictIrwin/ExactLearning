@@ -90,12 +90,16 @@ class MomentsBundle():
 @dataclass
 class ExactLearningResult():
     """
-    Store an exact learning result
+    Store an exact learning result, sort of represents a fact
     """
-    equation: str
-    num_dims: int
+    def __init__(self, result_dict):
+        self.equation = result_dict["equation"]
+        self.num_dims = result_dict["num_dims"]
+        self.complex_moment = result_dict["complex_moments"]
 
-    # Might have a method to yeild TeXForm etc.
+    #TODO: Might have a method to yeild TeXForm etc.
+    def __repr__(self) -> str:
+        return self.equation
 
 
 

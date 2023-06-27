@@ -1,5 +1,13 @@
 from moments import MomentsBundle
 import numpy as np
+from scipy.optimize import minimize
+
+from predefined_complexity import *
+from utils import get_random_key, parse_terms, wrap, deal
+
+from moments import ExactLearningResult
+
+
 
 class ExactEstimator:
   """
@@ -69,19 +77,18 @@ class ExactEstimator:
       self.ratio["{}".format(i)] = self.new_moments[1]/self.new_moments[0]
 
     ### Second order
-    #for i in range(1,self.n_s_dims+1):
-    #  for j in range(1,self.n_s_dims+1):
-    #    if(j<i): continue
-    #    loadstring ="{}/logderivative_{}{}_{}.npy".format(folder,i,j,tag) 
-    #    print(loadstring)
-    #    self.ratio2["{}{}".format(i,j)] = np.load(loadstring)
+    for i in range(1,self.n_s_dims+1):
+      for j in range(1,self.n_s_dims+1):
+        if(j<i): continue
+        self.ratio2["{}{}".format(i,j)] = self.new_moments[2]/self.new_moments[0]
 
     ### Third Order?
 
     #print("Warning: second order not actually loaded!")
     #print("Warning: Do detect max order etc.")
 
-    ### Load in the ratio dq/q which is expected to be a sum of digamma functions
+    ### Load in the ratio dq/q which is expected to be a
+    #  sum of digamma functions
     #self.ratio = np.load("{}/logderivative_{}.npy".format(folder,tag))
     #self.ratio2 = np.load("{}/logderivative2_{}.npy".format(folder,tag))
 
@@ -104,6 +111,7 @@ class ExactEstimator:
       self.imag_error = np.zeros(self.moments.shape)
     
 
+    # TODO: Check these are even used
     self.real_s = np.real(self.s_values)
     self.imag_s = np.imag(self.s_values)
     self.real_m = np.real(self.moments)
@@ -796,11 +804,20 @@ class ExactEstimator:
     print("Simplified: ",string_in)
     function_guess = self.compute_inverse_mellin_transform(string_in, start = 0) 
     print(function_guess)
-    print(nsimplify(function_guess, rational = True))
+   
+
+    equation =  nsimplify(function_guess, rational = True)
+    print(equation)
+
+    result_dict = {}
+    result_dict["equation"] = str(equation)
+    result_dict["complex_moments"] = str(string_in)
+    result_dict["num_dims"] = 1
     
+    # Encode the mathematical result in a nice compact form
+    result = ExactLearningResult(result_dict)
 
-
-    return
+    return result
 
  
     if("c" in fp_list and "c^s" not in fp_list):

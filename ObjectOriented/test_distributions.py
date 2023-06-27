@@ -33,6 +33,17 @@ with open("test_1d_distributions.txt","r") as f:
     # Define a potential solution
     ee = ExactEstimator(mb)
 
+    ee.set_fingerprint( gen_fpdict(['c','shift-gamma']))
+    n_bfgs = 10
+    for i in range(n_bfgs): 
+      ee.BFGS(order=2)
+      print("{}%".format(100*(i+1)/n_bfgs),flush=True)
+    ee.speculate(k = 4)
+
+    result = ee.cascade_search()
+
+    print("GOt Here")
+    print(result)
     exit()
 
     # OR
