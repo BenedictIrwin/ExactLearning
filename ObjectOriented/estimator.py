@@ -321,25 +321,19 @@ class ExactEstimator:
     with open("./Functions/{}_logderivative2.py".format(key),"r") as f: flines = f.readlines()
     exec("".join(flines),globals())
 
-  def preseed(self, num_samples, logd = False):
+  def preseed(self, num_samples):
     """
     TODO: # Searching for a good starting point
     """
     p0 = np.random.uniform(low=-10,high=10,size=[num_samples, self.N_terms])
     #p0 = np.random.choice([np.sqrt(2),0.5,1,2,3], size = [num_samples, self.N_terms])
 
-
     if(self.fit_mode=="log"):
-      if(logd == True):
-        f1 = self.real_logd_loss
-        f2 = self.imag_logd_loss
-      else:
-        f1 = self.real_log_loss
-        f2 = self.complex_log_loss
+        f = self.log_loss
     if(self.fit_mode == "normal"):
       print("Normal BFGS not currently supported!")
       exit()
-    losses = [self.real_log_loss(q) for q in p0]
+    losses = [self.log_loss(q) for q in p0]
     print(losses)
     print(np.amin(losses))
     print(np.amax(losses))
@@ -535,7 +529,7 @@ class ExactEstimator:
     Evalulate the total loss at a point and order
     TODO: Generalised loss mode.
     """
-    return self.real_log_loss(q, order), self.complex_log_loss(q, order)
+    return self.log_loss(q, order, 'real'), self.log_loss(q, order, 'complex')
 
   def speculate(self, params, k = 4, silent = True):
     """
