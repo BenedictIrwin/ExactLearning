@@ -1,0 +1,11 @@
+
+Clearly bugs:
+
+trigamma nan bug on using linear-gamma with L-BFGS-b
+
+Getting wrong answers, because not prioritising simpler expressions...
+
+Features:
+
+We might prefer floats rather than huge fractions like 8720979037792035/10000000000000 etc.
+Possibly a setting for that?

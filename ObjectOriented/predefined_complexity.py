@@ -81,6 +81,7 @@ integers_dict = { "{}".format(i) : i for i in range(100) }
 
 ## A flexible list of possible prefactor type constants including gamma functions, roots and Pi
 not_zero_dict = rationals_dict.copy()
+del not_zero_dict['0/1'] # delete zero from here, or it will crash log(x)!
 
 ## Sqrt of these constants for positive only BFGS varaibles
 sqrt_not_zero_dict = { "sqrt({})".format(i) : np.sqrt(not_zero_dict[i]) for i in not_zero_dict.keys()}
@@ -88,9 +89,8 @@ sqrt_not_zero_dict = { "sqrt({})".format(i) : np.sqrt(not_zero_dict[i]) for i in
 ## Hypergeometric arguments, should include 2**2/3**3 type numbers as well
 hyp_arg_dict = rationals_dict.copy()
 
-## For polynomial coeffieicnts (usually rationals)
+## For polynomial coefficients (usually rationals)
 poly_coeff_dict = rationals_dict.copy()
-
 
 ## A global list of constants, this is used for key matching
 global_constants_dict = { "_notzero_" : not_zero_dict, "_sqrtnotzero_" : sqrt_not_zero_dict, "_gamma-rational_" : rationals_dict, "_hyp-arg_" : hyp_arg_dict, "_poly-coeff_" : poly_coeff_dict }

@@ -51,44 +51,9 @@ with open("test_1d_distributions.txt","r") as f:
       plt.plot(x,g(x),'r:',label=f'pred {res}')
       plt.legend()
     plt.show()
-
+    input()
     
 
-
-
-
-    ee.set_fingerprint( gen_fpdict(['c','shift-gamma']))
-    n_bfgs = 10
-    for i in range(n_bfgs):
-      # Something is pretty broken, possibly multiple things...
-      # Need to be very careful and systematic
-      ee.BFGS(order=2)
-      print("{}%".format(100*(i+1)/n_bfgs),flush=True)
-    ee.set_fingerprint( gen_fpdict(['c','c^s','shift-gamma']))
-    for i in range(n_bfgs):
-      # Something is pretty broken, possibly multiple things...
-      # Need to be very careful and systematic
-      ee.BFGS(order=2)
-      print("{}%".format(100*(i+1)/n_bfgs),flush=True)
-    ee.speculate(k = 4)
-
-    result = ee.cascade_search()
-
-    print("GOt Here")
-    print(result)
-    x = np.linspace(min,max,100)
-    f = eval("lambda x :"+ python)
-    from numpy import exp as exp
-    from numpy import sqrt as sqrt
-    g = eval("lambda x :"+ result.equation)
-    plt.title(name)
-    plt.xlabel("x")
-    plt.ylabel("p(x)")
-    plt.plot(x,f(x),label='original')
-    plt.plot(x,g(x),'r:',label='pred')
-    plt.legend()
-    plt.show()
-    input()
     
 
     # OR

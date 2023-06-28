@@ -469,14 +469,14 @@ class ExactEstimator:
       C = np.abs(wrap(np.imag(A)-np.imag(self.ratio2["11"])+np.imag(self.ratio["1"]**2)))
     return np.mean(B+C)
 
-  def BFGS(self, p0=None, order: int = 0, method : str = 'BFGS') -> tuple[Any, float]:
+  def BFGS(self, p0=None, order: int = 0, method : str = 'L-BFGS-B') -> tuple[Any, float]:
     """
     TODO: ## A gradient based approach to get the optimial parameters for a given fingerprint
     p0: A first guess of parameters
     order: Which moment derivative we will fit to, [0,1,2]
     """
-    if(method != "BFGS"):
-      raise NotImplementedError("method needs to be BFGS!")
+    #if(method != "BFGS"):
+    #  raise NotImplementedError("method needs to be BFGS!")
 
     #TODO: Consider better initialisation schemes
     if(p0 is None): 
@@ -509,9 +509,17 @@ class ExactEstimator:
         # Do a fine minimization
         res = minimize(f2, x0=res.x, args = (order), method = "BFGS", tol = 1e-8)
     elif(method == 'L-BFGS-B'):
-        print("WARNING: CONSTRAINTS APPLIED TO ALL VARIABLES... _poly-coeff_ may actually need to be negative?")
+        print("WARNING: CONSTRAINTS APPLIED TO ALL VARIABLES... _poly-coeff_ may actually need to be negative!")
+        print("WARNING: CONSTRAINTS APPLIED TO ALL VARIABLES... some gamma coeffs may actually need to be negative!")
+        print("WARNING: Some log(x) coeffs cannot be zero!")
         # TODO: Explain this, need to expand to understand the exact fingerprint being used.
+        # This is poly-coeff, which is a polynomial coefficient, and yes can be negative, so need to check the ansatz
+        small = 1e-6
         constraints = [(0, None) for _ in p0]
+        for i, term in enumerate(self.fingerprint.split(":")[3:]):
+          #TODO: This assumes c and c^s are at the front of the list? (i.e. double param terms etc.)
+          if(term in ['c','c^s']):
+            constraints[i]=(small,None)
         # Do a coarse minimisation
         res = minimize(f1, x0=p0, args = (order), method = "L-BFGS-B", bounds = constraints, tol = 1e-6)
         # Do a fine minimization
@@ -833,6 +841,8 @@ class ExactEstimator:
 
     # TODO: Add checks for infinite and non-sensical constants
     # TODO: possibly hook in a pre-defined 'is this a distribution' kind of flag
+    if(coeff == 0.0):
+        raise ValueError('Cannot normalise with 0')
 
     print("Normalisation Coefficient:", coeff)
 
@@ -899,7 +909,10 @@ class ExactEstimator:
     # Upgrade to have trial params as well
     standard_fingerprints = [
       gen_fpdict(['c','shift-gamma']),
-      gen_fpdict(['c','c^s','shift-gamma'])
+      gen_fpdict(['c','c^s','shift-gamma']),
+      #gen_fpdict(['c','c^s','linear-gamma']),
+      #gen_fpdict(['c','c^s','linear-gamma','linear-gamma']),
+      #gen_fpdict(['c','c^s','linear-gamma','neg-linear-gamma'])
     ]
 
     #TODO: define standard seach params, lengths and times, heuristics
