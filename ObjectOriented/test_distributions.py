@@ -16,13 +16,14 @@ with open("test_1d_distributions.txt","r") as f:
     max = float(max)
     print(name, min, max, python, mma, moments)
     python = python.replace("[comma]",",") # multi-arg functions
+    
     x = np.linspace(min,max,100)
     f = eval("lambda x :"+ python)
-    plt.title(name)
-    plt.xlabel("x")
-    plt.ylabel("p(x)")
-    plt.plot(x,f(x))
-    plt.show()
+    #plt.title(name)
+    #plt.xlabel("x")
+    #plt.ylabel("p(x)")
+    #plt.plot(x,f(x))
+    #plt.show()
 
     # Now call Exact Learning
 
@@ -33,10 +34,14 @@ with open("test_1d_distributions.txt","r") as f:
     # Define a potential solution
     ee = ExactEstimator(mb)
 
-    ee.set_fingerprint( gen_fpdict(['c','shift-gamma']))
+    # Need to add a way to scan multiple solutions and test one by one...
+
+    ee.set_fingerprint( gen_fpdict(['c','c^s','linear-gamma']))
     n_bfgs = 10
-    for i in range(n_bfgs): 
-      ee.BFGS(order=2)
+    for i in range(n_bfgs):
+      # Something is pretty broken, possibly multiple things...
+      # Need to be very careful and systematic
+      ee.BFGS(order=0)
       print("{}%".format(100*(i+1)/n_bfgs),flush=True)
     ee.speculate(k = 4)
 
@@ -44,12 +49,25 @@ with open("test_1d_distributions.txt","r") as f:
 
     print("GOt Here")
     print(result)
-    exit()
+    x = np.linspace(min,max,100)
+    f = eval("lambda x :"+ python)
+    from numpy import exp as exp
+    from numpy import sqrt as sqrt
+    g = eval("lambda x :"+ result.equation)
+    plt.title(name)
+    plt.xlabel("x")
+    plt.ylabel("p(x)")
+    plt.plot(x,f(x),label='original')
+    plt.plot(x,g(x),'r:',label='pred')
+    plt.legend()
+    plt.show()
+    input()
+    
 
     # OR
-    ee = ExactEstimator()
-    ee.set_fingerprint()
-    ee.fit(mb)
+    #ee = ExactEstimator()
+    #ee.set_fingerprint()
+    #ee.fit(mb)
 
 
 
@@ -57,7 +75,7 @@ with open("test_1d_distributions.txt","r") as f:
     # Do this for a clone, so we can improve it without disturbing the existing one
 
 
-    exit()
+  exit()
 
     # If it is not clear how, make a data converter
     # Any time we call plt.plot(x,y) we should be able to call
@@ -76,30 +94,6 @@ with open("test_1d_distributions.txt","r") as f:
     # results ->  <el.results>
     # results.solved() -> True/False
     # results.TeXForm() -> "\exp(-x)"  # by hooking whatever sympy has
-
-
-    #### Working Example... ####
-   
-    # Make a folder called 'name'
-    os.mkdir(name)
-
-    # Interpolate the datapoints we have as input 'i.e. function'
-
-    # Integrate to get the momenets from the data
-
-    # Save files into the folder
-
- 
-    EE = ExactEstimator(name, folder = name)
-    EE.set_fingerprint( gen_fpdict(['c','linear-gamma']))
-    n_bfgs = 1
-    for i in range(n_bfgs):
-      EE.BFGS(order=2)
-      print("{}%".format(100*(i+1)/n_bfgs),flush=True)
-    EE.speculate(k = 4)
-    ############################
-    
-    EE.cascade_search()
 
 
 #vec_int = np.vectorize(special_int)

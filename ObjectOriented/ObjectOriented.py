@@ -4,11 +4,13 @@ from scipy.optimize import minimize
 
 
 pwd = os.getcwd()
-string_list = "a b c d e f g h i j k l m n o p q r s t u v w x y z".split(" ")
 
 # from predefined_complexity import rationals_dict, integers_dict
 from predefined_complexity import *
 
+twopi = 2*np.pi
+twopi_rec = 1/twopi
+pi_rec = 1/np.pi
 ## A function to get the result in the principle branch
 def wr(x): return x - np.sign(x)*np.ceil(np.abs(twopi_rec*x)-0.5)*twopi
 wrap = np.vectorize(wr)
@@ -162,9 +164,16 @@ class ExactEstimator:
     self.imag_log_diff = imag_log_upper - imag_log_lower
  
 
-  ## Write a vectorized function to evaluate arbitary fingerprint
-  ## The method is passed a dictionary to do this
+
   def write_function(self,key):
+    """
+    Write a vectorized function to evaluate arbitary fingerprint
+    The method is passed a dictionary to do this
+
+    Function to write a 'vectorised function file' from a fingerprint
+    the 'fingerprint' is a shorthand notation for an Exact Learning ansatz.
+    'key' is a code that makres the function unique and referencable.
+    """
     print("Writing function: ",self.fingerprint,key)
     params = self.fingerprint.split(":")[3:]
 
@@ -337,7 +346,7 @@ class ExactEstimator:
       return
 
     ## Otherwise write a vectorized loss function in terms of the input data etc. 
-    key = "".join([np.random.choice(string_list) for i in range(10)])
+    key = get_random_key()
 
     ## Write the function and its log derivative
     self.write_function(key)

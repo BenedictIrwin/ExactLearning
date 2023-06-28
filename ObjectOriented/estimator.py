@@ -409,11 +409,11 @@ class ExactEstimator:
       B = np.maximum(0.0,B-self.real_log_diff)
     if(order == 1): 
       A = logderivative(*full)[0]
-      B = np.abs(np.real(A)-np.real(self.ratio))
+      B = np.abs(np.real(A)-np.real(self.ratio['1']))
       #B = np.maximum(0.0,B-self.real_log_diff)
     if(order == 2): 
       A = logderivative2(*full)[0]# - logderivative(*p)[0]**2
-      B = np.abs(np.real(A)-np.real(self.ratio2)+np.real(self.ratio**2))
+      B = np.abs(np.real(A)-np.real(self.ratio2['1'])+np.real(self.ratio['1']**2))
       #B = np.maximum(0.0,B-self.real_log_diff)
     return np.mean(B)
  
@@ -429,8 +429,8 @@ class ExactEstimator:
       C = np.maximum(0.0,C-self.imag_log_diff)
     if(order == 1): 
       A = logderivative(*full)
-      B = np.abs(np.real(A)-np.real(self.ratio))
-      C = np.abs(wrap(np.imag(A)-np.imag(self.ratio)))
+      B = np.abs(np.real(A)-np.real(self.ratio['1']))
+      C = np.abs(wrap(np.imag(A)-np.imag(self.ratio['1'])))
     if(order == 2): 
       A = logderivative2(*full)# - logderivative(*p)**2
       B = np.abs(np.real(A)-np.real(self.ratio2)+np.real(self.ratio**2))
@@ -512,6 +512,8 @@ class ExactEstimator:
       B = np.abs(np.real(A)-np.real(self.ratio["1"]))
       #B = np.maximum(0.0,B-self.real_log_diff)
     if(order == 2): 
+      print('breakpoint')
+      breakpoint()
       A = logderivative2(*p)[0]# - logderivative(*p)[0]**2
       B = np.abs(np.real(A)-np.real(self.ratio2["11"])+np.real(self.ratio["1"]**2))
       #B = np.maximum(0.0,B-self.real_log_diff)

@@ -55,7 +55,7 @@ def trigamma_g1(z,maxits=40,eps=np.spacing(np.double(1)),realmin=np.finfo(np.dou
         cf *= dlt
         if np.abs(dlt-1) < eps: break
     else:
-        raise Exception('trigamma_g1 failed to converge.')
+        raise Exception(f'trigamma_g1 failed to converge at {z}.')
     return cf
 
 np.trigamma = np.vectorize(trigamma)
