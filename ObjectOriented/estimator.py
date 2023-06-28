@@ -135,6 +135,8 @@ class ExactEstimator:
     ## The bounds to work with when fitting
     self.real_log_diff = real_log_upper - real_log_lower
     self.imag_log_diff = imag_log_upper - imag_log_lower
+
+    # TODO: Calculate bounds for hihger order terms 
  
 
 
@@ -365,7 +367,7 @@ class ExactEstimator:
     ## Figure out how to assemble the problem in the loss function?
     res = minimize(f, x0=p0, args = (order, 'real', states, values), method = "BFGS", tol = 1e-6)
     res = minimize(f, x0=res.x, args = (order, 'complex', states, values), method = "BFGS", tol = 1e-8)
-    x_final = states*values + deal(res.x, states) 
+    x_final = states * values + deal(res.x, states) 
     loss = f(res.x, order, 'complex', states, values)
     self.register(x_final,loss)
     return x_final, loss
@@ -376,7 +378,6 @@ class ExactEstimator:
     real, complex, full, partial
     """
     if(states is not None and values is not None):
-      is_partial = True
       full = states * values + deal(p, states)
     else:
       full = p
@@ -399,7 +400,14 @@ class ExactEstimator:
       if(type=='complex'): 
         C = np.abs(wrap(np.imag(A)-np.imag(self.ratio['1'])))  
     if(order == 2):
-      A = logderivative2(*full)
+      print(full)
+      try:
+        A = logderivative2(*full)
+      except:
+        print(full)
+        # This exploded, so we get a bad loss
+        A = np.zeros_like(logderivative2(*np.ones_like(full)))
+        full = np.random.uniform(low=-1, high=1, size=len(full))
       B = np.abs(np.real(A)-np.real(self.ratio2['11'])+np.real(self.ratio['1']**2))
       if(type=='complex'): 
         C = np.abs(wrap(np.imag(A)-np.imag(self.ratio2['11'])+np.imag(self.ratio['1']**2)))
@@ -527,7 +535,6 @@ class ExactEstimator:
   def point_evaluation(self, q, order = 0):
     """
     Evalulate the total loss at a point and order
-    TODO: Generalised loss mode.
     """
     return self.log_loss(q, order, 'real'), self.log_loss(q, order, 'complex')
 
@@ -715,7 +722,8 @@ class ExactEstimator:
         else:
           fix_dict[token]["fixed"] = False
           # TODO: check this dumb value is not actually used?
-          fix_dict[token]["value"] = 0
+          # FIX: it is, changing
+          fix_dict[token]["value"] = np.random.uniform(-2,2)
         itr+=1
 
     
@@ -762,6 +770,7 @@ class ExactEstimator:
 
 
     results = self.speculate(p_new, k=4)
+    print("JUST BEFORE P_best ",results)
     p_best = self.most_likely_from_results(results)
 
     # TODO: Implement some kind of check based on below
@@ -780,7 +789,11 @@ class ExactEstimator:
     # TODO: possibly hook in a pre-defined 'is this a distribution' kind of flag
     if(coeff == 0.0):
         raise ValueError('Cannot normalise with 0')
+    from sympy import zoo
+    if(coeff == zoo):
+        raise ValueError('Cannot normalise with ComplexInfinity')
 
+    #TODO: Consider nan etc.
     print("Normalisation Coefficient:", coeff)
 
     # This time, it will leave it as a function of s
@@ -847,7 +860,7 @@ class ExactEstimator:
     standard_fingerprints = [
       gen_fpdict(['c','shift-gamma']),
       gen_fpdict(['c','c^s','shift-gamma']),
-      #gen_fpdict(['c','c^s','linear-gamma']),
+      gen_fpdict(['c','c^s','linear-gamma']),
       #gen_fpdict(['c','c^s','linear-gamma','linear-gamma']),
       #gen_fpdict(['c','c^s','linear-gamma','neg-linear-gamma'])
     ]

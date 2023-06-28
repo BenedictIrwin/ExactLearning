@@ -53,8 +53,8 @@ rationals_dict = {}
 keys = []
 values = []
 ## Generate a dictionary of rationals
-for i in range(20):
-  for j in range(1,20):
+for i in range(6):
+  for j in range(1,6):
     q = i/j
     st = "{}/{}".format(i,j)
     stlen = len(st)
@@ -72,6 +72,9 @@ for i in range(20):
 
 rationals_dict = {i:j for i,j in zip(keys,values)}
 
+#TODO: Basically these dictionaries are causing tons of problems and need to be improved
+
+# THE L-BFGS-B -> Fixed value and unfixed values -> 0 ??? Check might be causing big problens
 ## A dict of only integers (useful for powers of gamma functions)
 integers_dict = { "{}".format(i) : i for i in range(100) }
 

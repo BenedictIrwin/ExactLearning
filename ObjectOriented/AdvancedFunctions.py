@@ -112,7 +112,7 @@ def tetragamma_g1(z,maxits=40,eps=np.spacing(np.double(1)),realmin=np.finfo(np.d
         cf *= dlt
         if np.abs(dlt-1) < eps: break
     else:
-        raise Exception('tetragamma_g1 failed to converge.')
+        raise Exception(f'tetragamma_g1 failed to converge at {z}.')
     return cf
 
 np.tetragamma = np.vectorize(tetragamma)

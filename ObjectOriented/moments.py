@@ -14,8 +14,8 @@ class MomentsBundle():
 
         # Definable variables
         self.name = name
-        self.num_s_samples = 10
-        self.s_domain = {'Re':[1,3],'Im':[-np.pi,np.pi]}
+        self.num_s_samples = 40
+        self.s_domain = {'Re':[1,5],'Im':[-2*np.pi,2*np.pi]}
         self.max_moment_log_derivative_order = 3
 
         # TODO: Generalise this
