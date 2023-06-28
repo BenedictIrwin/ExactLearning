@@ -353,39 +353,67 @@ class ExactEstimator:
     """
     TODO: ## A way of calling BFGS on a subspace of the parameters...
     """
-
-    print(fix_dict) ## Try to get the constraints in as well for params which must be >0
-  
     ## Look into fix dict
     states = np.array([fix_dict[i]["fixed"] for i in fix_dict.keys()])
     #mask = ??? ## zeros ones
     ## Let values be 0
     values = np.array([fix_dict[i]["value"] for i in fix_dict.keys()])
     num_free_vars = np.sum(~states)
-    if( p0 == None): p0 = np.random.uniform(low = -1, high = 1, size = num_free_vars)
-
-    ## Taking p0, states and values, expand to full vector
-    print(p0)
-
-    #full = states * values + deal(p0, states)
-    #print(full) 
-
-
+    #TODO: Consider initialisation
+    if( p0 == None): 
+      p0 = np.random.uniform(low = -1, high = 1, size = num_free_vars)
     if(self.fit_mode=="log"):
-      f1 = self.partial_real_log_loss
-      f2 = self.partial_complex_log_loss
-    if(self.fit_mode == "normal"):
+      f = self.log_loss
+    elif(self.fit_mode == "normal"):
       print("Normal BFGS not currently supported!")
       exit()
 
     ## Figure out how to assemble the problem in the loss function?
-    res = minimize(f1, x0=p0, args = (order, states, values), method = "BFGS", tol = 1e-6)
-    res = minimize(f2, x0=res.x, args = (order, states, values), method = "BFGS", tol = 1e-8)
-    x_final = states*values + deal(res.x,states) 
-    loss = f2(res.x, order, states, values)
+    res = minimize(f, x0=p0, args = (order, 'real', states, values), method = "BFGS", tol = 1e-6)
+    res = minimize(f, x0=res.x, args = (order, 'complex', states, values), method = "BFGS", tol = 1e-8)
+    x_final = states*values + deal(res.x, states) 
+    loss = f(res.x, order, 'complex', states, values)
     self.register(x_final,loss)
     return x_final, loss
   
+  def log_loss(self, p, order, type='complex', states=None, values=None):
+    """
+    All types of log loss in one function
+    real, complex, full, partial
+    """
+    if(states is not None and values is not None):
+      is_partial = True
+      full = states * values + deal(p, states)
+    else:
+      full = p
+
+    if(not type in ['real','complex']):
+      print(type)
+      breakpoint()
+      raise ValueError('Type must be "real" or "complex"')
+
+    if(order == 0):
+      A = fingerprint(*full)
+      B = np.abs(np.real(A)-np.real(np.log(self.moments)))
+      B = np.maximum(0.0,B-self.real_log_diff)
+      if(type=='complex'):
+        C = np.abs(wrap(np.imag(A)-np.imag(np.log(self.moments))))
+        C = np.maximum(0.0,C-self.imag_log_diff)
+    if(order == 1):
+      A = logderivative(*full)
+      B = np.abs(np.real(A)-np.real(self.ratio['1']))
+      if(type=='complex'): 
+        C = np.abs(wrap(np.imag(A)-np.imag(self.ratio['1'])))  
+    if(order == 2):
+      A = logderivative2(*full)
+      B = np.abs(np.real(A)-np.real(self.ratio2['11'])+np.real(self.ratio['1']**2))
+      if(type=='complex'): 
+        C = np.abs(wrap(np.imag(A)-np.imag(self.ratio2['11'])+np.imag(self.ratio['1']**2)))
+      
+    if(type=='real'): return np.mean(B)
+    if(type=='complex'): return np.mean(B+C)
+    
+
   def partial_real_log_loss(self, p, order, states, values):
     """
     TODO: ## Vectorised difference function
@@ -486,8 +514,7 @@ class ExactEstimator:
       if(self.n_s_dims > 1):
         #TODO: Extend this
         raise NotImplementedError('Only 1D functions implemented at the moment.')
-      f1 = self.real_log_loss
-      f2 = self.complex_log_loss
+      f = self.log_loss
 
     elif(self.fit_mode == "normal"):
       #TODO: Extend this
@@ -505,9 +532,9 @@ class ExactEstimator:
 
     if(method == "BFGS"):
         # Do a coarse minimisation
-        res = minimize(f1, x0=p0, args = (order), method = "BFGS", tol = 1e-6)
+        res = minimize(f, x0=p0, args = (order, 'real'), method = "BFGS", tol = 1e-6)
         # Do a fine minimization
-        res = minimize(f2, x0=res.x, args = (order), method = "BFGS", tol = 1e-8)
+        res = minimize(f, x0=res.x, args = (order, 'complex'), method = "BFGS", tol = 1e-8)
     elif(method == 'L-BFGS-B'):
         print("WARNING: CONSTRAINTS APPLIED TO ALL VARIABLES... _poly-coeff_ may actually need to be negative!")
         print("WARNING: CONSTRAINTS APPLIED TO ALL VARIABLES... some gamma coeffs may actually need to be negative!")
@@ -521,12 +548,12 @@ class ExactEstimator:
           if(term in ['c','c^s']):
             constraints[i]=(small,None)
         # Do a coarse minimisation
-        res = minimize(f1, x0=p0, args = (order), method = "L-BFGS-B", bounds = constraints, tol = 1e-6)
+        res = minimize(f, x0=p0, args = (order, 'real'), method = "L-BFGS-B", bounds = constraints, tol = 1e-6)
         # Do a fine minimization
-        res = minimize(f2, x0=res.x, args = (order), method = "L-BFGS-B", bounds = constraints, tol = 1e-8)
+        res = minimize(f, x0=res.x, args = (order, 'complex'), method = "L-BFGS-B", bounds = constraints, tol = 1e-8)
 
     # Calculate final (fine) loss
-    loss = f2(res.x, order)
+    loss = f(res.x, order, 'complex')
 
     # Register this result (in case it is the best ever)
     self.register(res.x, loss)

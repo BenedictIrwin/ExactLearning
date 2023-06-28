@@ -488,7 +488,65 @@ For complex inputs, we can see convergent numerical properties. So really tracki
 \subsection{Domain of Validity}
 This often gives a free factor, or set of equations.
 
+\subsection{Window}
+We can include a factor of $e^{-Qx}$ in the Mellin Transform, instead of the $\theta(a-x)$. Then the result, in the limit $Q \to 0$, will be the original Mellin transform.
+
+For $J_0(x)$ and $s=1$ we get convergence like:
+$$
+\frac{1}{\sqrt{\frac{1}{Q^2}+1} \sqrt{Q^2}}
+$$
+for exp(-x) it give $\frac{1}{1+Q}$.
 
 
+\subsection{Practical}
+Probably, the only reasonable way is to convolve the input function with a decaying function or similar, and directly fit the ensuing Meijer-G function etc. to the moments. Need to establish a pattern for fitting most stuff and accelerate that.
+
+One quick algorithm would be to establish core 's-values' like $1$, $2$, $I$, and such. Precompute certain Meijer-G expressions as a function of $a,b,c$ and $Q$. This would look like a big model $f(a,b,c,s,Q)$. We could even deep learn such a thing if needed?
+
+We then know that
+$$
+MellinTransform[Hypergeometric2F1[a,b,c,-x]Exp[- Q x],x,s] = \frac{\Gamma (c) G_{2,3}^{3,1}\left(Q^2,2|
+                  \begin{array}{c}
+                   1-s,c-s \\
+                   0,a-s,b-s \\
+                  \end{array}
+                  \right)}{\Gamma (a) \Gamma (b)}
+$$
+Now for any function that fits into the class of rational coefficient hypergeometric expressions, we do our best. 
+
+For a product of $_2F_1$ terms we get 
+$$
+\frac{\Gamma (c) \Gamma (f) G_{4,4}^{3,3}\left(1\left|
+                  \begin{array}{c}
+                   1-d,1-e,1-s,c-s \\
+                   0,a-s,b-s,1-f \\
+                  \end{array}
+                  \right.\right)}{\Gamma (a) \Gamma (b) \Gamma (d) \Gamma (e)}
+$$
+there is going to be pair and single permutation symmetry with $a,b$ and $d,e$, and pair symmetry between $c$ and $f$.
+
+If evalulated at $s=1$ for example,Out[45]
+
+
+\section{Flowchart}
+Would probably develop an algorithm and a flowchart, that looks as follows. 
+Receive data, inspect function and classify into 
+(discrete, continuous, likely domain, resolution, asymptotic behaviour, start and end points, min and max values, number of local minima/maxima/turning points, oscillation detection)
+then a graph of 'methods' depending on the above can trigger, pure EL, i.e. fit gammas, or factorial moments), assume it is hypergeometric form etc, or f(g(x)) or f(x)g(x) or ... and look at the starting point (is it 1 at 0 for example), shift and scale the data. Or simple fit line or fit polynomial approaches.
+
+\section{Holonomic}
+The holonomic approach seemed very cool. Seems to work for some things at least, and the theoretical results are very good. Need to work in a nice optimisation framework. Pytorch might work... 
+
+Writing 'Riemanns differential equation' as one solution class is probably a good idea. 
+
+Can we find differential equations that describe probability distributions? Well if they have a hypergeometric representation, then we can.
+
+We might need to consider what happens to the differential equation when arguments of functions change, i.e. $x \to ax$
+
+
+            
+                  
+                  
+                  
 
 \end{document}
