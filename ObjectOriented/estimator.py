@@ -9,6 +9,7 @@ from moments import ExactLearningResult
 
 
 
+
 class ExactEstimator:
   """
   Exact Estimator
@@ -18,19 +19,19 @@ class ExactEstimator:
   """
   def __init__(self, input : MomentsBundle):
 
-    print(input.__dict__.keys())
-
+    # Defined variables
     self.tag = input.name
-
     self.sample_mode = "first"
     self.fit_mode = "log"
     self.N_terms = None
 
-    self.BFGS_derivative_order = 0
+    # self.BFGS_derivative_order = 0
 
     ## These are the object
     ## The fingerpint is the dict
     ## The function is a key that is a file (could eventually make a string) containing the function
+
+    # Placeholder variables
     self.fingerprint = None
     self.function = None
 
@@ -112,10 +113,10 @@ class ExactEstimator:
     
 
     # TODO: Check these are even used
-    self.real_s = np.real(self.s_values)
-    self.imag_s = np.imag(self.s_values)
-    self.real_m = np.real(self.moments)
-    self.imag_m = np.imag(self.moments)
+    # self.real_s = np.real(self.s_values)
+    # self.imag_s = np.imag(self.s_values)
+    # self.real_m = np.real(self.moments)
+    # self.imag_m = np.imag(self.moments)
     #self.real_logm = np.real(self.logmoments)
     #self.imag_logm = np.imag(self.logmoments)
     
@@ -131,7 +132,7 @@ class ExactEstimator:
  
 
 
-  def write_function(self,key):
+  def write_function(self, key):
     """
     Write a vectorized function to evaluate arbitary fingerprint
     The method is passed a dictionary to do this
@@ -150,8 +151,6 @@ class ExactEstimator:
       logderivative_terms = ":".join([ term_dict[term]["logderivative"] for term in params])
       logderivative2_requirements = set( term_dict[term]["logderivative2req"] for term in params )
       logderivative2_terms = ":".join([ term_dict[term]["logderivative2"] for term in params])
-      print(logderivative_terms)
-      print(logderivative_requirements)
     if(self.fit_mode == "normal"): 
       requirements = set( term_dict[term]["req"] for term in params )
       terms = ":".join([ term_dict[term]["moment"] for term in params]) 
@@ -265,63 +264,51 @@ class ExactEstimator:
         f.write("  return ret\n")
         f.write("logderivative2 = frompyfunc(fp,{},1)\n".format(self.N_terms))
 
-  def set_fingerprint(self,fp_hash):
+  def set_fingerprint(self, fp_hash) -> None:
+    """
+    Ingest a fingerprint hash
+    """
     self.fingerprint = fp_hash
 
-    print(fp_hash)
-
-    ## Add a list to collect results dictionaries under this has
-    if(self.fingerprint not in self.results): self.results[self.fingerprint] = []
+    # Add a list to collect results dictionaries under this has
+    if(self.fingerprint not in self.results): 
+      self.results[self.fingerprint] = []
     
     hash_list = fp_hash.split(":")
-    print(hash_list)
     name = hash_list[0]
     hash_mode = hash_list[1]
     self.fingerprint_N = hash_list[2]
     if(self.fingerprint_N!="max"): self.fingerprint_N = int(self.fingerprint_N)
     self.sample_mode = hash_mode ## Important for random samples
-
-
     count = [ term_dict[term]["n"] for term in hash_list[3:]]
     self.N_terms = np.sum(count) 
  
-    print(count)
-    print(self.N_terms)
 
-    ## If we have seen this fingerprint before, just load up the previous file
+    # If we have seen this fingerprint before, just load up the previous file
     if(self.fingerprint in self.fingerprint_function_dict and hash_mode == 'first'):
-      print(self.function)
-      print(self.fingerprint_function_dict)
       self.function = self.fingerprint_function_dict[self.fingerprint]
-      print(self.function)
-      #with open(".\\Functions\\{}.py".format(self.function),"r") as f: flines = f.readlines()
-      if('fingerprint' in globals().keys()): del globals()['fingerprint']
-      if('logderivative' in globals().keys()): del globals()['logderivative']
-      if('logderivative2' in globals().keys()): del globals()['logderivative2']
-      
-      ## Executes the python in the custom file (i.e. a function)
-      with open("./Functions/{}.py".format(self.function),"r") as f: flines = f.readlines()
-      exec("".join(flines),globals())
-      with open("./Functions/{}_logderivative.py".format(self.function),"r") as f: flines = f.readlines()
-      exec("".join(flines),globals())
-      with open("./Functions/{}_logderivative2.py".format(self.function),"r") as f: flines = f.readlines()
-      exec("".join(flines),globals())
-
+      self.set_ansatz(self.function)
       print("Function is reset to {}!".format(self.function))
-      #print("LOAD log derivative???")
       return
 
-    ## Otherwise write a vectorized loss function in terms of the input data etc. 
+    # Otherwise write a vectorized loss function in terms of the input data etc.
+    # Write the function and its log derivative
     key = get_random_key()
-
-    ## Write the function and its log derivative
     self.write_function(key)
+    self.set_ansatz(key)
+    self.fingerprint_function_dict[self.fingerprint] = key
+    self.function = key
 
-    ## Overwrite any existing function with the name 
+  def set_ansatz(self, key):
+    """
+    Set the fingerprint and its derivatives in the global space
+    """
     if('fingerprint' in globals().keys()): del globals()['fingerprint']
     if('logderivative' in globals().keys()): del globals()['logderivative']
     if('logderivative2' in globals().keys()): del globals()['logderivative2']
-    #with open(".\\Functions\\{}.py".format(key),"r") as f: flines = f.readlines()
+    
+    # Executes the python in the custom file (i.e. a function)
+    # This defines a new function
     with open("./Functions/{}.py".format(key),"r") as f: flines = f.readlines()
     exec("".join(flines),globals())
     with open("./Functions/{}_logderivative.py".format(key),"r") as f: flines = f.readlines()
@@ -329,11 +316,10 @@ class ExactEstimator:
     with open("./Functions/{}_logderivative2.py".format(key),"r") as f: flines = f.readlines()
     exec("".join(flines),globals())
 
-    self.fingerprint_function_dict[self.fingerprint] = key
-    self.function = key
-
-  ## Searching for a good starting point
   def preseed(self, num_samples, logd = False):
+    """
+    TODO: # Searching for a good starting point
+    """
     p0 = np.random.uniform(low=-10,high=10,size=[num_samples, self.N_terms])
     #p0 = np.random.choice([np.sqrt(2),0.5,1,2,3], size = [num_samples, self.N_terms])
 
@@ -358,11 +344,13 @@ class ExactEstimator:
 
     exit()
 
-
-
-  ## A way of calling BFGS on a subspace of the parameters...
   def partial_BFGS(self, fix_dict, p0=None, order=0):
+    """
+    TODO: ## A way of calling BFGS on a subspace of the parameters...
+    """
 
+    print("Partial BFGS")
+    breakpoint()
     print(fix_dict) ## Try to get the constraints in as well for params which must be >0
   
     ## Look into fix dict
@@ -400,8 +388,10 @@ class ExactEstimator:
     self.register(x_final,loss)
     return x_final, loss
   
-  ## Vectorised difference function
-  def partial_real_log_loss(self, p, order, states,  values):
+  def partial_real_log_loss(self, p, order, states, values):
+    """
+    TODO: ## Vectorised difference function
+    """
     full = states*values + deal(p, states)
     if(order == 0): 
       A = fingerprint(*full)[0]
@@ -410,6 +400,7 @@ class ExactEstimator:
     if(order == 1): 
       A = logderivative(*full)[0]
       B = np.abs(np.real(A)-np.real(self.ratio['1']))
+      # TODO: Whatever the self.real_log_diff is doing above
       #B = np.maximum(0.0,B-self.real_log_diff)
     if(order == 2): 
       A = logderivative2(*full)[0]# - logderivative(*p)[0]**2
@@ -417,9 +408,11 @@ class ExactEstimator:
       #B = np.maximum(0.0,B-self.real_log_diff)
     return np.mean(B)
  
-  ## WE CAN PROBABLY TIDY THIS UP USING DEFAULT ARGUMENTS
-  ## Vectorised difference function
   def partial_complex_log_loss(self, p, order, states, values):
+    """
+    TODO:   ## WE CAN PROBABLY TIDY THIS UP USING DEFAULT ARGUMENTS
+    ## Vectorised difference function
+    """
     full = states*values + deal(p, states)
     if(order == 0): 
       A = fingerprint(*full)
@@ -437,72 +430,11 @@ class ExactEstimator:
       C = np.abs(wrap(np.imag(A)-np.imag(self.ratio2)+np.imag(self.ratio**2)))
     return np.mean(B+C)
 
-    
-
-
-  ## A gradient based approach to get the optimial parameters for a given fingerprint
-  def BFGS(self,p0=None, order=0):
-    #self.BFGS_derivative_order = derivative_order
-    #if(p0==None): p0=np.random.random(self.N_terms)
-    if(p0==None): p0=np.random.uniform(low=-1,high=1,size=self.N_terms)
-    if(self.fit_mode=="log"):
-      if(self.n_s_dims > 1):
-        print("ND In Progress!")
-        exit()
-      f1 = self.real_log_loss
-      f2 = self.complex_log_loss
-    if(self.fit_mode == "normal"):
-      print("Normal BFGS not currently supported!")
-      exit()
-
-    print("ADDING BFGS CONSTRAINTS MECHANISM")
-    print("Optional callable jac, hess, etc.")
-
-    #boundssequence or Bounds, optional
-    #Bounds on variables for Nelder-Mead, L-BFGS-B, TNC, SLSQP, Powell, and trust-constr methods. There are two ways to specify the bounds:
-    #Instance of Bounds class.
-    #Sequence of (min, max) pairs for each element in x. None is used to specify no bound.
-
-    ## Really easy... generate in fix_dict... ? i.e. both positive?
-    ## Hard if they are just equations? This would be done as a linear constraint? i.e. a + b (s_max) > 0 and a + b (s_min) > 0
-
-    ## switch method to L-BFGS-B
-
-    print("WARNING: CONSTRAINTS APPLIED TO ALL VARAIBLES... _poly-coeff_ may actually need to be negative?")
-    constraints = [(0,None) for i in p0]
-
-    res = minimize(f1, x0=p0, args = (order), method = "L-BFGS-B", bounds = constraints, tol = 1e-6)
-    res = minimize(f2, x0=res.x, args = (order), method = "L-BFGS-B", bounds = constraints, tol = 1e-8)
-    loss = f2(res.x, order)
-    self.register(res.x,loss)
-    return res.x, loss
-
-  ## Store the results
-  def register(self,params,loss):
-    ## Best Solution (eventually have top k solutions BPQ)
-    if(loss < self.best_loss):
-      print("New record solution! {}\n{}".format(loss,self.fingerprint))
-      self.best_loss = loss
-      self.best_params = params
-      self.best_fingerprint = self.fingerprint
-      self.best_function = self.function
-
-    descriptors = self.descriptors_from_fingerprint(self.fingerprint)
-    self.results["descriptors"] = descriptors
-    self.results[self.fingerprint].append({"params" : params, "loss" : loss})
-
-  ## Convert params to a unifed set of descriptors
-  ## This may be useful to train models that predict loss via function composition
-  ## Consider a Free-Wilson type analysis
-  def descriptors_from_fingerprint(self,fingerprint):
-    fp_list = fingerprint.split(":")[3:]
-    descriptors = []
-    elements = ["c","c^s","linear-gamma","scale-gamma","shift-gamma"]
-    descriptors = [ fp_list.count(e) for e in elements ]
-    return descriptors
-
-  ## Vectorised difference function
-  def real_log_loss(self,p, order):
+  def real_log_loss(self, p, order):
+    """
+    TODO: Remove duplicity
+    ## Vectorised difference function
+    """
     if(order == 0): 
       A = fingerprint(*p)[0]
       B = np.abs(np.real(A)-np.real(np.log(self.moments)))
@@ -518,9 +450,13 @@ class ExactEstimator:
       B = np.abs(np.real(A)-np.real(self.ratio2["11"])+np.real(self.ratio["1"]**2))
       #B = np.maximum(0.0,B-self.real_log_diff)
     return np.mean(B)
-  
-  ## Vectorised difference function
-  def complex_log_loss(self,p,order):
+
+  def complex_log_loss(self, p, order):
+    """
+    ## Vectorised difference function
+    TODO: Remove duplicity, only one loss function
+    Real/Imag, total/partial, order
+    """
     if(order == 0): 
       A = fingerprint(*p)
       B = np.abs(np.real(A)-np.real(np.log(self.moments)))
@@ -537,10 +473,100 @@ class ExactEstimator:
       C = np.abs(wrap(np.imag(A)-np.imag(self.ratio2["11"])+np.imag(self.ratio["1"]**2)))
     return np.mean(B+C)
 
-  def set_mode(self,mode): 
-    if(mode not in ["log","normal"]):
-      print("Error: valid mode choices are 'log' or 'normal' for logmoments or moments respectively!")
-      exit()
+  def BFGS(self, p0=None, order: int = 0):
+    """
+    TODO: ## A gradient based approach to get the optimial parameters for a given fingerprint
+    p0: A first guess of parameters
+    order: Which moment derivative we will fit to, [0,1,2]
+    """
+
+    print("BFGS")
+    print(p0)
+    print(order)
+    breakpoint()
+
+    #TODO: Consider better initialisation schemes
+    if(p0 is None): 
+      p0 = np.random.uniform(low=-1,high=1,size=self.N_terms)
+
+
+    if(self.fit_mode=="log"):
+      if(self.n_s_dims > 1):
+        #TODO: Extend this
+        raise NotImplementedError('Only 1D functions implemented at the moment.')
+      f1 = self.real_log_loss
+      f2 = self.complex_log_loss
+
+    elif(self.fit_mode == "normal"):
+      #TODO: Extend this
+      raise NotImplementedError("BFGS on direct moments not currently supported!")
+
+    # TODO: print("ADDING BFGS CONSTRAINTS MECHANISM")
+    # TODO: print("Optional callable jac, hess, etc.")
+    #boundssequence or Bounds, optional
+    #Bounds on variables for Nelder-Mead, L-BFGS-B, TNC, SLSQP, Powell, and trust-constr methods. There are two ways to specify the bounds:
+    #Instance of Bounds class.
+    #Sequence of (min, max) pairs for each element in x. None is used to specify no bound.
+    ## Really easy... generate in fix_dict... ? i.e. both positive?
+    ## Hard if they are just equations? This would be done as a linear constraint? i.e. a + b (s_max) > 0 and a + b (s_min) > 0
+    ## switch method to L-BFGS-B
+
+    print("WARNING: CONSTRAINTS APPLIED TO ALL VARIABLES... _poly-coeff_ may actually need to be negative?")
+    # TODO: Explain this
+    constraints = [(0, None) for _ in p0]
+
+    # Do a coarse minimisation
+    res = minimize(f1, x0=p0, args = (order), method = "L-BFGS-B", bounds = constraints, tol = 1e-6)
+
+    # Do a fine minimization
+    res = minimize(f2, x0=res.x, args = (order), method = "L-BFGS-B", bounds = constraints, tol = 1e-8)
+
+    # Calculate final (fine) loss
+    loss = f2(res.x, order)
+
+    # Register this result (in case it is the best ever)
+    self.register(res.x, loss)
+
+    return res.x, loss
+
+  def register(self, params, loss) -> None:
+    """
+    ## Store the results
+    TODO: Best Solution (eventually have top k solutions BPQ)
+    """
+    
+    if(loss < self.best_loss):
+      print("New record solution! {}\n{}".format(loss,self.fingerprint))
+      self.best_loss = loss
+      self.best_params = params
+      self.best_fingerprint = self.fingerprint
+      self.best_function = self.function
+
+    # TODO: Is this even used?
+    descriptors = self.descriptors_from_fingerprint(self.fingerprint)
+    self.results["descriptors"] = descriptors
+    self.results[self.fingerprint].append({"params" : params, "loss" : loss})
+
+  def descriptors_from_fingerprint(self,fingerprint):
+    """
+    TODO:
+    ## Convert params to a unifed set of descriptors
+    ## This may be useful to train models that predict loss via function composition
+    ## Consider a Free-Wilson type analysis
+    """
+    fp_list = fingerprint.split(":")[3:]
+    descriptors = []
+    elements = ["c","c^s","linear-gamma","scale-gamma","shift-gamma"]
+    descriptors = [ fp_list.count(e) for e in elements ]
+    return descriptors
+
+  def set_mode(self, mode: str) -> None:
+    """
+    TODO: What is this?
+    Set the fitting mode of the estimator
+    """
+    if(mode not in ["log", "normal"]):
+      raise NotImplementedError("Error: valid mode choices are 'log' or 'normal' for logmoments or moments respectively!")
     self.fit_mode = mode
 
   def summarise(self):
