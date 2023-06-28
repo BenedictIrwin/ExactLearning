@@ -17,7 +17,7 @@ with open("test_1d_distributions.txt","r") as f:
     print(name, min, max, python, mma, moments)
     python = python.replace("[comma]",",") # multi-arg functions
     
-    x = np.linspace(min,max,100)
+    x = np.linspace(min,max,300)
     f = eval("lambda x :"+ python)
     #plt.title(name)
     #plt.xlabel("x")
@@ -35,13 +35,40 @@ with open("test_1d_distributions.txt","r") as f:
     ee = ExactEstimator(mb)
 
     # Need to add a way to scan multiple solutions and test one by one...
+    result = ee.standard_solve()
 
-    ee.set_fingerprint( gen_fpdict(['c','c^s','linear-gamma']))
+    x = np.linspace(min,max,100)
+    f = eval("lambda x :"+ python)
+    from numpy import exp as exp
+    from numpy import sqrt as sqrt
+    
+    plt.title(name)
+    plt.xlabel("x")
+    plt.ylabel("p(x)")
+    plt.plot(x,f(x),label='original')
+    for res in result:
+      g = eval("lambda x :"+ res.equation)
+      plt.plot(x,g(x),'r:',label=f'pred {res}')
+      plt.legend()
+    plt.show()
+
+    
+
+
+
+
+    ee.set_fingerprint( gen_fpdict(['c','shift-gamma']))
     n_bfgs = 10
     for i in range(n_bfgs):
       # Something is pretty broken, possibly multiple things...
       # Need to be very careful and systematic
-      ee.BFGS(order=0)
+      ee.BFGS(order=2)
+      print("{}%".format(100*(i+1)/n_bfgs),flush=True)
+    ee.set_fingerprint( gen_fpdict(['c','c^s','shift-gamma']))
+    for i in range(n_bfgs):
+      # Something is pretty broken, possibly multiple things...
+      # Need to be very careful and systematic
+      ee.BFGS(order=2)
       print("{}%".format(100*(i+1)/n_bfgs),flush=True)
     ee.speculate(k = 4)
 

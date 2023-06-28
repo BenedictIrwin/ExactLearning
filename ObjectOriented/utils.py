@@ -49,3 +49,24 @@ def deal(p0, states):
     else: vec.append(p0.pop(0))
     itr+=1
   return np.array(vec)
+
+## A function that helps
+def gen_fpdict(parlist,N='max',mode='first',name=''):
+  """
+  TODO:
+  """
+  #hash_string = ":".join(sorted(parlist))
+  hash_string = ":".join(parlist)
+  #print(kwargs)
+  #if("name" not in kwargs.keys()): name = ''
+  #else: name = kwargs["name"]
+  #if("mode" not in kwargs.keys()): mode = 'first'
+  #else: mode = kwargs["mode"]
+  #if("N" not in kwargs.keys()): N = 'max'
+  #else: N = kwargs["N"]
+  if(mode not in['first','random']):  
+    print("Error: gen_fpdict mode can only be 'first' or 'random' (or blank===first)!")
+    exit()
+  hash_string = ":".join([name,mode,str(N),hash_string])
+  return hash_string
+

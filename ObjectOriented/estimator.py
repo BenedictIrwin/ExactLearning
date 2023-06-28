@@ -1,9 +1,11 @@
 from moments import MomentsBundle
 import numpy as np
 from scipy.optimize import minimize
+from sympy import nsimplify
 
+from typing import Any
 from predefined_complexity import *
-from utils import get_random_key, parse_terms, wrap, deal
+from utils import get_random_key, parse_terms, wrap, deal, gen_fpdict
 
 from moments import ExactLearningResult
 
@@ -65,6 +67,10 @@ class ExactEstimator:
     self.new_moments = input.moments
     self.new_real_error = input.real_error_in_moments
     self.new_imag_error = input.imaginary_error_in_moments
+
+    # TODO:
+    # We should import a single moments object
+    # [n_dims, order_k, n_s]
 
     self.moments     = self.new_moments[0]
     #self.logmoments  = np.log(self.moments)
@@ -283,7 +289,6 @@ class ExactEstimator:
     count = [ term_dict[term]["n"] for term in hash_list[3:]]
     self.N_terms = np.sum(count) 
  
-
     # If we have seen this fingerprint before, just load up the previous file
     if(self.fingerprint in self.fingerprint_function_dict and hash_mode == 'first'):
       self.function = self.fingerprint_function_dict[self.fingerprint]
@@ -349,8 +354,6 @@ class ExactEstimator:
     TODO: ## A way of calling BFGS on a subspace of the parameters...
     """
 
-    print("Partial BFGS")
-    breakpoint()
     print(fix_dict) ## Try to get the constraints in as well for params which must be >0
   
     ## Look into fix dict
@@ -358,12 +361,7 @@ class ExactEstimator:
     #mask = ??? ## zeros ones
     ## Let values be 0
     values = np.array([fix_dict[i]["value"] for i in fix_dict.keys()])
-    print(states)
-    print(values)
-
     num_free_vars = np.sum(~states)
-    print(num_free_vars)
-
     if( p0 == None): p0 = np.random.uniform(low = -1, high = 1, size = num_free_vars)
 
     ## Taking p0, states and values, expand to full vector
@@ -392,19 +390,19 @@ class ExactEstimator:
     """
     TODO: ## Vectorised difference function
     """
-    full = states*values + deal(p, states)
+    full = states * values + deal(p, states)
     if(order == 0): 
-      A = fingerprint(*full)[0]
+      A = fingerprint(*full)
       B = np.abs(np.real(A)-np.real(np.log(self.moments)))
       B = np.maximum(0.0,B-self.real_log_diff)
     if(order == 1): 
-      A = logderivative(*full)[0]
+      A = logderivative(*full)
       B = np.abs(np.real(A)-np.real(self.ratio['1']))
       # TODO: Whatever the self.real_log_diff is doing above
       #B = np.maximum(0.0,B-self.real_log_diff)
     if(order == 2): 
-      A = logderivative2(*full)[0]# - logderivative(*p)[0]**2
-      B = np.abs(np.real(A)-np.real(self.ratio2['1'])+np.real(self.ratio['1']**2))
+      A = logderivative2(*full)# - logderivative(*p)[0]**2
+      B = np.abs(np.real(A)-np.real(self.ratio2['11'])+np.real(self.ratio['1']**2))
       #B = np.maximum(0.0,B-self.real_log_diff)
     return np.mean(B)
  
@@ -426,8 +424,8 @@ class ExactEstimator:
       C = np.abs(wrap(np.imag(A)-np.imag(self.ratio['1'])))
     if(order == 2): 
       A = logderivative2(*full)# - logderivative(*p)**2
-      B = np.abs(np.real(A)-np.real(self.ratio2)+np.real(self.ratio**2))
-      C = np.abs(wrap(np.imag(A)-np.imag(self.ratio2)+np.imag(self.ratio**2)))
+      B = np.abs(np.real(A)-np.real(self.ratio2['11'])+np.real(self.ratio['1']**2))
+      C = np.abs(wrap(np.imag(A)-np.imag(self.ratio2['11'])+np.imag(self.ratio['1']**2)))
     return np.mean(B+C)
 
   def real_log_loss(self, p, order):
@@ -435,18 +433,16 @@ class ExactEstimator:
     TODO: Remove duplicity
     ## Vectorised difference function
     """
-    if(order == 0): 
-      A = fingerprint(*p)[0]
+    if(order == 0):
+      A = fingerprint(*p)
       B = np.abs(np.real(A)-np.real(np.log(self.moments)))
       B = np.maximum(0.0,B-self.real_log_diff)
     if(order == 1): 
-      A = logderivative(*p)[0]
+      A = logderivative(*p)
       B = np.abs(np.real(A)-np.real(self.ratio["1"]))
       #B = np.maximum(0.0,B-self.real_log_diff)
     if(order == 2): 
-      print('breakpoint')
-      breakpoint()
-      A = logderivative2(*p)[0]# - logderivative(*p)[0]**2
+      A = logderivative2(*p)# - logderivative(*p)**2
       B = np.abs(np.real(A)-np.real(self.ratio2["11"])+np.real(self.ratio["1"]**2))
       #B = np.maximum(0.0,B-self.real_log_diff)
     return np.mean(B)
@@ -473,22 +469,18 @@ class ExactEstimator:
       C = np.abs(wrap(np.imag(A)-np.imag(self.ratio2["11"])+np.imag(self.ratio["1"]**2)))
     return np.mean(B+C)
 
-  def BFGS(self, p0=None, order: int = 0):
+  def BFGS(self, p0=None, order: int = 0, method : str = 'BFGS') -> tuple[Any, float]:
     """
     TODO: ## A gradient based approach to get the optimial parameters for a given fingerprint
     p0: A first guess of parameters
     order: Which moment derivative we will fit to, [0,1,2]
     """
-
-    print("BFGS")
-    print(p0)
-    print(order)
-    breakpoint()
+    if(method != "BFGS"):
+      raise NotImplementedError("method needs to be BFGS!")
 
     #TODO: Consider better initialisation schemes
     if(p0 is None): 
       p0 = np.random.uniform(low=-1,high=1,size=self.N_terms)
-
 
     if(self.fit_mode=="log"):
       if(self.n_s_dims > 1):
@@ -509,17 +501,21 @@ class ExactEstimator:
     #Sequence of (min, max) pairs for each element in x. None is used to specify no bound.
     ## Really easy... generate in fix_dict... ? i.e. both positive?
     ## Hard if they are just equations? This would be done as a linear constraint? i.e. a + b (s_max) > 0 and a + b (s_min) > 0
-    ## switch method to L-BFGS-B
+    ## TODO: Option to switch method to L-BFGS-B
 
-    print("WARNING: CONSTRAINTS APPLIED TO ALL VARIABLES... _poly-coeff_ may actually need to be negative?")
-    # TODO: Explain this
-    constraints = [(0, None) for _ in p0]
-
-    # Do a coarse minimisation
-    res = minimize(f1, x0=p0, args = (order), method = "L-BFGS-B", bounds = constraints, tol = 1e-6)
-
-    # Do a fine minimization
-    res = minimize(f2, x0=res.x, args = (order), method = "L-BFGS-B", bounds = constraints, tol = 1e-8)
+    if(method == "BFGS"):
+        # Do a coarse minimisation
+        res = minimize(f1, x0=p0, args = (order), method = "BFGS", tol = 1e-6)
+        # Do a fine minimization
+        res = minimize(f2, x0=res.x, args = (order), method = "BFGS", tol = 1e-8)
+    elif(method == 'L-BFGS-B'):
+        print("WARNING: CONSTRAINTS APPLIED TO ALL VARIABLES... _poly-coeff_ may actually need to be negative?")
+        # TODO: Explain this, need to expand to understand the exact fingerprint being used.
+        constraints = [(0, None) for _ in p0]
+        # Do a coarse minimisation
+        res = minimize(f1, x0=p0, args = (order), method = "L-BFGS-B", bounds = constraints, tol = 1e-6)
+        # Do a fine minimization
+        res = minimize(f2, x0=res.x, args = (order), method = "L-BFGS-B", bounds = constraints, tol = 1e-8)
 
     # Calculate final (fine) loss
     loss = f2(res.x, order)
@@ -527,6 +523,7 @@ class ExactEstimator:
     # Register this result (in case it is the best ever)
     self.register(res.x, loss)
 
+    print("Warning: Registering losses of different orders equivalently.")
     return res.x, loss
 
   def register(self, params, loss) -> None:
@@ -569,58 +566,52 @@ class ExactEstimator:
       raise NotImplementedError("Error: valid mode choices are 'log' or 'normal' for logmoments or moments respectively!")
     self.fit_mode = mode
 
-  def summarise(self):
+  def summarise(self) -> None:
+    """
+    TODO: Describe this
+    Run through the results we have, get the minimum loss registered
+    Print out the best params
+    """
     results = self.results
     keys = self.results.keys()
     losses = [[j["loss"] for j in results[key]] for key in keys]
     minimum_loss = np.amin(losses,axis=1)
-    for i,j in zip(keys,minimum_loss):
+    for i,j in zip(keys, minimum_loss):
       print(i,j)
 
   def point_evaluation(self, q, order = 0):
+    """
+    Evalulate the total loss at a point and order
+    TODO: Generalised loss mode.
+    """
     return self.real_log_loss(q, order), self.complex_log_loss(q, order)
 
-  ## A function which suggests possible closed forms
-  def speculate(self, k = 4):
-    print("Best result is: ")
-    print("- Fingerprint: ",self.best_fingerprint)
-    print("- Parameters: ",self.best_params)
-    print("- Loss: ",self.best_loss)
-    terms_list = self.function_terms_dict[self.best_function]
+  def speculate(self, params, k = 4, silent = True):
+    """
+    A function that looks at params and tries to match closed forms to parameters.
 
-    print("Best Function ID: ",self.best_function)
-    print("Log Space Function Expression: ~~~~")
-    with open("Functions/{}.py".format(self.best_function),"r") as ff:
-      flines = [i.strip() for i in ff.readlines()]
-      flines = [i for i in flines if "ret " in i]
-      for i in flines: 
-        print(i)
-    print("~~~~~~~~~~~~~~~~~~~~~~~~~")
-
-    ## A place to store lists of samples
-
+    k: The number of parameter values to consider, i.e. k closest neighbours
+    returns: results dict
+    """
+    terms_list = self.function_terms_dict[self.function]
     results_dict = {}
 
-    #sample_dict = {i : [] for i in terms_list.keys()}
-    #terms_dict = {i : [] for i in terms_list.keys()}
-
     ## For each parameter get the correct list:KDTree pair
-    for par,value in zip(terms_list.keys(),self.best_params):
+    for par, value in zip(terms_list.keys(), params):
       term_type = terms_list[par]
       ## Could do a search within  tolerance or just do nearest neighbours
 
-
       ## For the parameters that were fixed to squared to keep 
       if( term_type == "_sqrtnotzero_"):
-        print("*** ",par,"**2 :",term_type," ***")
+        if(not silent): print("*** ",par,"**2 :",term_type," ***")
         distances, IDs = global_trees_dict[term_type].query([np.abs(value**2)],k)
       else:
-        print("*** ",par,":",term_type," ***")
+        if(not silent): print("*** ",par,":",term_type," ***")
         distances, IDs = global_trees_dict[term_type].query([np.abs(value)],k)
 
       dict_IDs = [ list(global_constants_dict[term_type].keys())[i] for i in IDs]
 
-      ## Use softmax to get probabilities?
+      ## Use softmax to get probabilities
       d_sum = np.sum([ np.exp(-d/np.mean(distances)) for d in distances ])
       probs = [ np.exp(-d/np.mean(distances))/d_sum for d in distances ]
 
@@ -631,209 +622,233 @@ class ExactEstimator:
       results_dict[par]["probs"] = probs
       results_dict[par]["guesses"] = dict_IDs
 
-      #### ADD SOMETHING LIKE if _sqrtnotzero_, just do 'best', or historical values, or random...
-      #### Later we might want to make a comprehensive dict of values like 2^(-7/2), but could be huge...
-      #### For gamma linear just do the best few
-      #if( term_type == "_sqrtnotzero_" ):
-      #  sample_dict[par] = [value for i in range(samples)]        
-      #else:
-      #  samp = np.random.choice([i for i in range(k)], size = samples, p = probs)
-      #  print(samp)
-      #  terms_dict[par] = [ dict_IDs[j] for j in samp]
-      #  sample_dict[par] = [global_constants_dict[term_type][q] for q in terms_dict[par]]
-      #  terms_dict[par] = dict_IDs.copy()
-
-      for i, delta, p in zip(dict_IDs, distances, probs):
-        delta = np.round(delta, decimals = 8)
-        p = np.round(p, decimals = 3)
-        ##i = i.replace("/1","")
-        if( term_type == "_sqrtnotzero_"):
-          print(value**2,"~","{}".format("-" if value < 0 else "")+i," (Delta = {}, p = {})".format(delta,p))
-        else:
-          print(value,"~","{}".format("-" if value < 0 else "")+i," (Delta = {}, p = {})".format(delta,p))
-      
-      print("*** ","~~~"," ***") 
-
-    #p0 = [np.sqrt(2**(-7/2)/3),np.sqrt(2**(1/2)),9/2,1/2]
-    #print("Ideal (test)--> ", p0)
-    #if(samples == None): return []
-
-    ## Need to overhaul this such that on the first pass it generates all of the information
-    ## Then below it does a clean sampling on obviously named lists and writes out the results
-    #print(results_dict)
-
-
-    #samp_points = []
-    ## Generate samples
-    #print(sample_dict)
-    #samples = np.vstack(list(sample_dict.values())).T
-    #terms = np.vstack(list(terms_dict.values())).T
-    #samples = np.unique(samples,axis = 0)
-    #terms = np.unique(terms,axis = 0)
-    #probs = 0
-    #print(samples.shape)
+      if(not silent):
+        for i, delta, p in zip(dict_IDs, distances, probs):
+            delta = np.round(delta, decimals = 8)
+            p = np.round(p, decimals = 3)
+            ##i = i.replace("/1","")
+            if( term_type == "_sqrtnotzero_"):
+              print(value**2,"~","{}".format("-" if value < 0 else "")+i," (Delta = {}, p = {})".format(delta,p))
+            else:
+              print(value,"~","{}".format("-" if value < 0 else "")+i," (Delta = {}, p = {})".format(delta,p))
+        
+        print("*** ","~~~"," ***") 
     return results_dict
-    #exit()
 
-  def most_likely_from_results(self, results):
-    p = []
+
+  def most_likely_from_results(self, results : dict) -> dict:
+    """
+    Takes a results dictionary, and returns the parameter with argmax probability
+    """
+    p = {}
     for i in results.keys():
       am = np.argmax(results[i]["probs"])
-      #print(i,results[i],results[i]["guesses"][am])
-      p.append(results[i]["guesses"][am])
+      p[i] = results[i]["guesses"][am]
     return p
 
-  def print_function_from_guess(self, p, language = "MMA", s_value = "s"):
-    print(self.fingerprint)
+  def print_function_from_guess(self, p : dict, language : str = "MMA", s_value : str = "s") -> str:
+    """
+    Takes a best guess parameter vector
+    Uses the implied fingerprint definition loaded in the object
+    p:  The best parameter dictionary
+    language:
+    s_value:
+    Returns: A string [in language]
+    """
+    
     fp_list = self.fingerprint.split(":")[3:]
-    print(fp_list)
     string_list = []
     itr = 0
     for i in fp_list:
-      #print(term_dict[i])
-      #print(term_dict[i][language])
       expression = term_dict[i][language]
       for tt in range(term_dict[i]["n"]):
-        expression = expression.replace(term_dict[i]["terms"][tt],p[itr],1)
-        itr+=1
+        # TODO: Does this only replace 1? Is that OK? What if it has duplicates of the same term?
+        expression = expression.replace(term_dict[i]["terms"][tt],p[f'p{itr}'],1)
+        itr += 1
       string_list.append(expression)
     string = " * ".join(string_list)
     string = string.replace("_s_", s_value)
     return string
 
-  ## Given a sympy result attempt the inverse Mellin Transform
-  ## This should return a functional form that can be used to inspect the original data...
   def compute_inverse_mellin_transform(self, fingerprint, start = 0):
+    """
+    TODO:
+    ## Given a sympy result attempt the inverse Mellin Transform
+    ## This should return a functional form that can be used to inspect the original data...
+    """
     from sympy import inverse_mellin_transform, oo, gamma, sqrt
     from sympy.abc import x, s
     result = eval("inverse_mellin_transform({}, s, x, ({}, oo))".format(fingerprint,start))
     return result
 
   def get_normalisation_coefficient(self, fingerprint):
+    """
+    This assumes the value of s was replaced with 1.
+    Evalulates the sympy expression for the best matched fingerprint
+    In theory this will find the normalisation of distributions
+    """
     from sympy import gamma, sqrt
     from sympy.abc import s
-    print(fingerprint)
+
+    # TODO: This assumes only gamma and sqrt are name functions that might appear in the string...
     result = eval(fingerprint)
-    print(result)
     return result
 
+  def cascade_search(self, n_itrs=1, k=4) -> ExactLearningResult:
+    """
+    TODO: A function that attempts to generally solve with a given fingerprint
+    """
 
-  ## A function that attempts to generally solve with a given fingerprint
-  def cascade_search(self):
+    # terms like 'c', 'c^s', ...
+    fp_list = self.fingerprint.split(":")[3:]
+
+    if(fp_list in [['c'],['c','c^s']]):
+      raise ValueError(f'cascade search not suitable for ansatz {fp_list}')
+
     ## First do a few high order BFGS to get gamma parameters
     print("Getting Order 2 BFGS")
-    for i in range(10):
-      self.BFGS(order = 2)
-    ## Get the best params,
-    ## Check for consistency in order 1 and order 0
-    results = self.speculate()
-    #print(results)
+    res = []
+    for _ in range(n_itrs):
+      # TODO: Consider refactoring BFGS to give argmin of losses?
+      ret = self.BFGS(order = 2)
+      res.append(ret)
+
+    # TODO: Also argmax type approach
+    best_idx = np.argmin([r[1] for r in res])
+    best_local_params = res[best_idx][0]
+    results = self.speculate(best_local_params, k=k)
+
+    # Speculate top k = 4
+    # TODO: We should actually try every one of the top $k$ symbolically!
+
+    # Get a dictionary with keys pi : best_value_i
     p_best = self.most_likely_from_results(results)
-    print(p_best)
+
+    # TODO: self.likely_candidates_from_results
+    # TODO: Weight the probabilities by 'complexity' i.e. 1/2 is more common than 11/20
 
     #####
-    ## OPTIONAL --> Do the other fittings anyway just to check.. 
+    #TODO: OPTIONAL --> Do the other fittings anyway just to check.. 
     #####
  
-    fp_list = self.fingerprint.split(":")[3:]
-    print(p_best)
-    print(fp_list)
-    for ii in fp_list:
-      print(term_dict[ii])
+    # Get the number of parameters per term (not used)
     par_nums = [term_dict[ii]['n'] for ii in fp_list]
-    print(par_nums)
-    print(self.best_function)
 
+    # TODO: Got to figure out how to handle these?
     order_2_terms = ["shift-gamma","neg-shift-gamma","linear-gamma","neg-linear-gamma","scale-gamma","neg-scale-gamma","neg-P1","P1","alt-linear-gamma","alt-neg-linear-gamma"]
     order_1_terms = ["c^s"] + order_2_terms 
-
+    order_0_terms = []
     positive_terms = ["c","c^s"]
 
-    ## Figure out which parameters are order 2 and could be fixed...
+    # Figure out which parameters are order 2 and could be fixed...
+    # TODO: Explain this more clearly?
 
+    idx_where_cs = None
+    idx_where_c = None
 
     fix_dict = {}
     ## Determine which parameters are which
     itr = 0
     for ii in fp_list:
-      for jj in range(term_dict[ii]['n']):
+      for _ in range(term_dict[ii]['n']):
         token = "p{}".format(itr)
+        if(ii == 'c^s'):
+          idx_where_cs = itr
+        if(ii == 'c'):
+          idx_where_c = itr
         fix_dict[token] = {}
         if(ii in order_2_terms):
+          print("fp_list",fp_list)
+          print("ii",ii)
+          print("itr",itr)
+          print(token)
+          print(fix_dict)
+          print(p_best)
           fix_dict[token]["fixed"] = True
-          fix_dict[token]["value"] = float(eval(p_best[itr]))
+          # TODO: This is an argmax only approach, and we might want to try all of them
+          fix_dict[token]["value"] = float(eval(p_best[token]))
         else:
           fix_dict[token]["fixed"] = False
+          # TODO: check this dumb value is not actually used?
           fix_dict[token]["value"] = 0
         itr+=1
 
-    #print(fix_dict)
-    #input()
+    
 
-
-    ## Do a (constrained) order 1?
+    # Do a constrained order 1
     if( "c^s" in fp_list):
       res = []
-      for i in range(10):
+      # TODO: break out seperate n_itrs params if needed
+      for _ in range(n_itrs):
         ret = self.partial_BFGS(fix_dict, order = 1)
         res.append(ret)
+
+      # TODO: Also argmax type approach
       best_idx = np.argmin([r[1] for r in res])
       print("best local params", res[best_idx])
       
-      ## DO SOME KIND OF CHECK ON THE LOSS?
+      # TODO: DO SOME KIND OF CHECK ON THE LOSS?
+      # Is it exact? Or below a core threshold?
 
-      idx_where_cs = 1
       fix_dict["p{}".format(idx_where_cs)]["fixed"] = True
       fix_dict["p{}".format(idx_where_cs)]["value"] = res[best_idx][0][idx_where_cs]
    
-    print(fix_dict)
 
-    ## Do a constrained order 0 (for the constant) ?? Can also normalise?
+
+    # Do a constrained order 0 (for the constant), can also normalise.
     if( "c" in fp_list):
       res = []
-      for i in range(10):
+      for _ in range(n_itrs):
         ret = self.partial_BFGS(fix_dict, order = 0)
         res.append(ret)
       best_idx = np.argmin([r[1] for r in res])
       print("best local params", res[best_idx])
       
+      # TODO: DO SOME KIND OF CHECK ON THE LOSS?
+      # Is it exact? Or below a core threshold?
       
-      idx_where_c = 0
       fix_dict["p{}".format(idx_where_c)]["fixed"] = True
       fix_dict["p{}".format(idx_where_c)]["value"] = res[best_idx][0][idx_where_c]
 
-    print(fix_dict)
+
+
+    # These are raw parameters, straight out of BFGS
     p_new = [fix_dict[key]["value"] for key in fix_dict.keys()]
-    final_loss = self.point_evaluation(p_new, order = 0)
-    print(final_loss)
-    final_loss = self.point_evaluation(p_new, order = 1)
-    print(final_loss)
-    final_loss = self.point_evaluation(p_new, order = 2)
-    print(final_loss)
 
-    ## Hack
-    self.best_params = p_new
-    results = self.speculate()
-   
-    print(results)
+
+    results = self.speculate(p_new, k=4)
     p_best = self.most_likely_from_results(results)
-    print(p_best)
 
-    string = self.print_function_from_guess(p_best, "sympy", s_value = "1")
-    print(string)
-    coeff = self.get_normalisation_coefficient(string) 
-    print("Normalisation Coefficient:",coeff)
-    
+    # TODO: Implement some kind of check based on below
+    # Or return them in the dictionary.
+    losses = {}
+    losses['0'] = self.point_evaluation(p_new, order = 0)
+    losses['1'] = self.point_evaluation(p_new, order = 1)
+    losses['2'] = self.point_evaluation(p_new, order = 2)
+
+    # By evalulating at s=1, we will get normalisation via Mellin Transform
+    # TODO: Check about the whole p**2 vs p and whether that makes sense? (Seems to)
+    normalisation_constant_string = self.print_function_from_guess(p_best, "sympy", s_value = "1")
+    coeff = self.get_normalisation_coefficient(normalisation_constant_string)
+
+    # TODO: Add checks for infinite and non-sensical constants
+    # TODO: possibly hook in a pre-defined 'is this a distribution' kind of flag
+
+    print("Normalisation Coefficient:", coeff)
+
+    # This time, it will leave it as a function of s
     string = self.print_function_from_guess(p_best, "sympy")
-    print("Into inv. Mellin Transform",string+"/{}".format(coeff))
-    
-    from sympy import nsimplify
-    string_in = nsimplify(string+"/{}".format(coeff))
+    string_in = string+"/{}".format(coeff)
+    print("Into inv. Mellin Transform",string_in)
+
+
+    string_in = nsimplify(string_in)
     print("Simplified: ",string_in)
+
+
     function_guess = self.compute_inverse_mellin_transform(string_in, start = 0) 
     print(function_guess)
    
-
     equation =  nsimplify(function_guess, rational = True)
     print(equation)
 
@@ -841,6 +856,7 @@ class ExactEstimator:
     result_dict["equation"] = str(equation)
     result_dict["complex_moments"] = str(string_in)
     result_dict["num_dims"] = 1
+    result_dict["losses"] = losses
     
     # Encode the mathematical result in a nice compact form
     result = ExactLearningResult(result_dict)
@@ -858,34 +874,51 @@ class ExactEstimator:
       coeff = self.get_normalisation_coefficient(string) 
       exit()
 
-
-
     string = self.print_function_from_guess(p_best, "sympy")
     print(string) 
-
     function_guess = self.compute_inverse_mellin_transform(string)
     print(function_guess)
 
     ## A new function that samples results of a speculate()
-
-
-    ##
     ## Check for rounded parameters high high probability
-
-    ## Specifically for 0 shift and 1 scale parameters consider a reduction in the fingerprint definition?
-
-
-
+    ## TODO: Specifically for 0 shift and 1 scale parameters consider a reduction in the fingerprint definition?
     ## Reenter the rounded combinations to get losses
-
     ## Decide on which parameters to fix...
-
     ## Perform a constrained BFGS! (We might have to write a different method)...
     ## Ideally it will only optimize over a few variables and expands the solution vector as it goes..
-
     ## For parameters of the form :c: perform a simple normalisation!
+    ## For parameters of the form :c^s: perform a log(c) trick...ef   
 
-    ## For parameters of the form :c^s: perform a log(c) trick...
+  def standard_solve(self) -> list[ExactLearningResult]:
+    """
+    A method to try a standard set of fingerprints in a systematic way.
 
-    #OR syMPY## Return a guess at the closed form (in Mathematica Language)
-    
+    Load a fingerprint, fit it and get a bunch of function suggestions.
+    """
+    print("Hello")
+    # Upgrade to have trial params as well
+    standard_fingerprints = [
+      gen_fpdict(['c','shift-gamma']),
+      gen_fpdict(['c','c^s','shift-gamma'])
+    ]
+
+    #TODO: define standard seach params, lengths and times, heuristics
+    results_list = []
+    for std_fp in standard_fingerprints:
+      self.set_fingerprint(std_fp)
+      results = self.cascade_search(n_itrs = 10)
+      results_list.append(results)
+
+      # Do a check to see if it is exact already?
+    print(results_list)
+
+    for res in results_list:
+      print(res, res.loss)
+
+    # Consider a meta-dynamics type approach as well... 
+    # Reason about which results are best.
+    # Do go back, and compare against the interpolating function?
+    # I.e. measure probability of success / confidence,
+    # If we match everywhere, then it is perfect p = 1.0
+
+    return results_list

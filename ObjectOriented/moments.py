@@ -96,6 +96,7 @@ class ExactLearningResult():
         self.equation = result_dict["equation"]
         self.num_dims = result_dict["num_dims"]
         self.complex_moment = result_dict["complex_moments"]
+        self.loss = result_dict['losses']
 
     #TODO: Might have a method to yeild TeXForm etc.
     def __repr__(self) -> str:
