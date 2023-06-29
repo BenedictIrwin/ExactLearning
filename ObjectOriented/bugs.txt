@@ -5,6 +5,10 @@ trigamma nan bug on using linear-gamma with L-BFGS-b
 
 Getting wrong answers, because not prioritising simpler expressions...
 
+When sympy crashes, it kills everything, we need more try except. 
+If the Inverse Mellin Transform or normalisation files, then just abort that fingerprint, or divert to a moments only solution
+
+
 Features:
 
 We might prefer floats rather than huge fractions like 8720979037792035/10000000000000 etc.

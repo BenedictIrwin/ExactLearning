@@ -2,6 +2,7 @@ from moments import MomentsBundle
 import numpy as np
 from scipy.optimize import minimize
 from sympy import nsimplify
+from sklearn.metrics import mean_squared_error
 
 from typing import Any
 from predefined_complexity import *
@@ -29,6 +30,8 @@ class ExactEstimator:
 
     # self.BFGS_derivative_order = 0
 
+
+    self.moments_bundle = input
     ## These are the object
     ## The fingerpint is the dict
     ## The function is a key that is a file (could eventually make a string) containing the function
@@ -400,7 +403,6 @@ class ExactEstimator:
       if(type=='complex'): 
         C = np.abs(wrap(np.imag(A)-np.imag(self.ratio['1'])))  
     if(order == 2):
-      print(full)
       try:
         A = logderivative2(*full)
       except:
@@ -813,7 +815,7 @@ class ExactEstimator:
     print(equation)
 
     result_dict = {}
-    result_dict["equation"] = str(equation)
+    result_dict["equation"] = equation
     result_dict["complex_moments"] = str(string_in)
     result_dict["num_dims"] = 1
     result_dict["losses"] = losses
@@ -871,12 +873,23 @@ class ExactEstimator:
       self.set_fingerprint(std_fp)
       results = self.cascade_search(n_itrs = 10)
       results_list.append(results)
+      
+      x = np.linspace(self.moments_bundle.x_min, self.moments_bundle.x_max, 10)
+      y = self.moments_bundle.interpolating_function(x)
+
+      equation_string = str(results.equation)
+      fs, equation_string = self.functions_from_equation_string(equation_string)
+
+      g = eval(equation_string)
 
       # Do a check to see if it is exact already?
-    print(results_list)
-
-    for res in results_list:
-      print(res, res.loss)
+      # Get loss between g and y
+      initial_domain_loss = mean_squared_error(y,g)
+      print('Initial Domain Loss: ',initial_domain_loss)
+      exact_loss_threshold = 1e-10
+      if(initial_domain_loss < exact_loss_threshold):
+        print("Likely exact solution!")
+        break
 
     # Consider a meta-dynamics type approach as well... 
     # Reason about which results are best.
@@ -885,3 +898,17 @@ class ExactEstimator:
     # If we match everywhere, then it is perfect p = 1.0
 
     return results_list
+  
+  def functions_from_equation_string(self, string : str) -> list:
+    function_list = []
+    print(string)
+    fn_dict = {'exp':'np.exp','sqrt':'np.sqrt'}
+
+    # Loop over function dict, replacing the strings
+    for key in fn_dict.keys():
+        if(key in string): 
+            this_fn = fn_dict[key]
+            function_list.append(this_fn)
+            string = string.replace(key, this_fn)
+
+    return function_list, string
