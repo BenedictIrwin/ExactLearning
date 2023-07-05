@@ -13,3 +13,8 @@ Features:
 
 We might prefer floats rather than huge fractions like 8720979037792035/10000000000000 etc.
 Possibly a setting for that?
+
+Auto-flush the Functions folder.
+
+Remember to analyse the support of the moments?
+This can be done when fitting a MomentsBundle?

@@ -47,8 +47,8 @@ with open("test_1d_distributions.txt","r") as f:
     plt.ylabel("p(x)")
     plt.plot(x,f(x),label='original')
     for res in result:
-      g = eval("lambda x :"+ res.equation)
-      plt.plot(x,g(x),'r:',label=f'pred {res}')
+      g = eval("lambda x :"+ str(res.equation))
+      plt.plot(x,g(x),'r:',label=f'pred {res.equation}')
       plt.legend()
     plt.show()
     input()

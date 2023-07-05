@@ -1,5 +1,5 @@
 name, x_min, x_max, python_string, mma_string, correct_moments
-exponential_1, 0.0, 6.0, np.exp(-x), Exp[-x], Gamma[s]
+exponential_1, 0.0, 10.0, np.exp(-x), Exp[-x], Gamma[s]
 chi_squared_k=3, 0.0, 20.0, np.sqrt(x) * np.exp(-x/2) / np.sqrt(2 * np.pi), ,  
 inverse_chi_squared_k=2, 0.01, 5.0, np.exp(-1/(2*x))/2/x**2, ,
 F_ratio_n=1_m=2, 0.01, 10.0, 1.0/np.sqrt(x)/(2 + x)**(3/2), ,
