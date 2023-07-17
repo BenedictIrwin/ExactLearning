@@ -6,6 +6,7 @@ from typing import Iterable
 import scipy.integrate as integrate
 from scipy.interpolate import interp1d
 from scipy.special import gamma, polygamma, digamma
+from scipy.optimize import root
 from AdvancedFunctions import trigamma_vec as trigamma 
 from AdvancedFunctions import tetragamma_vec as tetragamma 
 from matplotlib import pyplot as plt
@@ -30,8 +31,8 @@ class MomentsBundle():
         self.max_moment_log_derivative_order = 4
 
         # Sample range for plotting moments as function of s
-        self.moments_sample_s_min = -30
-        self.moments_sample_s_max = 30
+        self.moments_sample_s_min = -10
+        self.moments_sample_s_max = 10
         self.moments_sample_n_samples = 2000
 
         # TODO: Generalise this
@@ -62,6 +63,9 @@ class MomentsBundle():
         self.unit_intercept = None
         self.scale_gamma_pole = None
 
+        # TODO: Try to scan how many times the moments cross 0 and where they do
+        self.moments_have_roots = None # Implies moments have a polynomial or other non-meromorphic term of order "num roots"
+
         # TODO: Make this a single object?
         self.x_max = None
         self.x_min = None
@@ -76,7 +80,7 @@ class MomentsBundle():
             self.x_max = np.amax(x)
             self.x_min = np.amin(x)
 
-        # TODO: idiot_proofing etc.
+        # TODO: idiot_proofing etc. Crashes like out of bounds etc.
 
         # TODO: Determine how likely it is a probability distribution
 
@@ -86,10 +90,11 @@ class MomentsBundle():
         # TODO: Understand if y!=0 at x_max and asymptotics
 
         # TODO: Consider order k = -1
+        # Need to know what expression to write to cancel out terms
 
         # TODO: Consider the case where we have a histogram rather than curve data.
 
-        # Fit interpolating form
+        # Fit interpolating form -------------------
         # TODO: We have many options for the tail density where it is cut short
         # We can try a range of values from 'zero everywhere' to, linear tail, to exponential
         # or power law tail, pade tail etc. But the main thing is to get an ensemble of values
@@ -119,21 +124,24 @@ class MomentsBundle():
             return y_end / np.log(np.exp(1) + x - x_end)**a
         def powertail(x, a): 
             return y_end / (1 + x - x_end)**a
+        def exptail(x, s): raise NotImplementedError
 
-        x_dd = np.linspace(x_end, 2*self.x_max, 1000)
-        print(self.interpolating_function([self.x_min,self.x_max]))
-        plt.plot(x,self.interpolating_function(x),label = 'interp' )
-        plt.plot(x_dash,self.interpolating_function(x_dash),'r-',label='interp. ext')
-        plt.plot(x_dash, test_function(x_dash),label='exact')
-        for a in [0.5,1,1.5]:
-            plt.plot(x_dd, logtail(x_dd, a), label = f'Logtail guess a = {a}')
-        for a in [0.3,0.4,0.5]:
-            plt.plot(x_dd, powertail(x_dd, a), label = f'Powertail guess a = {a}')
+        if(False):
+            x_dd = np.linspace(x_end, 2*self.x_max, 1000)
+            print(self.interpolating_function([self.x_min,self.x_max]))
+            plt.plot(x,self.interpolating_function(x),label = 'interp' )
+            plt.plot(x_dash,self.interpolating_function(x_dash),'r-',label='interp. ext')
+            plt.plot(x_dash, test_function(x_dash),label='exact')
+            for a in [0.5,1,1.5]:
+                plt.plot(x_dd, logtail(x_dd, a), label = f'Logtail guess a = {a}')
+            for a in [0.3,0.4,0.5]:
+                plt.plot(x_dd, powertail(x_dd, a), label = f'Powertail guess a = {a}')
 
-        plt.legend()
-        plt.show()
+            plt.legend()
+            plt.show()
 
         #breakpoint()
+        # TODO: Examine the spread of moments under different tail approximations
         def tail_extrapolate_one(x_i):
             ret = []
             #for x_i in x:
@@ -181,7 +189,8 @@ class MomentsBundle():
         if(True):
             # An analytic comparison for testing the integrals over interpolating functions
             # Perhaps they are breaking down...
-            def test_function(x): return np.exp(-1/(2*x))/2/x**2  #inv chi sq
+            # def test_function(x): return np.exp(-1/(2*x))/2/x**2  #inv chi sq
+            def test_function(x): return np.sqrt(x) * np.exp(-x/2) / np.sqrt(2 * np.pi)  # chi-sq k=3
             #def test_function(x): return 12* (1-x)**2 * np.heaviside(1-x,0.5) # Beta(2,3) , might work
             #def test_function(x): return 1.0/np.sqrt(x)/(2 + x)**(3/2) # F-ratio
             #def test_function(x): return np.exp(-x) # Exponential
@@ -218,17 +227,18 @@ class MomentsBundle():
 
         # exp( delta s m) = Gamma(a s1 + b)/Gamma(a s0 + b)
 
-        # Point estimate of large line
-        s = np.array([50.0, 50.1])
-        moments, re, im = self.vectorised_integration_function[0](s)
-        y = np.log(moments)
-        # dy/dx
-        m = (y[1]-y[0])/(s[1]-s[0])
-        c = y[0] - m*s[0]
-        print(m,c)
-        print(np.log(s) - 0.5/s)
-        def line(x,m,c):
-            return m*x + c
+        if(False):
+            # Point estimate of large line
+            s = np.array([50.0, 50.1])
+            moments, re, im = self.vectorised_integration_function[0](s)
+            y = np.log(moments)
+            # dy/dx
+            m = (y[1]-y[0])/(s[1]-s[0])
+            c = y[0] - m*s[0]
+            print(m,c)
+            print(np.log(s) - 0.5/s)
+            def line(x,m,c):
+                return m*x + c
 
 
         # TODO: Consider taking the numerical derivative (like in holonomic script)
@@ -298,7 +308,14 @@ class MomentsBundle():
             plt.legend()
             plt.show()
 
-            s_loc_filter = s_loc[np.log(re1) < -5]
+            # TODO: Establish a weight function from the errors profile
+            # I.e. flat bottom region is very good
+
+            try:
+                s_loc_filter = s_loc[np.log(re1) < -5]
+            except:
+                print("The integration domain is not defined due to poor convergence of numerical integration under current assumptions.")
+                raise NotImplementedError
             low_s = np.amin(s_loc_filter)
             high_s = np.amax(s_loc_filter)
 
@@ -306,39 +323,139 @@ class MomentsBundle():
             s = np.linspace(low_s, high_s, 200)
             s_loc = s
 
+            # Set this as the actual sampling domain
+            self.s_domain['Re'][0] = low_s
+            self.s_domain['Re'][1] = high_s
+
             q, re1, im1 = self.vectorised_integration_function[0](s)
             dq, re2, im2 = self.vectorised_integration_function[1](s)
             ddq, re3, im3 = self.vectorised_integration_function[2](s)
             dddq, re4, im4 = self.vectorised_integration_function[3](s)
 
-            # TODO: We definately notice a discrepancy in the integration of certain functions.
-            # This indicates the sampling has problems, probably for very sharp or divergent functions
-            # Potentially the tail not long enough, or not exactly zero at the origin etc.
-            q_an, re1a, im1a = self.vectorised_integration_function_an[0](s)
-            dq_an, re2a, im2a = self.vectorised_integration_function_an[1](s)
-            ddq_an, re3a, im3a = self.vectorised_integration_function_an[2](s)
-            dddq_an, re4a, im4a = self.vectorised_integration_function_an[3](s)
+            test_data = False
 
-            def local_moment(s):
-                return 2**(1-s) * gamma(2-s) # Inv-chi_sq k=2
-            
-            mma_s = [1.0,2,3,1.5,2.5,0.5,0.1,1.75,1.85,1.25,0.75,0.2,0.3,0.4]
-            mma_res = [1.0,2.0,8.0,1.25331,3.75994,1.25331,5.09816,1.54567,1.70447,1.0779,1.03045,2.63675,1.84153,1.46344]
-            #plt.plot(s, c(np.real(q)), label = 'numeric')
-            #plt.show()
+            if(test_data):
+                # TODO: We definately notice a discrepancy in the integration of certain functions.
+                # This indicates the sampling has problems, probably for very sharp or divergent functions
+                # Potentially the tail not long enough, or not exactly zero at the origin etc.
+                q_an, re1a, im1a = self.vectorised_integration_function_an[0](s)
+                dq_an, re2a, im2a = self.vectorised_integration_function_an[1](s)
+                ddq_an, re3a, im3a = self.vectorised_integration_function_an[2](s)
+                dddq_an, re4a, im4a = self.vectorised_integration_function_an[3](s)
+
+                # TODO: Do create a sliding method that detects sudden flips in polarity
+                # I.e. pole detector.
+
+                def local_moment(s):
+                    #return 2**(1-s) * gamma(2-s) # Inv-chi_sq k=2
+                    return 2**(s-1) * gamma(0.5+s)/gamma(3/2) # chi_sq k=3
+                
+                mma_s = [1.0,2,3,1.5,2.5,0.5,0.1,1.75,1.85,1.25,0.75,0.2,0.3,0.4]
+                mma_res = [1.0,2.0,8.0,1.25331,3.75994,1.25331,5.09816,1.54567,1.70447,1.0779,1.03045,2.63675,1.84153,1.46344]
+                #plt.plot(s, c(np.real(q)), label = 'numeric')
+                #plt.show()
+
 
             #plt.plot(s, c(np.real(q)), 'b:',label = 'numeric')
             #plt.show()
             # Need to solve why they are not the same...
-            plt.plot(s, c(np.real(q)), 'b:',label = 'numeric')
-            plt.plot(s, c(re1), label = 'real error numeric')
-            plt.plot(s, c(q_an), 'r-', label = 'anyl. int.')
-            plt.plot(s, c(re1a), label = 'real error analytic')
-            plt.plot(s, c(local_moment(s)),'k:', label = 'theoretical')
+            plt.title("Real part of moments")
+            plt.plot(s, c(np.real(q)),label = 'numeric')
+            plt.plot([min(s),max(s)],[0,0],'k:')
+            if(test_data):
+                plt.plot(s, c(re1), label = 'real error numeric')
+                plt.plot(s, c(q_an), 'r-', label = 'anyl. int.')
+                plt.plot(s, c(re1a), label = 'real error analytic')
+                plt.plot(s, c(local_moment(s)),'k:', label = 'theoretical')
             #plt.plot(mma_s, mma_res, 'ro', label= 'MMA n. int.')
+
+            #exit()
+
+            def root_wrapper(s):
+                res, _, _ = self.vectorised_integration_function[0](s)
+                return np.real(res)
+            def pole_wrapper(s):
+                res, _, _ = self.vectorised_integration_function[0](s)
+                return np.real(1.0/res)
+
+            # Find roots of the moments function
+            # These can be directly forwarded to the algorithm
+            # (or even divided out directly for simplicity)
+            # Root Finding
+            potential_root_list = []
+            evaluated_root_list = []
+            potential_pole_list = []
+            evaluated_pole_list = []
+            for i in range(len(q)-1):
+                m1, m2 = np.real(q)[i], np.real(q)[i+1]
+                if(np.sign(m1) != np.sign(m2)):
+                    #TODO: Rule out 'poles' but add them to 'potential pole list'
+                    # Criterion could be ??? 
+                    critereon = np.abs(m1) + np.abs(m2) < 10*(s[i+1]-s[i])
+                    if(not critereon): 
+                        potential_pole_list.append(i)
+                        plt.plot(s[i],0,'bo')
+                        res = root(pole_wrapper, x0=s[i])
+                        print(res)
+                        if(res.success):
+                            plt.plot(res.x[0],0,'bo')
+                            plt.arrow(s[i],m1,res.x[0]-s[i],res.fun[0]-m1)
+                            evaluated_pole_list.append([res.x[0],res.fun[0]])
+                    else:
+                        potential_root_list.append(i)
+                        plt.plot(s[i],m1,'ro')
+                        res = root(root_wrapper, x0=s[i])
+                        print(res)
+                        if(res.success):
+                            plt.plot(res.x[0],res.fun[0],'ro')
+                            plt.arrow(s[i],m1,res.x[0]-s[i],res.fun[0]-m1)
+                            evaluated_root_list.append([res.x[0],res.fun[0]])
+
+            print("Roots: -------")
+            for i in potential_root_list:
+                print(s[i],q[i])
+            print(evaluated_root_list)
+
+            print("Poles: -------")
+            for i in potential_pole_list:
+                print(s[i],q[i])
+            print(evaluated_pole_list)
+
+            self.num_poly_terms = len(evaluated_root_list)
+            self.num_evaluated_poles = len(evaluated_pole_list)
+
+            # Logic to remove a polynomial cofactor from 'q'
+            if(self.num_poly_terms > 0):
+                # Divide through by polynomial
+                root_polynomial = ""
+                for i, rt in enumerate(evaluated_root_list):
+                    root_polynomial += f"(s-{rt[0]})"
+                    if(i<len(evaluated_root_list)-1): root_polynomial+="*"
+
+                poly = eval("lambda s: "+root_polynomial)
+                poly_data = np.array([poly(ss) for ss in s])
+                plt.plot(s,c(poly_data),label='Root Polynomial')
+                plt.plot(s,c(np.real(q)/poly_data),label='Factorized Moments')
+
+
+                if(True):
+                    print(f"Renormalising, removing order-{len(evaluated_root_list)} polynomial!")
+                    q = q/poly_data
+
             plt.legend()
             plt.show()
-            #exit()
+
+            
+            
+
+
+
+
+
+            
+            
+
+
 
 
             from mpl_toolkits import mplot3d
@@ -350,13 +467,17 @@ class MomentsBundle():
             ydata = []
             zdata = []
             an_zdata = []
+
             for i in range(len(s)):
               for j in range(len(s)):
                   #if(i==j): continue
                   xdata.append(s[i])
                   ydata.append(s[j])
-                  zdata.append(np.log(q[i]/q[j]))
-                  an_zdata.append(np.log(local_moment(s[i])/local_moment(s[j])))
+                  if(True):
+                    zdata.append(np.log(q[i]/q[j]))
+                  if(True):
+                    local_moment = lambda s: gamma(1/2+s)
+                    an_zdata.append(np.log(local_moment(s[i])/local_moment(s[j])))
 
             xdata=np.array(xdata)
             ydata=np.array(ydata)
@@ -366,21 +487,46 @@ class MomentsBundle():
             anidx = np.abs(an_zdata)<0.1
 
             fig = plt.figure()
+
+            # TODO: Use these points to identify gamma(a s + b) term?
+            zero_0 = 1.46163214496836 # Where logGamma'[x] = 0, x > 0
+            zero_1 = -0.504083008264455 # x < 0
+            zero_2 = -1.57349847316239
             
             ax = plt.axes(projection='3d')
             ax.set_title("Ratio of q(s)/q(t)")
             #ax.scatter3D(xdata[~idx], ydata[~idx], zdata[~idx])
             ax.scatter3D(xdata[idx], ydata[idx], zdata[idx], cmap='reds')
-            ax.scatter3D(xdata[anidx], ydata[anidx], an_zdata[anidx], cmap='reds')
+            if(True):
+                ax.scatter3D(xdata[anidx], ydata[anidx], an_zdata[anidx], cmap='reds')
             # ax.plot_trisurf(xdata, ydata, zdata, cmap='viridis', edgecolor='none')
             ax.set_xlabel('s')
             ax.set_ylabel('t')
             ax.set_zlabel('q(s)/q(t)')
             plt.show()
+
+            #TODO: Somehow solve for continuous curves
             
+            plt.title("Projection to s-t plane")
 
             plt.plot(xdata[idx], ydata[idx], 'r.',label='data')
-            plt.plot(xdata[anidx], ydata[anidx], 'k.',label ='analytic')
+            if(True):
+                plt.plot(xdata[anidx], ydata[anidx], 'k.',label ='local moment')
+            plt.grid(True,'both','both')
+            plt.legend()
+            plt.plot(zero_0,zero_0,'ro')
+            plt.plot(zero_1,zero_1,'ro')
+            plt.plot(zero_2,zero_2,'ro')
+            plt.show()
+
+            plt.title("Projection to s-dq/dq plane")
+            plt.plot(xdata[idx], zdata[idx], 'r.',label='data')
+            if(True):
+                plt.plot(xdata[anidx], an_zdata[anidx], 'k.',label ='local moment')
+            plt.grid(True,'both','both')
+            plt.plot(zero_0,0,'ro')
+            plt.plot(zero_1,0,'ro')
+            plt.plot(zero_2,0,'ro')
             plt.legend()
             plt.show()
 
@@ -402,52 +548,78 @@ class MomentsBundle():
             # Establish the domain as the region when this linear relationship breaks down
             # Do the coefficients of the line reveal the internals of the Gamma?
 
-            plt.title("Errors in Integration - For Analytic Curve")
-            plt.plot(s_loc, np.log(re1a), label = 're1_an')
-            plt.plot(s_loc, np.log(re2a), label = 're2_an')
-            plt.plot(s_loc, np.log(re3a), label = 're3_an')
-            plt.plot(s_loc, np.log(re4a), label = 're4_an')
-            plt.plot(s_loc, np.log(im1a), label = 'im1_an')
-            plt.plot(s_loc, np.log(im2a), label = 'im2_an')
-            plt.plot(s_loc, np.log(im3a), label = 'im3_an')
-            plt.plot(s_loc, np.log(im4a), label = 'im4_an')
-            plt.legend()
-            plt.show()
+            if(test_data):
+                plt.title("Errors in Integration - For Analytic Curve")
+                plt.plot(s_loc, np.log(re1a), label = 're1_an')
+                plt.plot(s_loc, np.log(re2a), label = 're2_an')
+                plt.plot(s_loc, np.log(re3a), label = 're3_an')
+                plt.plot(s_loc, np.log(re4a), label = 're4_an')
+                plt.plot(s_loc, np.log(im1a), label = 'im1_an')
+                plt.plot(s_loc, np.log(im2a), label = 'im2_an')
+                plt.plot(s_loc, np.log(im3a), label = 'im3_an')
+                plt.plot(s_loc, np.log(im4a), label = 'im4_an')
+                plt.legend()
+                plt.show()
 
-            #TODO: Revise s to a domain with acceptable errors
+            # [DONE] Revise s to a domain with acceptable errors
+            # TODO: Where this is not possible, produce an error! I.e. 'curve appears unstable'
+            # Numerical integration failed to produced acceptable error for learning.
 
             # TODO: Consider adding covariance to error propagation as might be a factor
 
             # TODO: Remember to only fit in the domain where errors are tolerable.
             # This will improve the performance significantly
+            # Retest all the BFGS type fitting after that.
+            # TODO: Remember to restrict the coefficient domains to [-1,1,-1/2,1/2] etc.
 
-            plt.plot(s_loc,np.real(dq/q), label=f'{k} real')
-            plt.plot(s_loc,np.real(dq/q) * (re1/np.real(q) + re2/np.real(dq)), label=f'{k} real error via prop')
-            plt.plot(s_loc,np.real(dq_an/q_an) * (re1a/np.real(q_an) + re2a/np.real(dq_an)), label=f'{k} real error_an via prop')
-            plt.plot(s_loc,np.real(dq_an/q_an), label=f'{k} real analytic')
-            plt.plot(s_loc, -1/(0.86-s_loc),'k:' ,label='fitted curve')
-            #plt.plot(s_loc,np.imag(dq/q), label=f'{k} imag')
-            #plt.plot(s_loc,c(digamma(s)), label = "p(0,s)")
-            #plt.plot(s_loc,c(np.log(2) - digamma(0.5 - s) + digamma(1+s)), label = "r log 2 - p(0,0.5-s) + p(0,1+s)")
-            #plt.plot(s_loc,d(np.log(2) - digamma(0.5 - s) + digamma(1+s)), label = "i log 2 - p(0,0.5-s) + p(0,1+s)")
-            #plt.plot(s_loc,c(-np.log(2) - digamma(2 - s)) , label = "r -log 2 - p(0,2-s)")
-            #plt.plot(s_loc,c(-np.log(2) - digamma(1 - 1j * s_loc)) , label = "r* -log 2 - p(0,2-s)")
-            #plt.plot(s_loc,d(-np.log(2) - digamma(2 - s)) , label = "i -log 2 - p(0,2-s)")
+            # TODO: IF WE ARE DIVIDING THROUGH BY POLYNOMIAL, THEN WE NEED TO ISOLATE THE LOG DERIVATIVE OF POLYNOMIAL FROM dQ, ddQ etc. ??
+
+            # TODO: Try to remove unstable regions from sampling s, i.e. poles
+            # But do note them down?
+            plt.title("q, dq, ddq, dddq")
+            plt.plot(s_loc,c(np.real(q)), label=f'q')
+            plt.plot(s_loc,c(np.real(dq)), label=f'dq')
+            plt.plot(s_loc,c(np.real(ddq)), label=f'ddq')
+            plt.plot(s_loc,c(np.real(dddq)), label=f'dddq')
             plt.legend()
             plt.show()
 
 
-            plt.plot(s_loc,np.real(ddq/q), label=f'{k} real')
-            #plt.plot(s_loc,np.imag(ddq/q), label=f'{k} imag')
+
+            plt.title("dq/q")
+            plt.plot(s_loc,c(np.real(dq/q)), label=f'{k} real')
+            plt.plot([min(s),max(s)],[0,0],'k:')
+            #plt.plot(s_loc,np.real(dq/q) * (re1/np.real(q) + re2/np.real(dq)), label=f'{k} real error via prop')
+            #plt.plot(s_loc,np.real(dq_an/q_an) * (re1a/np.real(q_an) + re2a/np.real(dq_an)), label=f'{k} real error_an via prop')
+            if(test_data):
+                plt.plot(s_loc,c(np.real(dq_an/q_an)), label=f'{k} real analytic')
+                #plt.plot(s_loc, -1/(0.86-s_loc),'k:' ,label='fitted curve')
+                #plt.plot(s_loc,np.imag(dq/q), label=f'{k} imag')
+                #plt.plot(s_loc,c(digamma(s)), label = "p(0,s)")
+                #plt.plot(s_loc,c(np.log(2) - digamma(0.5 - s) + digamma(1+s)), label = "r log 2 - p(0,0.5-s) + p(0,1+s)")
+                #plt.plot(s_loc,d(np.log(2) - digamma(0.5 - s) + digamma(1+s)), label = "i log 2 - p(0,0.5-s) + p(0,1+s)")
+                plt.plot(s_loc,c(-np.log(2) - digamma(2 - s)) , label = "r -log 2 - p(0,2-s)")
+                #plt.plot(s_loc,c(-np.log(2) - digamma(1 - 1j * s_loc)) , label = "r* -log 2 - p(0,2-s)")
+                #plt.plot(s_loc,d(-np.log(2) - digamma(2 - s)) , label = "i -log 2 - p(0,2-s)")
             plt.legend()
             plt.show()
-            plt.plot(s_loc,np.real(ddq/q - (dq/q)**2), label=f'{k} real')
-            plt.plot(s_loc,np.real(ddq_an/q_an - (dq_an/q_an)**2), label=f'{k} real analytic')
-            #np.save("curve_3_2ndorder",np.real(ddq/q - (dq/q)**2))
-            #exit()
-            #plt.plot(s_loc,np.imag(ddq/q - (dq/q)**2), label=f'{k} imag')
-            #plt.plot(s_loc,c(trigamma(0.5 - s) + trigamma(1+s)), label = "p(1,0.5-s) + p(1,1+s)")
-            #plt.plot(s_loc,c(trigamma(2 - s)), label = "p(1,2-s)")
+
+            if(test_data):
+                plt.title("ddq/q for numeric and analytic comparison")
+                plt.plot(s_loc,c(np.real(ddq/q)), label=f'{k} real')
+                #plt.plot(s_loc,np.imag(ddq/q), label=f'{k} imag')
+                plt.legend()
+                plt.show()
+
+            plt.title("ddq/q - (dq/q)^2 for numeric and analytic comparison")
+            plt.plot(s_loc,c(np.real(ddq/q - (dq/q)**2)), label=f'{k} real')
+            if(test_data):
+                plt.plot(s_loc,c(np.real(ddq_an/q_an - (dq_an/q_an)**2)), label=f'{k} real analytic')
+                #np.save("curve_3_2ndorder",np.real(ddq/q - (dq/q)**2))
+                #exit()
+                #plt.plot(s_loc,np.imag(ddq/q - (dq/q)**2), label=f'{k} imag')
+                #plt.plot(s_loc,c(trigamma(0.5 - s) + trigamma(1+s)), label = "p(1,0.5-s) + p(1,1+s)")
+                plt.plot(s_loc,c(trigamma(2 - s)), label = "p(1,2-s)")
             plt.plot([min(s),max(s)],[0,0],'k:')
             plt.legend()
             plt.show()
@@ -466,39 +638,38 @@ class MomentsBundle():
                 plt.plot(s_loc, np.exp(- s_loc))
                 plt.show()
 
+            plt.title("dddq/q - 3(ddq/q)(dq/q) + 2 (dq/q)^3 for numeric and analytic comparison")
             plt.plot(s_loc, c(np.real(2 *(dq/q)**3 - 3 *(dq/q) * (ddq/q) + (dddq/q))), label='3rd order, real')
-            #plt.plot(s_loc, np.imag(2 *(dq/q)**3 - 3 *(dq/q) * (ddq/q) + (dddq/q)), label='3rd order, imag')
-            #plt.plot(s,c(-polygamma(2, 0.5 - s) + polygamma(2, 1+s)), label = "-p(2,0.5-s) + p(2,1+s)")
-            #plt.plot(s,c(-polygamma(2, 2 - s)), label = "-p(2,2-s)")
-            #plt.plot(s_loc,c(tetragamma(2 - s)), label = "p(2,2-s)")
+            if(test_data):
+                #plt.plot(s_loc, np.imag(2 *(dq/q)**3 - 3 *(dq/q) * (ddq/q) + (dddq/q)), label='3rd order, imag')
+                #plt.plot(s,c(-polygamma(2, 0.5 - s) + polygamma(2, 1+s)), label = "-p(2,0.5-s) + p(2,1+s)")
+                #plt.plot(s,c(-polygamma(2, 2 - s)), label = "-p(2,2-s)")
+                plt.plot(s_loc,c(-tetragamma(2 - s)), label = "p(2,2-s)")
             plt.plot([min(s),max(s)],[0,0],'k:')
             plt.legend()
             plt.show()
 
             #plt.plot(s_loc, c((np.real(2 *(dq/q)**3 - 3 *(dq/q) * (ddq/q) + (dddq/q)))*ff(s)/tetragamma(2 - s)), label='3rd order, real')
             #plt.show()
-            return
 
+            if(False):
+                for k in range(0,self.max_moment_log_derivative_order):
+                    moments, re, im = self.vectorised_integration_function[k](s)
+                    if(k == 0):
+                        plt.title("Moments / gamma(s)")
+                        plt.plot(s,moments/gamma(s), label=f'{k}')
+                        plt.plot([min(s),max(s)],[0,0],'k:')
+                        #plt.plot(s,gamma(s),'k:')
+                    if(k == 1):
+                        plt.title("log Moments")
+                        plt.plot(s,np.log(moments), label=f'{k}')
+                        plt.plot([min(s),max(s)],[0,0],'k:')
+                        #plt.plot(s,gamma(s)*polygamma(0,s),'k:')
+                    if(k == 2):
+                        plt.plot(s,np.log(moments), label=f'{k}')
+                        #plt.plot(s,gamma(s)*(polygamma(0,s)**2 + polygamma(1,s)),'k:')
+                    plt.show()
 
-            for k in range(0,self.max_moment_log_derivative_order):
-                moments, re, im = self.vectorised_integration_function[k](s)
-                if(k == 0):
-                    plt.plot(s,moments/gamma(s), label=f'{k}')
-                    plt.plot([min(s),max(s)],[0,0],'k:')
-                    #plt.plot(s,gamma(s),'k:')
-                if(k == 1):
-                    plt.plot(s,np.log(moments), label=f'{k}')
-                    plt.plot([min(s),max(s)],[0,0],'k:')
-                    #plt.plot(s,gamma(s)*polygamma(0,s),'k:')
-                if(k == 2):
-                    plt.plot(s,np.log(moments), label=f'{k}')
-                    #plt.plot(s,gamma(s)*(polygamma(0,s)**2 + polygamma(1,s)),'k:')
-                plt.show()
-                exit()
-
-        print("Remember dq/q and ddq/q !")
-        exit()
-        # TODO: Remember we are then interested in dq/q and ddq/q
         for k in range(0,self.max_moment_log_derivative_order):
             moments, re, im = self.vectorised_integration_function[k](s)
 
@@ -602,7 +773,6 @@ class MomentsBundle():
 
 
         # Root Finding
-        from scipy.optimize import root
         def wrapper(s):
             res, _, _ = self.vectorised_integration_function[1](s)
             return np.real(res)
@@ -728,22 +898,13 @@ class MomentsBundle():
         # TODO: of the -1 curve Zeros number is --> ?
         #zero_a = >1 < 1.46, about 1.164
 
-        # TODO: Use these points to identify gamma(a s + b) term?
-        zero_0 = 1.46163214496836 # Where logGamma'[x] = 0, x > 0
-        zero_1 = -0.504083008264455 # x < 0
-        zero_2 = -1.57349847316239
+
 
 
 
         # You could just fit the ansatz asymptotics ??? I.e. Sum_i loggamma(a_i + b_i *s)
         #plt.legend()
         #plt.show()
-
-
-        # Minimise
-        moments, re, im = self.vectorised_integration_function[2](s)
-        plt.plot(s,np.log(moments) - line(s,m,c),label=f'residual')
-        plt.show()
 
 
 
@@ -756,10 +917,9 @@ class MomentsBundle():
 
         print("innovation, technical excellence, feasibility and business impact")
         # TODO: Grab some stuff from the literature review?
-        raise NotImplementedError
-
 
         # TODO: add timing as optional outputs
+
 
         # Generate s-domain [once, remains fixed]
         s1 = np.random.uniform(
@@ -775,6 +935,9 @@ class MomentsBundle():
         self.complex_s_samples = np.array([ t1 + t2*1j for t1,t2 in zip(s1,s2) ])
 
         # TODO: determine domain of validity
+
+        print("We must control logic to remove the polynomial correctly before proceeding! Moments are resampled above and not correct.")
+        breakpoint()
 
         # Perform the numerical integration for moments m(s)
         # Calculate m'(s), m''(s),..., m^{(k)}(s) etc. as  E[log(X)^k X^{s-1} f(x)](s)
