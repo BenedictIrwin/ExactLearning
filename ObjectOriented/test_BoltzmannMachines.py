@@ -7,7 +7,37 @@ import os
 from moments import MomentsBundle
 from estimator import ExactEstimator
 
+import h5py
+from matplotlib import pyplot as plt
+h5 = h5py.File('TestData.h5','r')
+
 # from exact_learning.data import points_to_moments
+
+for i in range(4,10):
+    x = h5['Dataset1'][i][:,0] 
+    y = h5['Dataset1'][i][:,1]
+    plt.plot(x,y,label = f'{i}')
+    plt.plot([min(x),max(x)],[0,0],'k:')
+    plt.legend()
+    plt.show()
+
+    # Extract moments
+    mb = MomentsBundle(f"curve_{i}")
+    mb.ingest(x, y)
+
+    input("Press Enter")
+    continue
+
+    # Define a potential solution
+    ee = ExactEstimator(mb)
+    
+
+    # Need to add a way to scan multiple solutions and test one by one...
+    result = ee.standard_solve()
+
+    input("Press Enter")
+
+exit()
 
 names = []
 roots = []
@@ -20,7 +50,7 @@ with open("test_1d_distributions.txt","r") as f:
     print(name, min, max, python, mma, moments)
     python = python.replace("[comma]",",") # multi-arg functions
     
-    x = np.linspace(min,max,60000)
+    x = np.linspace(min,max,300)
     f = eval("lambda x :"+ python)
     #plt.title(name)
     #plt.xlabel("x")
@@ -36,7 +66,7 @@ with open("test_1d_distributions.txt","r") as f:
 
     print("Biggest realisation is for Gamma(a s + b), but a in [1,-1,1/2,-1/2]")
     print("Also b in [k/2,] from [-1/2, ... ]")
-    continue
+    breakpoint()
 
     s = np.linspace(mb.moments_sample_s_min,
                     mb.moments_sample_s_max,
