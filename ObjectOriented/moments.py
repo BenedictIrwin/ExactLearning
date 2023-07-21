@@ -1,6 +1,8 @@
 from copyreg import constructor
 from dataclasses import dataclass
+from email.mime import base
 from math import inf
+from tkinter import W
 from typing import Iterable
 #from ObjectOriented.AdvancedFunctions import trigamma
 import scipy.integrate as integrate
@@ -12,6 +14,21 @@ from AdvancedFunctions import tetragamma_vec as tetragamma
 from matplotlib import pyplot as plt
 #from scipy.interpolate import approximate_taylor_polynomial
 import numpy as np
+
+
+
+def get_derivatives(root_polynomial : str, order : int) -> dict:
+    """
+    Populate a dictionary input with strings representing the derivatives
+    root_polynomial : string to take analytic derivatives of
+    order : 
+    """
+    from sympy import symbols
+    from sympy.parsing.sympy_parser import parse_expr
+    s, p, sym_p = symbols('s'), {}, parse_expr(root_polynomial)
+    for i in range(order+1):
+        p[i] = str(sym_p.diff(s,i))
+    return p
 
 @dataclass
 class MomentsBundle():
@@ -62,6 +79,8 @@ class MomentsBundle():
         self.asymptotic_to_zero = None
         self.unit_intercept = None
         self.scale_gamma_pole = None
+        self.root_polynomial = None
+        self.poly_derivatives = []
 
         # TODO: Try to scan how many times the moments cross 0 and where they do
         self.moments_have_roots = None # Implies moments have a polynomial or other non-meromorphic term of order "num roots"
@@ -312,7 +331,7 @@ class MomentsBundle():
             # I.e. flat bottom region is very good
 
             try:
-                s_loc_filter = s_loc[np.log(re1) < -5]
+                s_loc_filter = s_loc[np.log(re1) < -15]
             except:
                 print("The integration domain is not defined due to poor convergence of numerical integration under current assumptions.")
                 raise NotImplementedError
@@ -376,7 +395,7 @@ class MomentsBundle():
                 return np.real(res)
             def pole_wrapper(s):
                 res, _, _ = self.vectorised_integration_function[0](s)
-                return np.real(1.0/res)
+                return 1.0/np.real(res)
 
             # Find roots of the moments function
             # These can be directly forwarded to the algorithm
@@ -399,7 +418,7 @@ class MomentsBundle():
                         print(res)
                         if(res.success):
                             plt.plot(res.x[0],0,'bo')
-                            plt.arrow(s[i],m1,res.x[0]-s[i],res.fun[0]-m1)
+                            plt.arrow(s[i],0,res.x[0]-s[i],0)
                             evaluated_pole_list.append([res.x[0],res.fun[0]])
                     else:
                         potential_root_list.append(i)
@@ -432,6 +451,7 @@ class MomentsBundle():
                     root_polynomial += f"(s-{rt[0]})"
                     if(i<len(evaluated_root_list)-1): root_polynomial+="*"
 
+                self.root_polynomial = root_polynomial
                 poly = eval("lambda s: "+root_polynomial)
                 poly_data = np.array([poly(ss) for ss in s])
                 plt.plot(s,c(poly_data),label='Root Polynomial')
@@ -440,24 +460,315 @@ class MomentsBundle():
 
                 if(True):
                     print(f"Renormalising, removing order-{len(evaluated_root_list)} polynomial!")
-                    q = q/poly_data
+
+                    # chi_0 = phi_0/p(s)
+                    #q = q/poly_data
+
+                    print("Careful for analysis of dq, etc. which are not normalised?")
+                    self.poly_derivative_expressions = get_derivatives(self.root_polynomial, order = 3)
+            
+                    p = {}
+                    poly_order = 3
+                    for i in range(poly_order + 1):
+                        poly = eval("lambda s: "+self.poly_derivative_expressions[i])
+                        p[i] = np.array([poly(ss) for ss in s])
+                    
+                    self.poly_samples = p
+                    
+                    # TODO: Check the polynomial in the complex plane makes sense?
+                    # TODO: Extend to any dimension up to say max_root_order=10
+                    # TODO: Error estimates will be a bit wrong!
+                    chi = {}
+
+                    # Simply divide through chi_0 = phi_0/p_0
+                    chi[0] = q/p[0]
+
+                    # chi_1 from chi_1/chi_0 = phi_1/phi_0 - p_1/p_0
+                    chi[1] = (dq/q - p[1]/p[0]) * chi[0]
+
+                    # Rearrange phi_2/phi = D[p(s)chi(s),{s,2}]/p/chi
+                    chi[2] = (ddq/q - 2.0 * chi[1]/chi[0] * p[1]/p[0] - p[2]/p[0]) * chi[0]
+
+                    # Rearrage phi_3/phi_0 = D[p(s)chi(s),{s,2}]/(p_0chi_0)
+                    chi[3] = (dddq/q - 3.0 * chi[2]/chi[0] * p[1]/p[0] - 3.0 * chi[1]/chi[0] * p[2]/p[0] - p[3]/p[0]) * chi[0]
+
+                    q = chi[0]
+                    dq = chi[1]
+                    ddq = chi[2]
+                    dddq = chi[3]
+
+                    # phi_1 / phi_0  
 
             plt.legend()
             plt.show()
 
+            # Take the factorised expression.
+            # Plot phi(s+1)/phi(s) , which may be a polynomial or rational expression?
+            # The order of the polynomial on top and bottom is important, because it is derived from
+            # a in Gamma (as + b) for integer a, and the total number of gamma on top and bottom.
             
+            # We can fit the moments for easy shifting
+            phi_0 = self.normalised_moments_interpolation = interp1d(s, q, kind='cubic',  bounds_error = False, fill_value = 0)
+            phi_1 = self.normalised_moments_interpolation = interp1d(s, dq, kind='cubic',  bounds_error = False, fill_value = 0)
+
+            if(False):
+                ## Define a secret function 'moments'
+                #def phi(s, v):
+                #    return v[0]*v[1]**s*gamma(v[2] + v[3]*s)
+
+                #def logdivphi(s,v):
+                #    return log(v[1]) + v[3]*digamma(v[2] + v[3]*s)
+
+                ## EulerGamma
+                g = 0.57721566490153286060651209008240243104216
+                c1,c2,c3,c4 = np.random.uniform(0,1,size=[4])
+                #v = np.random.uniform(0,1,size=[4])
+                print(c1,c2,c3,c4)
+
+                p0 = phi_0(0)
+                #p1 = phi(1, v)
+
+                for i in range(1000):
+                    ## Solve
+                    #p0 = phi(0, v)
+                    #dp0 = logdivphi(0, v)
+
+                    t1 = phi_0((1-c3)/c4)
+                    t2 = phi_0((2-c3)/c4)
+                    ##log_term = np.log(t2/t1) / np.log(c2) 
+
+                    th1 = phi_1((1-c3)/c4)/t1
+                    th2 = phi_1((2-c3)/c4)/t2
+
+                    c3_new = t1*phi_0(1/c4)/p0/t2
+
+
+                    #c2_new = t2**c4/t1**c4
+                    #c2_new = p1/c1/gamma(c3+c4)
+                    #c2_new = exp(dp0 - c4*digamma(c3))
+                    c1_new = p0/gamma(c3)
+                    #c4_new = 1/log_term
+                    #c4_new = (dp0 - log(c2))/digamma(c3)
+                    #c4_new = (dp0 - log(c2_new))/digamma(c3)# + 0.05*(th2-th1)/(1-2*g)
+                    c4_new = th2 - th1
+                    c2_new = np.exp((th2 + th1 - c4_new*(1 - 2*g))/2)
+
+                    c1 = c1_new
+                    c2 = c2_new
+                    c3 = c3_new
+                    c4 = c4_new
+                    
+                    print(c1,c2,c3,c4)
+
+                plt.plot(s,phi_0(s),label = 'true')
+                plt.plot(s,c1 * c2**s * gamma(c3 + c4 * s),label = 'fit')
+                plt.legend()
+                plt.show()
+
+
+            # Inverted Function as a line
+            cc_inv = phi_0(0)/phi_0(1)
+            mm_inv = phi_0(1)/phi_0(2)
+
+
+            cc = phi_0(1)/phi_0(0)
+            mm = phi_0(2)/phi_0(1)-cc
+
+            print(mm,cc)
+            print(mm_inv, cc_inv)
+
+            """
+            if  Gamma+ Gamma-
+                fit rational 
+                if |a| = 1 , C (a + bs )/(c + ds )
+                C is C^s
+
+            if( a is 1):
+                if(line_correlation_high):
+                    cc = power_constant_base * b
+                    mm = power_constant_base
+                    C * mm**s * gamma(s + cc/mm)
+            if( a is -1):
             
+            if( a is 2):
+                If second order polynomial
+
+            if( a is -2):
+
+            if( a is integer)
+
+            # TODO: CONSIDER polynomial terms as well
+
+            # TODO: Consider rational optimisation overpolygamma ratios as well. At constant s
+            # I.e. solve for constants
+            """
+
+            # TODO: Make a poly fit routine
+            # TODO: Make a rational fit routine
+            # TODO: factor out any zeros or poles.
+            if(True):
+                from scipy.optimize import curve_fit
+
+                def rational(x, p, q):
+                    """
+                    The general rational function description.
+                    p is a list with the polynomial coefficients in the numerator
+                    q is a list with the polynomial coefficients (except the first one)
+                    in the denominator
+                    The zeroth order coefficient of the denominator polynomial is fixed at 1.
+                    Numpy stores coefficients in [x**2 + x + 1] order, so the fixed
+                    zeroth order denominator coefficent must comes last. (Edited.)
+                    """
+                    return np.polyval(p, x) / np.polyval(q + [1.0], x)
+
+                def rational3_3(x, p0, p1, p2, q1, q2):
+                    return rational(x, [p0, p1, p2], [q1, q2])
+                
+                def rational4_4(x, p0, p1, p2, p3, q1, q2, q3):
+                    return rational(x, [p0, p1, p2, p3], [q1, q2, q3])
+                
+                def line(x,a,b): return a * x + b
+
+                # TODO: Check the coefficients order
+                def poly2(x, a, b, c): return c* x**2 + b * x + a
+
+
+                line_start = (1,1)
+                poly2_start = (1,1,1)
+
+                # y = rational(x, [-0.2, 0.3, 0.5], [-1.0, 2.0])
+                #ynoise = y * (1.0 + np.random.normal(scale=0.1, size=x.shape))
+                s_loc = np.linspace(min(s),max(s)-1,50)
+                #popt, pcov = curve_fit(rational4_4, s_loc, phi_0(s_loc+1)/phi_0(s_loc), p0=(0.0, 0.0, 0.9, 0.0, -1.0, 1, 1))
+                popt_line, pcov = curve_fit(line, s_loc, phi_0(s_loc+1)/phi_0(s_loc), p0=line_start)
+                popt_poly2, pcov = curve_fit(poly2, s_loc, phi_0(s_loc+1)/phi_0(s_loc), p0=poly2_start)
+
+                print("line",popt_line)
+                print("poly2",popt_poly2)
+
+                plt.plot(s, phi_0(s+1)/phi_0(s), label='original')
+                #plt.plot(x, ynoise, '.', label='data')
+                plt.plot(s, line(s, *popt_line), label='fit line')
+                plt.plot(s, poly2(s, *popt_poly2), label='fit poly2')
+                plt.legend()
+                plt.show()
 
 
 
+                # Assuming only a line
+                scale_constant = np.mean(phi_0(s)/(popt_line[0]**s * gamma(s + popt_line[1]/popt_line[0])))
+                base_constant = popt_line[0]
+                gamma_shift = popt_line[1]/popt_line[0]
 
+                # Assuming a poly2 -> Construct from roots and get constant = base
+                from numpy.polynomial.polynomial import polyroots, polyfromroots, Polynomial
+                roots_2 = polyroots(popt_poly2)
+                print("roots_2",roots_2)
+                test_points = np.array([1,2,3])
+                p_coeffs = Polynomial(popt_poly2)(test_points)
+                p_roots = Polynomial(polyfromroots(roots_2))(test_points)
+                base_constant = p_coeffs/p_roots
+
+                print("Base constant 2", base_constant)
+                #TODO: Assert that the constant is the same all over
+                base_constant = base_constant[0]
+                gamma_shift_1 =  roots_2[0]/base_constant
+                gamma_shift_2 =  roots_2[1]/base_constant
+                trial_form = base_constant**s * gamma(s + gamma_shift_1) * gamma(s + gamma_shift_2)
+
+                # TODO: Derive a scale constant from the below
+                scale_constant = np.mean(phi_0(s)/trial_form)
+
+
+                plt.plot(s,phi_0(s), label = 'true')
+                plt.plot(s,(popt_line[0]**s * gamma(s + popt_line[1]/popt_line[0])), label = 'line')
+                plt.plot(s,trial_form, label = 'poly_2')
+                plt.legend()
+                plt.show()
+
+                #cc = power_constant_base * b
+                #mm = power_constant_base
+                #C * mm**s * gamma(s + cc/mm)
+                print(self.root_polynomial)
+                plt.title("Is it constant?")
+                plt.plot(s,phi_0(s)/(popt_line[0]**s * gamma(s + popt_line[1]/popt_line[0])),label = 'phi/fit assumption line')
+                plt.plot(s,phi_0(s)/trial_form,label = 'phi/fit assumption line')
+                #plt.plot(s,phi_0(s), label = 'true')
+                plt.legend()
+                plt.show()
+                breakpoint()
+                exit()
+
+
+
+                # TODO: Automatic sympy evalulation of function
+                def sympy_inverse_mellin(moments_string):
+                    from sympy import inverse_mellin_transform, oo, gamma, sqrt
+                    from sympy.abc import x, s
+                    return inverse_mellin_transform(moments_string, s, x, (0, oo))
+
+                moments_string = self.root_polynomial + f"*({scale_constant})*({base_constant})^s * Gamma[s + {gamma_shift}]".replace('--','+')
+                print(moments_string)
+                #MMA_function = input("Get the MMA function as input, and parse into sympy etc.")
+
+                string = """0.005573457742959165*((-15.925025447742174*x^1.4332110586835183)/E^(3.2464714279171454*x) +(33.259591472696314*(1 - 2.265173303155506*x)*x^(53270321/37168511))/E^(3.2464714279171454*x) +(3.91390619491436*^-15*x^(53270321/37168511)*(2837727099443041 - 1.7340881800943048*^16*x +1.4560406389353844*^16*x^2))/E^(3.2464714279171454*x))"""
+                #result = sympy_inverse_mellin(moments_string)
+
+                def get_vals(string):
+                    from sympy.parsing.mathematica import parse_mathematica
+                    from sympy.abc import x
+                    expression = parse_mathematica(string)
+                    values = [expression.evalf(subs={x:xx}) for xx in [0,1,2,3]]
+                    print(values)
+                    breakpoint()
+                    return values
+                
+                values = get_vals(string)
+                #func = lambdify(x, expression, 'numpy') # returns a numpy-ready function
+
+                # TODO: Simplify and figure out how to plot the result
+                plt.title("Comparison")
+                x = np.linspace(self.x_min,self.x_max,20)
+                plt.plot(x, self.interpolating_function(x), label = 'Interpolant')
+                #plt.plot(x,(-1.438492776325737*x**1.2369673295454544)* np.exp(-3.5511363636363633*x),label = 'approx')
+                #mma_x = [0,0.1,0.2,0.05,0.15,0.2,0.25, 0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0]
+                #mma_y = np.array([0., 0.0195802, 0.00540991,0.012437, 0.0167003, 0.00540991, -0.0115681,-0.0315771, -0.0723896, -0.105614, -0.126737,-0.135614, -0.134308, -0.12565, -0.112417, -0.0969391, -0.0809731, -0.0657189, -0.0519062, -0.0399023, -0.0298153, -0.0215822, -0.0150381, -0.00996711, -0.00613756])*0.1
+                plt.plot([0,1,2,3], values, 'r-', label = 'Curve_0 - Approximation')
+                plt.legend()
+                plt.show()
+                exit()
+
+
+
+            for i in [1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9]:
+                plt.plot(s, phi_0(s+i)/phi_0(s))
+            plt.plot(s, phi_0(s+1)/phi_0(s), label = 'phi0(s+1)/phi0(s)')
+            plt.plot(s, phi_0(s)/phi_0(s+1), label = 'phi0(s)/phi0(s+1)')
+            plt.plot(s, phi_0(s+2)/phi_0(s), label = 'phi0(s+2)/phi0(s)')
+            plt.plot(s, mm*s + cc, label = f'line {mm}s+{cc}')
+            plt.plot(s, mm_inv*s + cc_inv, label = f'line {mm_inv}s+{cc_inv}')
+            #plt.plot(s, 3 * (4+s)/5/(3- 4*s), label = 'F rat')
+            plt.plot(s, 1 + 2*s)
+            plt.plot(s, 3 + 8 * s + 4 * s**2)
+            #plt.plot(s, phi_1(s+1)/phi_1(s), label = 'phi1(s+1)/phi1(s)')
+            #plt.plot(s, (mm*s+ cc)/(s - 2.401076))
+
+            # TODO: Fit a polynomial/line etc.
+            # TODO: Find the poles, or roots of the reciprocal function?
+
+            plt.legend()
+            plt.show()
+
+            # Print
+
+            print("Also look at shifted dq/q over non-shifted dq/q which evaluates to a rational constant? As cancellation of digamma etc.")
+
+
+
+            plt.show()
+            #exit()
 
             
-            
-
-
-
-
             from mpl_toolkits import mplot3d
             
 
@@ -466,6 +777,7 @@ class MomentsBundle():
             xdata = []
             ydata = []
             zdata = []
+            dzdata = []
             an_zdata = []
 
             for i in range(len(s)):
@@ -475,16 +787,19 @@ class MomentsBundle():
                   ydata.append(s[j])
                   if(True):
                     zdata.append(np.log(q[i]/q[j]))
+                    dzdata.append(np.log(q[i]/q[j]))
                   if(True):
-                    local_moment = lambda s: gamma(1/2+s)
+                    local_moment = lambda s: gamma(s)**2
                     an_zdata.append(np.log(local_moment(s[i])/local_moment(s[j])))
 
             xdata=np.array(xdata)
             ydata=np.array(ydata)
             zdata=np.array(zdata)
+            dzdata = np.array(dzdata)
             an_zdata=np.array(an_zdata)
             idx = np.abs(zdata)<0.1
             anidx = np.abs(an_zdata)<0.1
+            didx = np.abs(dzdata)<0.1
 
             fig = plt.figure()
 
@@ -492,6 +807,7 @@ class MomentsBundle():
             zero_0 = 1.46163214496836 # Where logGamma'[x] = 0, x > 0
             zero_1 = -0.504083008264455 # x < 0
             zero_2 = -1.57349847316239
+            zero_3 = -2.61072086844414
             
             ax = plt.axes(projection='3d')
             ax.set_title("Ratio of q(s)/q(t)")
@@ -507,7 +823,7 @@ class MomentsBundle():
 
             #TODO: Somehow solve for continuous curves
             
-            plt.title("Projection to s-t plane")
+            plt.title("q/q Projection to s-t plane")
 
             plt.plot(xdata[idx], ydata[idx], 'r.',label='data')
             if(True):
@@ -517,11 +833,80 @@ class MomentsBundle():
             plt.plot(zero_0,zero_0,'ro')
             plt.plot(zero_1,zero_1,'ro')
             plt.plot(zero_2,zero_2,'ro')
+            plt.plot(zero_3,zero_3,'ro')
             plt.show()
+
+            plt.title("dq/dq Projection to s-t plane")
+
+            plt.plot(xdata[didx], ydata[didx], 'r.',label='data')
+            plt.grid(True,'both','both')
+            plt.legend()
+            plt.plot(zero_0,zero_0,'ro')
+            plt.plot(zero_1,zero_1,'ro')
+            plt.plot(zero_2,zero_2,'ro')
+            plt.show()
+
+            from scipy.spatial import ConvexHull, KDTree
+
 
             plt.title("Projection to s-dq/dq plane")
             plt.plot(xdata[idx], zdata[idx], 'r.',label='data')
-            if(True):
+            points = np.array([xdata[idx],zdata[idx]]).T
+            data_hull = ConvexHull(points)
+
+            # Identify points which are symmetric about 0
+            degenerate_points = np.array([xdata[idx],np.abs(np.real(zdata[idx]))]).T
+            lower_points_filter = zdata[idx]<0
+            lower_points = np.real(points[lower_points_filter])
+
+            tree = KDTree(np.real(degenerate_points))
+
+            upper_points = np.real(points[~lower_points_filter])
+
+            # Sort the upper points by 's' from lowest to highest
+            # Plot max(y) as a function of sorted x
+            sorted_upper_points = np.array(sorted(upper_points, key= lambda x: x[0]))
+            window_length = 6
+            # Smoothing
+            pos = [ np.mean(sorted_upper_points[i:i+window_length+1][:,0]) for i in range(len(sorted_upper_points) - window_length)]
+            vals = [ np.amax(sorted_upper_points[i:i+window_length+1][:,1]) for i in range(len(sorted_upper_points) - window_length)]
+
+            xx = np.linspace(min(xdata),max(xdata),200)
+            plt.plot(xx, [min(xxx, 0.1) for xxx in (xx-2.39)**2 /6] )
+            plt.plot(pos,vals)
+            plt.show()
+            upper_tree = KDTree(upper_points)
+            results = tree.query(degenerate_points, k=2)
+            
+            reflected_lower_points = np.array([1,-1])*lower_points
+            asym_results = upper_tree.query(reflected_lower_points, k=1)
+
+            # Consider larger than average asym distances
+            asym_distances = asym_results[0]
+            filt_point = np.percentile(asym_distances, q=0.99)
+            filt_idx = asym_distances > filt_point
+            #plt.hist(asym_results, bins=100, density=True)
+            #plt.show()
+
+
+            # If a point has two exact neighbours, it is likely degenerate
+            print(results)
+            #plt.show()
+
+            distances_sum = np.sum(results[0],axis=1)
+            filter = distances_sum < 0.001
+            #plt.hist(distances_sum, density=True, bins=100)
+            #plt.show()
+            plt.plot(points[filter,0],points[filter,1],'bx')
+            #plt.plot(lower_points[~filt_idx,0],lower_points[~filt_idx,1],'gx')
+
+            # Or could look for unusually large neighbour distances in the reflected lower points fitting to the upper points. 
+            # I.e. to get the 'void'
+
+
+
+            plt.plot(points[data_hull.vertices,0], points[data_hull.vertices,1], 'r--', lw=2)
+            if(False):
                 plt.plot(xdata[anidx], an_zdata[anidx], 'k.',label ='local moment')
             plt.grid(True,'both','both')
             plt.plot(zero_0,0,'ro')
@@ -932,27 +1317,66 @@ class MomentsBundle():
             size = self.num_s_samples)
         
         # Array of complex s-values
+        # TODO: Test this for complex numbers
         self.complex_s_samples = np.array([ t1 + t2*1j for t1,t2 in zip(s1,s2) ])
 
         # TODO: determine domain of validity
 
         print("We must control logic to remove the polynomial correctly before proceeding! Moments are resampled above and not correct.")
-        breakpoint()
+        #breakpoint()
 
         # Perform the numerical integration for moments m(s)
-        # Calculate m'(s), m''(s),..., m^{(k)}(s) etc. as  E[log(X)^k X^{s-1} f(x)](s)
+        # Calculate m(s), m'(s), m''(s),..., m^{(k)}(s) etc. as  E[log(X)^k X^{s-1} f(x)](s)
         for k in range(self.max_moment_log_derivative_order):
             self.moments[k], self.real_error_in_moments[k], self.imaginary_error_in_moments[k] = self.vectorised_integration_function[k](self.complex_s_samples)
+
+        # Renormalise by factoring out a polynomial
+        if(self.root_polynomial is not None):
+            
+            self.poly_derivative_expressions = get_derivatives(self.root_polynomial, order = 3)
+            
+            p = {}
+            poly_order = 3
+            for i in range(poly_order + 1):
+                poly = eval("lambda s: "+self.poly_derivative_expressions[i])
+                p[i] = np.array([poly(ss) for ss in self.complex_s_samples])
+            
+            self.poly_samples = p
+            
+            # TODO: Check the polynomial in the complex plane makes sense?
+            # TODO: Extend to any dimension up to say max_root_order=10
+            # TODO: Error estimates will be a bit wrong!
+            chi = {}
+
+            # Simply divide through chi_0 = phi_0/p_0
+            chi[0] = self.moments[0]/p[0]
+
+            # chi_1 from chi_1/chi_0 = phi_1/phi_0 - p_1/p_0
+            chi[1] = (self.moments[1]/self.moments[0] - p[1]/p[0]) * chi[0]
+
+            # Rearrange phi_2/phi = D[p(s)chi(s),{s,2}]/p/chi
+            chi[2] = (self.moments[2]/self.moments[0] - 2.0 * chi[1]/chi[0] * p[1]/p[0] - p[2]/p[0]) * chi[0]
+
+            # Rearrage phi_3/phi_0 = D[p(s)chi(s),{s,2}]/(p_0chi_0)
+            chi[3] = (self.moments[3]/self.moments[0] - 3.0 * chi[2]/chi[0] * p[1]/p[0] - 3.0 * chi[1]/chi[0] * p[2]/p[0] - p[3]/p[0]) * chi[0]
+
+            # Renormalise moments that will be passed on to the gamma finding code...
+            self.has_polynomial = True
+            for k in range(self.max_moment_log_derivative_order):
+                self.moments[k] = chi[k]
+
+
         
 
 
 @dataclass
 class ExactLearningResult():
     """
-    Store an exact learning result, sort of represents a fact
+    Store an exact learning result
     """
     def __init__(self, result_dict):
         self.equation = result_dict["equation"]
+        self.factored_polynomial = result_dict["factored_polynomial"]
         self.num_dims = result_dict["num_dims"]
         self.complex_moment = result_dict["complex_moments"]
         self.loss = result_dict['losses']
@@ -973,11 +1397,11 @@ def ingest(x,y,name) -> MomentsBundle:
     Convert to a dataset, via complex integration for distributions?
     """
 
-    # determine dimensionality of data
+    # TODO: determine dimensionality of data
 
-    # dig out an example of interpolation (i.e. Schrodinger)
+    # TODO: dig out an example of interpolation (i.e. Schrodinger)
 
-    # dig out an example of integration (i.e. moment fitting)
+    # TODO: dig out an example of integration (i.e. moment fitting)
 
     # name is used as the folder name for this problem,
     # e.g. "Beta_Distribution"

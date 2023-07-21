@@ -1,13 +1,14 @@
 name, x_min, x_max, python_string, mma_string, correct_moments
-inverse_chi_squared_k=2, 0.01, 10.0, np.exp(-1/(2*x))/2/x**2, ,
-F_ratio_n=1_m=2, 0.0001, 15.0, 1.0/np.sqrt(x)/(2 + x)**(3/2), ,
 chi_squared_k=3, 0.0, 60.0, np.sqrt(x) * np.exp(-x/2) / np.sqrt(2 * np.pi), , 
+F_ratio_n=10_m=3/2, 0.0, 15.0, 68578125 * (3/2)**(3/4) * x**4/256/(3/2 + 10 * x)**(23/4), ,
+inverse_chi_squared_k=2, 0.01, 10.0, np.exp(-1/(2*x))/2/x**2, ,
 exponential_1, 0.0, 50.0, np.exp(-x), Exp[-x], Gamma[s]
 F_ratio_n=10_m=3/2, 0.0, 15.0, 68578125 * (3/2)**(3/4) * x**4/256/(3/2 + 10 * x)**(23/4), ,
 Student_t_k=9/2, 0.0, 12.0, 2 * 81 * np.sqrt(6/np.pi) * (9 + 2 * x**2) ** (-11/4) * ss.gamma(11/4) / ss.gamma(9/4), ,
 beta_2_3, 0.0, 1.0, 12* ( 1- x)**2, ,
 beta_1/2_19/2, 0.01, 1.0, 65536 * (1-x)**(17/2)/12155/ np.pi/ np.sqrt(x), ,
 beta_2_2, 0.0, 1.0, 6 * (1-x) * x,,
+F_ratio_n=1_m=2, 0.0001, 15.0, 1.0/np.sqrt(x)/(2 + x)**(3/2), ,
 beta_1/3_1/3, 0.0, 1.0, ss.gamma(2/3)/((1-x)*x)**(2/3)/ss.gamma(1/3)**2, ,
 chi_k=1, 0.0, 6.0, np.sqrt(2/np.pi)*np.exp(- x**2 / 2), ,
 chi_k=10, 0.0, 6.0, x**9 * np.exp(-x**2 /2)/ 384, ,

@@ -33,6 +33,12 @@ with open("test_1d_distributions.txt","r") as f:
     # Define a problem
     mb = MomentsBundle(name)
     mb.ingest(x,f(x))
+    # Define a potential solution
+    ee = ExactEstimator(mb)
+    # Need to add a way to scan multiple solutions and test one by one...
+    result = ee.standard_solve()
+
+    exit()
 
     print("Biggest realisation is for Gamma(a s + b), but a in [1,-1,1/2,-1/2]")
     print("Also b in [k/2,] from [-1/2, ... ]")

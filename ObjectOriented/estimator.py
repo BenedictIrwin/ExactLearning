@@ -10,6 +10,8 @@ from utils import get_random_key, parse_terms, wrap, deal, gen_fpdict
 
 from moments import ExactLearningResult
 
+from matplotlib import pyplot as plt
+
 
 
 
@@ -417,7 +419,7 @@ class ExactEstimator:
     if(type=='real'): return np.mean(B)
     if(type=='complex'): return np.mean(B+C)
     
-  def BFGS(self, p0=None, order: int = 0, method : str = 'L-BFGS-B') -> tuple[Any, float]:
+  def BFGS(self, p0=None, order: int = 0, method : str = 'BFGS') -> tuple[Any, float]:
     """
     TODO: ## A gradient based approach to get the optimial parameters for a given fingerprint
     p0: A first guess of parameters
@@ -819,6 +821,8 @@ class ExactEstimator:
     result_dict["complex_moments"] = str(string_in)
     result_dict["num_dims"] = 1
     result_dict["losses"] = losses
+    result_dict["factored_polynomial"] = self.moments_bundle.root_polynomial
+    
     
     # Encode the mathematical result in a nice compact form
     result = ExactLearningResult(result_dict)
@@ -874,19 +878,30 @@ class ExactEstimator:
       results = self.cascade_search(n_itrs = 10)
       results_list.append(results)
       
-      x = np.linspace(self.moments_bundle.x_min, self.moments_bundle.x_max, 10)
+      x = np.linspace(self.moments_bundle.x_min, self.moments_bundle.x_max, 1000)
       y = self.moments_bundle.interpolating_function(x)
 
       equation_string = str(results.equation)
       fs, equation_string = self.functions_from_equation_string(equation_string)
 
       g = eval(equation_string)
+      
+      # THis is wrong because it is polynomial in s and not in x, so need to perform the inverse Mellin Transform
+      #h = eval(self.moments_bundle.root_polynomial + "*" + equation_string)
+
+      plt.plot(x,y,label = 'y')
+      plt.plot(x,g,label = 'g')
+      #plt.plot(x,h,label = 'h')
+      plt.legend()
+      plt.show()
+
+      breakpoint()
 
       # Do a check to see if it is exact already?
       # Get loss between g and y
       initial_domain_loss = mean_squared_error(y,g)
       print('Initial Domain Loss: ',initial_domain_loss)
-      exact_loss_threshold = 1e-10
+      exact_loss_threshold = 1e-9
       if(initial_domain_loss < exact_loss_threshold):
         print("Likely exact solution!")
         break

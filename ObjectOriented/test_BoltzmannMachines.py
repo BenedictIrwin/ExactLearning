@@ -13,7 +13,7 @@ h5 = h5py.File('TestData.h5','r')
 
 # from exact_learning.data import points_to_moments
 
-for i in range(4,10):
+for i in range(50,100):
     x = h5['Dataset1'][i][:,0] 
     y = h5['Dataset1'][i][:,1]
     plt.plot(x,y,label = f'{i}')
@@ -25,15 +25,12 @@ for i in range(4,10):
     mb = MomentsBundle(f"curve_{i}")
     mb.ingest(x, y)
 
-    input("Press Enter")
-    continue
-
     # Define a potential solution
     ee = ExactEstimator(mb)
-    
-
     # Need to add a way to scan multiple solutions and test one by one...
     result = ee.standard_solve()
+
+    exit()
 
     input("Press Enter")
 
