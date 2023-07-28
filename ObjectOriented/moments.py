@@ -1,14 +1,17 @@
-from copyreg import constructor
 from dataclasses import dataclass
-from email.mime import base
-from math import inf
-from tkinter import W
-from typing import Iterable
+from types import NoneType
+from typing import Iterable, Tuple, Callable
+#from Holonomic.pytorch_fit_holonomic import training_loop
+#TODO: Work on the holonomic routine as above
+
 #from ObjectOriented.AdvancedFunctions import trigamma
 import scipy.integrate as integrate
-from scipy.interpolate import interp1d
+from scipy.interpolate import interp1d, splrep, splev, Akima1DInterpolator, BarycentricInterpolator, KroghInterpolator, CubicHermiteSpline, PchipInterpolator
+from sklearn.gaussian_process import GaussianProcessRegressor
 from scipy.special import gamma, polygamma, digamma
-from scipy.optimize import root
+from sklearn.metrics import r2_score
+from scipy.optimize import root, minimize
+from scipy.stats import f
 from AdvancedFunctions import trigamma_vec as trigamma 
 from AdvancedFunctions import tetragamma_vec as tetragamma 
 from matplotlib import pyplot as plt
@@ -37,10 +40,10 @@ class MomentsBundle():
     Generates an interpolating function
     Generates an integration technique that can yeild moments
     """
-    def __init__(self, name):
+    def __init__(self, name, upper_integration_bound = np.inf):
 
         # Definable variables
-        self.name = name
+        self.name = name.replace('/','-')
         self.num_s_samples = 100
         self.s_domain = {'Re':[1,5],'Im':[-2*np.pi,2*np.pi]}
 
@@ -51,6 +54,8 @@ class MomentsBundle():
         self.moments_sample_s_min = -10
         self.moments_sample_s_max = 10
         self.moments_sample_n_samples = 2000
+
+        self.max_integration = upper_integration_bound
 
         # TODO: Generalise this
         self.real_errors_exist = True
@@ -66,6 +71,7 @@ class MomentsBundle():
         # These concepts will be expanded to kth order
         self.vectorised_integration_function = [None for _ in range(self.max_moment_log_derivative_order)]
         self.vectorised_integration_function_an = [None for _ in range(self.max_moment_log_derivative_order)]
+        self.vectorised_trap = [None for _ in range(self.max_moment_log_derivative_order)]
         self.moments = [None for _ in range(self.max_moment_log_derivative_order)]
         self.real_error_in_moments = [None for _ in range(self.max_moment_log_derivative_order)]
         self.imaginary_error_in_moments = [None for _ in range(self.max_moment_log_derivative_order)]
@@ -89,7 +95,12 @@ class MomentsBundle():
         self.x_max = None
         self.x_min = None
 
-    def ingest(self,x,y):
+    def ingest(self,x,y, y_is_function = False):
+
+        # Truncated the range
+        #print(x.shape)
+        #x = x[:10000]
+        #y = y[:10000]
 
         #TODO: Generalise this
         self.num_dims = 1
@@ -120,14 +131,92 @@ class MomentsBundle():
         # and consider the variance in the 'Mellin transform' as a result.
 
         def test_function(x): return np.exp(-1/(2*x))/2/x**2
-        self.interpolating_function = interp1d(x, y, kind='cubic', bounds_error = False, fill_value = 0)
-        #breakpoint()
+        def test_function(x): return np.sqrt(x) * np.exp(-x/2) / np.sqrt(2 * np.pi)
 
-        x_start = self.interpolating_function.x[0]
-        x_end = self.interpolating_function.x[-1]
-        y_start = self.interpolating_function.y[0]
-        y_end = self.interpolating_function.y[-1]
+        #self.interpolating_function = interp1d(x, y, kind='cubic', bounds_error = False, fill_value = 0)
+        if(y_is_function == False):
+            self.spl = splrep(x, y, k=3)
+            self.interpolating_function = lambda x : splev(x, self.spl)
 
+        else:
+            self.interpolating_function = y
+        #self.interpolating_function = Akima1DInterpolator(x,y)
+        #self.interpolating_function = BarycentricInterpolator(x,y)
+        #self.interpolating_function = KroghInterpolator(x,y) # Did not finish
+        #self.interpolating_function = CubicHermiteSpline(x,y) # Do not have dydx
+        #self.interpolating_function=PchipInterpolator(x,y)
+        #from sklearn.preprocessing import SplineTransformer
+        #from sklearn.linear_model import Ridge
+        #from sklearn.pipeline import make_pipeline
+
+        #self.interpolating_function = SplineTransformer(knots = 'uniform', degree = 5).fit(x[:,None],y)
+        #self.interpolating_function = make_pipeline(SplineTransformer(n_knots=300, degree=5), Ridge(alpha=1e-3))
+        #self.interpolating_function.fit(x[:,None],y)
+
+
+
+        # TODO: What we want is a way to rule out the moments datapoints that shift drastically under the change of 
+        # interpolation technique. These are not trustworthy/pure, as we don't want to rely on them to fit our final
+        # 'exact' moments representation. 
+        # We are never going to 'prefectly' reconstruct the moments space, whatever interpolation we use, only with an
+        # exact equation, could we probably evalulate the integrals to that level of precision.
+
+       
+        if(False):
+            # TODO: Try Fitting '100' smaller - processes, with a small amount of overlap
+            # Split the interpolating function into a bunch of regions and lookup the relevant process?
+            def x_y_to_sections(x,y, n_sections=10, overlap = 2):
+
+                # Get sizes
+                N = len(x)   # if 100, 10 chunks of 
+
+                # n sections, each with k data points
+                # Each section also has 2 on the left and 2 on right
+                # Total data = N
+                # Left: All datapoints and repeats
+                # N + 2o * (n-2) + 2o/2 = (n-2) * ( k + 2o) + 2*(k+o)
+                # Find expression for k
+                # k =
+
+                chunk_size = int((N - overlap)/n_sections)
+                x_list = []
+                y_list = []
+
+                x_list.append(x[:chunk_size + overlap])
+                y_list.append(y[:chunk_size + overlap])
+                for i in range(1,n_sections-1):
+                    x_list.append(x[i*chunk_size - overlap:(i+1)*chunk_size + overlap])
+                    y_list.append(y[i*chunk_size - overlap:(i+1)*chunk_size + overlap])
+                x_list.append(x[chunk_size*(n_sections-1)-overlap:])
+                y_list.append(y[chunk_size*(n_sections-1)-overlap:])
+
+
+                return [np.array(xx) for xx in x_list], [np.array(yy) for yy in y_list]
+
+
+        #x_list, y_list = x_y_to_sections(x,y, 20, 10)
+        #GP_list = []
+        #from sklearn.gaussian_process.kernels import RBF, ConstantKernel
+        #print("Fitting GPs")
+        #for xx,yy in zip(x_list,y_list):
+        #    print("Fitting!")
+        #    #TODO: https://scikit-learn.org/stable/modules/gaussian_process.html#gaussian-process-regression-gpr
+        #    # TODO: Set legnth scale to be 1/'delta x'
+        #    gp = GaussianProcessRegressor(kernel= ConstantKernel(1, (0.0001, 1.0)) * RBF(length_scale=1, length_scale_bounds=(1e-7, 1e-3)), alpha=1e-6).fit(xx[:,None], yy)
+        #    GP_list.append(gp)
+        #    print("Done Fitting")
+
+        #x_start = self.interpolating_function.x[0]
+        x_end = x[-1]
+        #y_start = self.interpolating_function.y[0]
+        if(y_is_function == False):
+            y_end = y[-1]
+        else:
+            breakpoint()
+            y_end = y(x_end)
+
+        #plt.plot(x,y,'ro')
+        # TODO: Do not use variables called x and y
         x = np.linspace(self.x_min,self.x_max,10000)
         x_dash = np.linspace(0.0,2*self.x_max,10000)
         # TODO: Design a function that represents a tail locally.
@@ -147,31 +236,57 @@ class MomentsBundle():
 
         if(False):
             x_dd = np.linspace(x_end, 2*self.x_max, 1000)
-            print(self.interpolating_function([self.x_min,self.x_max]))
-            plt.plot(x,self.interpolating_function(x),label = 'interp' )
-            plt.plot(x_dash,self.interpolating_function(x_dash),'r-',label='interp. ext')
-            plt.plot(x_dash, test_function(x_dash),label='exact')
-            for a in [0.5,1,1.5]:
-                plt.plot(x_dd, logtail(x_dd, a), label = f'Logtail guess a = {a}')
-            for a in [0.3,0.4,0.5]:
-                plt.plot(x_dd, powertail(x_dd, a), label = f'Powertail guess a = {a}')
+            
+            #print(self.interpolating_function([self.x_min,self.x_max]))
+            #idx =0
+            #for xx,yy,gp in zip(x_list,y_list,GP_list):
+            #    gp_pred, gp_var = gp.predict(xx.reshape([-1,1]), return_std=True)
+            #    plt.plot(xx,gp_pred)
+            #    plt.plot(xx,gp_pred + gp_var, 'k:')
+            #    plt.plot(xx,gp_pred - gp_var, 'k:')
+            #    idx += 1
+            plt.plot(x,self.interpolating_function(x),label='interp.')
+            #plt.plot(x_dash,self.interpolating_function.predict(x_dash.reshape([-1,1])),'--',label='interp. ext')
+            plt.plot(x_dash, test_function(x_dash), 'r--', label='exact')
+            #for a in [0.5,1,1.5]:
+            #    plt.plot(x_dd, logtail(x_dd, a), label = f'Logtail guess a = {a}')
+            #for a in [0.3,0.4,0.5]:
+            #    plt.plot(x_dd, powertail(x_dd, a), label = f'Powertail guess a = {a}')
 
             plt.legend()
             plt.show()
 
-        #breakpoint()
+        # TODO: Develop an ensemble of tails approach
+
+        # TODO: Develop a good tail extrapolation routine
+        #train_x
+        #val_x
+        #test_x
+
+
         # TODO: Examine the spread of moments under different tail approximations
-        def tail_extrapolate_one(x_i):
+        def tail_extrapolate_one(x_i, tail_parameter):
             ret = []
             #for x_i in x:
             # TODO: Make it a linear, or even a left tail right tail type thing using ther same smoothing model as above.
             if(x_i < self.x_min): ret = 0
-            if(x_i > self.x_max): ret = logtail(x_i, 1)
-            else: 
-                ret = self.interpolating_function(x_i)
+            if(x_i > self.x_max): ret = logtail(x_i, tail_parameter)
+            #if(x_i > self.x_max): ret = np.sqrt(x_i) * np.exp(-x_i/2) / np.sqrt(2 * np.pi)
+            else:
+                ret = self.interpolating_function(x_i) 
+                #for xx,gp in zip(x_list, GP_list):
+                
+                # Would need to make this much quicker for GP
+                #   if(x_i < np.amax(xx)):
+                #        ret = gp.predict([[x_i]])
+                #        break
             return ret
 
-        self.adjusted_interpolating_function = tail_extrapolate_one
+        if(y_is_function == False):
+            self.adjusted_interpolating_function = tail_extrapolate_one
+        else:
+            # TODO: Clean up this
+            self.adjusted_interpolating_function = self.interpolating_function
 
 
         #psi_inp_lin = interp1d(x,y)
@@ -182,20 +297,44 @@ class MomentsBundle():
         # Expressions exist for real x (WolframAlpha -> Im[Log[x]^(1/3)], alternate exprsn.)
         # Can always fit interpolating function
 
+        # TODO: Add a variation of tail parameter 'a'
         from functools import partial
-        def real_integrand(x,s,k): return np.real(x**(s-1)*self.adjusted_interpolating_function(x)*np.log(x)**k)
-        def imag_integrand(x,s,k): return np.imag(x**(s-1)*self.adjusted_interpolating_function(x)*np.log(x)**k)
-        def special_int(s,order):  
+        def real_integrand(x,s,k,a): return np.real(x**(s-1)*self.adjusted_interpolating_function(x,a)*np.log(x)**k)
+        def imag_integrand(x,s,k,a): return np.imag(x**(s-1)*self.adjusted_interpolating_function(x,a)*np.log(x)**k)
+        def special_int(s,order,a):  
             # N.B. Can use np.inf for exact equations if overriding
             # TODO: Catch cases with negative x_min or something else weird
-            r = integrate.quad(real_integrand, 0, np.inf, args=(s,order))
-            i = integrate.quad(imag_integrand, 0, np.inf, args=(s,order))  
+            r = integrate.quad(real_integrand, 0, self.max_integration, args=(s,order,a), complex_func=True, limit=100, epsabs = 1e-16, epsrel=1e-16)
+            i = integrate.quad(imag_integrand, 0, self.max_integration, args=(s,order,a), complex_func=True, limit=100, epsabs = 1e-16, epsrel=1e-16)  
             return r[0]+ 1j*i[0], r[1], i[1]
         
         for k in range(-3,self.max_moment_log_derivative_order):
             partial_dict = { k : partial(special_int, order = k)}
             self.vectorised_integration_function[k] = np.vectorize(partial_dict[k])
 
+        if(False):
+            # This did not really work
+            from functools import partial
+            # Define 'integration points'
+            def trap_int(s,order):  
+                # N.B. Can use np.inf for exact equations if overriding
+                # TODO: Catch cases with negative x_min or something else weird
+                X = [xx for xx in x]
+                Y = [xx**(s-1)*yy*np.log(xx)**order for xx,yy in zip(x,y)]
+                Yr = np.real(Y)
+                Yi = np.imag(Y)
+                r = integrate.simpson(Yr, X)
+                i = integrate.simpson(Yi, X)  
+                return r+ 1j*i#, r[1], i[1]
+            
+            for k in range(-3,self.max_moment_log_derivative_order):
+                partial_dict = { k : partial(trap_int, order = k)}
+                self.vectorised_trap[k] = np.vectorize(partial_dict[k])
+
+
+
+        def c(x): return np.clip(np.real(x),-10,10)
+        def d(x): return np.clip(np.imag(x),-10,10)
         test_function_dict = {
             "inv_chi_sq" : "np.exp(-1/(2*x))/2/x**2",
             "exp" : "np.exp(-x)",
@@ -205,11 +344,36 @@ class MomentsBundle():
             "exp" : "gamma(s)",
         }
 
+        def bound(a,s1,b,s2,c):
+            if isinstance(b,Iterable):
+                if(s1 == 'le' and s2 == 'le'):
+                    return np.array([ a <= xx <= c for xx in b])
+                if(s1 == 'l' and s2 == 'le'):
+                    return np.array([ a < xx <= c for xx in b])
+                else:
+                    raise Exception
+            else:
+                if(s1 == 'le' and s2 == 'le'):
+                    return a <= b <= c
+                if(s1 == 'l' and s2 == 'le'):
+                    return a < b <= c 
+        
+        def square_line_picking(x):
+            b1 = bound(0,'le',x,'le',1)
+            b2 = bound(1,'l',x,'le',np.sqrt(2))
+            t1 = (2*x *(x**2 - 4 * x + np.pi))
+            t2 = np.nan_to_num(  (2*x*(4*np.sqrt(x**2 - 1)-(x**2 + 2 - np.pi)-4*np.arctan(np.sqrt(x**2 - 1)))) )
+            return 0 + t1*b1 + t2*b2
+
+
+        
+
         if(True):
             # An analytic comparison for testing the integrals over interpolating functions
             # Perhaps they are breaking down...
             # def test_function(x): return np.exp(-1/(2*x))/2/x**2  #inv chi sq
-            def test_function(x): return np.sqrt(x) * np.exp(-x/2) / np.sqrt(2 * np.pi)  # chi-sq k=3
+            #def test_function(x): return np.sqrt(x) * np.exp(-x/2) / np.sqrt(2 * np.pi)  # chi-sq k=3
+            def test_function(x): return square_line_picking(x)  # chi-sq k=3
             #def test_function(x): return 12* (1-x)**2 * np.heaviside(1-x,0.5) # Beta(2,3) , might work
             #def test_function(x): return 1.0/np.sqrt(x)/(2 + x)**(3/2) # F-ratio
             #def test_function(x): return np.exp(-x) # Exponential
@@ -218,13 +382,53 @@ class MomentsBundle():
             def special_int_an(s,order):  
                 # N.B. Can use np.inf for exact equations if overriding
                 # TODO: Catch cases with negative x_min or something else weird
-                r = integrate.quad(real_integrand_an, 0, np.inf, args=(s,order),complex_func=True, limit=100)
-                i = integrate.quad(imag_integrand_an, 0, np.inf, args=(s,order),complex_func=True, limit=100)  
+                r = integrate.quad(real_integrand_an, 0, self.max_integration, args=(s,order), complex_func=True, limit=100, epsabs = 1e-16, epsrel=1e-16)
+                i = integrate.quad(imag_integrand_an, 0, self.max_integration, args=(s,order), complex_func=True, limit=100, epsabs = 1e-16, epsrel=1e-16)  
                 return r[0]+ 1j*i[0], r[1], i[1]
             
             for k in range(-3,self.max_moment_log_derivative_order):
                 partial_dict = { k : partial(special_int_an, order = k)}
                 self.vectorised_integration_function_an[k] = np.vectorize(partial_dict[k])
+
+
+        #s_analytic = np.linspace(-10,2,100)
+        #m_analytic = self.vectorised_integration_function_an[0](s_analytic)[0]
+        # Look for poles?
+        #plt.plot(s_analytic,np.clip(m_analytic,-10,10))
+        #plt.grid()
+        #plt.show()
+        #exit()
+
+        # TODO: Consider 'Integrating functions, given fixed samples' in scipy, i.e. do not use any interpolating method
+        if(False):
+            # Experiment to see if varying the tail varies the moments
+            # Test
+            s_old = np.linspace(-1,5,100)
+            s_2 = np.linspace(-1,5,200)
+            s_5 = np.linspace(-1,5,500)
+            for a in [10]:
+                q , _, _ = self.vectorised_integration_function[0](s_5, a=a)
+                print(q)
+                plt.plot(s_5,c(np.real(q)),label=f'{a}')
+                #np.save('pchip_10m.npy',q)
+
+            q10_orig = np.load('q10_orig.npy')
+            q10_k5_60k = np.load('q10_k5_60k.npy')
+            q10_k5_600k = np.load('q10_k5_600k.npy')
+            q10_k5_6m = np.load('q10_k5_6m.npy')
+            pchip10m = np.load('pchip_10m.npy')
+            plt.plot(s_old,c(q10_orig), 'b:', label = 'q10_orig')
+            plt.plot(s_old,c(q10_k5_60k), 'g:', label = 'q10_k5_60k')
+            plt.plot(s_2,c(q10_k5_600k), 'g--', label = 'q10_k5_600k')
+            plt.plot(s_2,c(q10_k5_6m), 'b--', label = 'q10_k5_6m')
+            plt.plot(s_2,c(pchip10m), '--', label = 'pchip_10m')
+            q_an, _, _ = self.vectorised_integration_function_an[0](s_5)
+            plt.plot(s_5,c(np.real(q_an)),'k--',label=f'Analytic Num. int.')
+            plt.plot(s_5,c(2**(s_5-1) * gamma(1/2+s_5)/gamma(3/2)), 'r:', label = 'correct')
+            plt.plot([min(s_5),max(s_5)],[0,0],'k:')
+            plt.xlim([-1,1])
+            plt.legend()
+            plt.show()
 
 
         # Get domain of validity
@@ -246,26 +450,10 @@ class MomentsBundle():
 
         # exp( delta s m) = Gamma(a s1 + b)/Gamma(a s0 + b)
 
-        if(False):
-            # Point estimate of large line
-            s = np.array([50.0, 50.1])
-            moments, re, im = self.vectorised_integration_function[0](s)
-            y = np.log(moments)
-            # dy/dx
-            m = (y[1]-y[0])/(s[1]-s[0])
-            c = y[0] - m*s[0]
-            print(m,c)
-            print(np.log(s) - 0.5/s)
-            def line(x,m,c):
-                return m*x + c
-
-
         # TODO: Consider taking the numerical derivative (like in holonomic script)
         # This might mean we don't need to integrate
         # Also a divergence between the derivate and the sampled moments would be a tell-tale
         # sign of a domain boundary.
-
-
 
         # Get the function max and min?
         # TODO: Get a list of points of interest
@@ -295,37 +483,38 @@ class MomentsBundle():
         
         # Test the accuracy
         if(True):
-            q, re1, im1 = self.vectorised_integration_function[0](s)
-            dq, re2, im2 = self.vectorised_integration_function[1](s)
-            ddq, re3, im3 = self.vectorised_integration_function[2](s)
-            dddq, re4, im4 = self.vectorised_integration_function[3](s)
+            q, re1, im1 = self.vectorised_integration_function[0](s,a=1)
+            dq, re2, im2 = self.vectorised_integration_function[1](s,a=1)
+            ddq, re3, im3 = self.vectorised_integration_function[2](s,a=1)
+            dddq, re4, im4 = self.vectorised_integration_function[3](s,a=1)
 
             # TODO: We definately notice a discrepancy in the integration of certain functions.
             # This indicates the sampling has problems, probably for very sharp or divergent functions
             # Potentially the tail not long enough, or not exactly zero at the origin etc.
+            
             q_an, re1a, im1a = self.vectorised_integration_function_an[0](s)
             dq_an, re2a, im2a = self.vectorised_integration_function_an[1](s)
             ddq_an, re3a, im3a = self.vectorised_integration_function_an[2](s)
             dddq_an, re4a, im4a = self.vectorised_integration_function_an[3](s)
-            def c(x): return np.clip(np.real(x),-10,10)
-            def d(x): return np.clip(np.imag(x),-10,10)
+
 
 
             # Define local s for quick plotting changes
             #s_loc = np.imag(s)
             s_loc = s
 
-            plt.title("Errors in Integration - For Input Curve")
-            plt.plot(s_loc, np.log(re1), label = 're1')
-            plt.plot(s_loc, np.log(re2), label = 're2')
-            plt.plot(s_loc, np.log(re3), label = 're3')
-            plt.plot(s_loc, np.log(re4), label = 're4')
-            plt.plot(s_loc, np.log(im1), label = 'im1')
-            plt.plot(s_loc, np.log(im2), label = 'im2')
-            plt.plot(s_loc, np.log(im3), label = 'im3')
-            plt.plot(s_loc, np.log(im4), label = 'im4')
-            plt.legend()
-            plt.show()
+            if(True):
+                plt.title("Errors in Integration - For Input Curve")
+                plt.plot(s_loc, np.log(re1), label = 're1')
+                plt.plot(s_loc, np.log(re2), label = 're2')
+                plt.plot(s_loc, np.log(re3), label = 're3')
+                plt.plot(s_loc, np.log(re4), label = 're4')
+                plt.plot(s_loc, np.log(im1), label = 'im1')
+                plt.plot(s_loc, np.log(im2), label = 'im2')
+                plt.plot(s_loc, np.log(im3), label = 'im3')
+                plt.plot(s_loc, np.log(im4), label = 'im4')
+                plt.legend()
+                plt.show()
 
             # TODO: Establish a weight function from the errors profile
             # I.e. flat bottom region is very good
@@ -335,8 +524,13 @@ class MomentsBundle():
             except:
                 print("The integration domain is not defined due to poor convergence of numerical integration under current assumptions.")
                 raise NotImplementedError
-            low_s = np.amin(s_loc_filter)
-            high_s = np.amax(s_loc_filter)
+            try:
+                low_s = np.amin(s_loc_filter)
+                high_s = np.amax(s_loc_filter)
+            except:
+                print("Skipping!")
+                exit()
+                return
 
             # Resample these values
             s = np.linspace(low_s, high_s, 200)
@@ -346,12 +540,12 @@ class MomentsBundle():
             self.s_domain['Re'][0] = low_s
             self.s_domain['Re'][1] = high_s
 
-            q, re1, im1 = self.vectorised_integration_function[0](s)
-            dq, re2, im2 = self.vectorised_integration_function[1](s)
-            ddq, re3, im3 = self.vectorised_integration_function[2](s)
-            dddq, re4, im4 = self.vectorised_integration_function[3](s)
+            q, re1, im1 = self.vectorised_integration_function[0](s,a=1)
+            dq, re2, im2 = self.vectorised_integration_function[1](s,a=1)
+            ddq, re3, im3 = self.vectorised_integration_function[2](s,a=1)
+            dddq, re4, im4 = self.vectorised_integration_function[3](s,a=1)
 
-            test_data = False
+            test_data = True
 
             if(test_data):
                 # TODO: We definately notice a discrepancy in the integration of certain functions.
@@ -369,32 +563,32 @@ class MomentsBundle():
                     #return 2**(1-s) * gamma(2-s) # Inv-chi_sq k=2
                     return 2**(s-1) * gamma(0.5+s)/gamma(3/2) # chi_sq k=3
                 
-                mma_s = [1.0,2,3,1.5,2.5,0.5,0.1,1.75,1.85,1.25,0.75,0.2,0.3,0.4]
-                mma_res = [1.0,2.0,8.0,1.25331,3.75994,1.25331,5.09816,1.54567,1.70447,1.0779,1.03045,2.63675,1.84153,1.46344]
-                #plt.plot(s, c(np.real(q)), label = 'numeric')
-                #plt.show()
+
 
 
             #plt.plot(s, c(np.real(q)), 'b:',label = 'numeric')
             #plt.show()
             # Need to solve why they are not the same...
-            plt.title("Real part of moments")
-            plt.plot(s, c(np.real(q)),label = 'numeric')
-            plt.plot([min(s),max(s)],[0,0],'k:')
-            if(test_data):
-                plt.plot(s, c(re1), label = 'real error numeric')
-                plt.plot(s, c(q_an), 'r-', label = 'anyl. int.')
-                plt.plot(s, c(re1a), label = 'real error analytic')
-                plt.plot(s, c(local_moment(s)),'k:', label = 'theoretical')
+            if(True):
+                plt.title("Real part of moments")
+                plt.plot(s, c(np.real(q)),label = 'numeric')
+                plt.plot([min(s),max(s)],[0,0],'k:')
+                if(test_data):
+                    plt.plot(s, c(re1), label = 'real error numeric')
+                    plt.plot(s, c(q_an), 'r-', label = 'anyl. int.')
+                    plt.plot(s, c(re1a), label = 'real error analytic')
+                    plt.plot(s, c(local_moment(s)),'k:', label = 'theoretical')
             #plt.plot(mma_s, mma_res, 'ro', label= 'MMA n. int.')
+            plt.legend()
+            plt.show()
 
             #exit()
 
             def root_wrapper(s):
-                res, _, _ = self.vectorised_integration_function[0](s)
+                res, _, _ = self.vectorised_integration_function[0](s,a=1)
                 return np.real(res)
             def pole_wrapper(s):
-                res, _, _ = self.vectorised_integration_function[0](s)
+                res, _, _ = self.vectorised_integration_function[0](s,a=1)
                 return 1.0/np.real(res)
 
             # Find roots of the moments function
@@ -508,8 +702,9 @@ class MomentsBundle():
             # a in Gamma (as + b) for integer a, and the total number of gamma on top and bottom.
             
             # We can fit the moments for easy shifting
-            phi_0 = self.normalised_moments_interpolation = interp1d(s, q, kind='cubic',  bounds_error = False, fill_value = 0)
-            phi_1 = self.normalised_moments_interpolation = interp1d(s, dq, kind='cubic',  bounds_error = False, fill_value = 0)
+            #OMG, still using interp1d here... 
+            #phi_0 = self.normalised_moments_interpolation = interp1d(s, q, kind='cubic',  bounds_error = False, fill_value = 0)
+            #phi_1 = self.normalised_moments_interpolation = interp1d(s, dq, kind='cubic',  bounds_error = False, fill_value = 0)
 
             if(False):
                 ## Define a secret function 'moments'
@@ -567,15 +762,15 @@ class MomentsBundle():
 
 
             # Inverted Function as a line
-            cc_inv = phi_0(0)/phi_0(1)
-            mm_inv = phi_0(1)/phi_0(2)
+            #cc_inv = phi_0(0)/phi_0(1)
+            #mm_inv = phi_0(1)/phi_0(2)
 
 
-            cc = phi_0(1)/phi_0(0)
-            mm = phi_0(2)/phi_0(1)-cc
+            #cc = phi_0(1)/phi_0(0)
+            #mm = phi_0(2)/phi_0(1)-cc
 
-            print(mm,cc)
-            print(mm_inv, cc_inv)
+            #print(mm,cc)
+            #print(mm_inv, cc_inv)
 
             """
             if  Gamma+ Gamma-
@@ -608,29 +803,222 @@ class MomentsBundle():
             # TODO: factor out any zeros or poles.
             if(True):
                 from scipy.optimize import curve_fit
-
-                def rational(x, p, q):
-                    """
-                    The general rational function description.
-                    p is a list with the polynomial coefficients in the numerator
-                    q is a list with the polynomial coefficients (except the first one)
-                    in the denominator
-                    The zeroth order coefficient of the denominator polynomial is fixed at 1.
-                    Numpy stores coefficients in [x**2 + x + 1] order, so the fixed
-                    zeroth order denominator coefficent must comes last. (Edited.)
-                    """
-                    return np.polyval(p, x) / np.polyval(q + [1.0], x)
-
-                def rational3_3(x, p0, p1, p2, q1, q2):
-                    return rational(x, [p0, p1, p2], [q1, q2])
-                
-                def rational4_4(x, p0, p1, p2, p3, q1, q2, q3):
-                    return rational(x, [p0, p1, p2, p3], [q1, q2, q3])
                 
                 def line(x,a,b): return a * x + b
 
                 # TODO: Check the coefficients order
                 def poly2(x, a, b, c): return c* x**2 + b * x + a
+
+                def gamma_ratio(s, a, b, c): 
+                    """
+                    Ratio of gamma functions is well behaved and stronger generalisation of a line
+                    a = 1 is a line
+                    a = 2 is a poly_2
+                    a = fractional -> Not representable by simple poly
+                    """
+                    return  np.real(c * gamma(a * (s+1) + b)/gamma(a * s + b))
+                
+                def gamma_ratio_2(s, a, b, c, d, e): 
+                    """
+                    Ratio of gamma functions is well behaved and stronger generalisation of a line
+                    a = 1 is a line
+                    a = 2 is a poly_2
+                    a = fractional -> Not representable by simple poly
+                    """
+                    return  np.real(c * (gamma(a * (s+1) + b)/gamma(a * s + b)) * (gamma(d * (s+1) + e)/gamma(d * s + e)))
+
+                # This domain
+                s_loc = np.linspace(min(s),max(s)-1,200)
+                top, rett, iett = self.vectorised_integration_function[0](s_loc+1,a=1)
+                bottom, rebb, iebb = self.vectorised_integration_function[0](s_loc,a=1)
+
+
+                if(self.num_poly_terms > 0):
+                    p = {}
+                    p_shift = {}
+                    poly_order = 3
+                    for i in range(poly_order + 1):
+                        poly = eval("lambda s: "+self.poly_derivative_expressions[i])
+                        p[i] = np.array([poly(ss) for ss in s_loc])
+                        p_shift[i] = np.array([poly(ss + 1) for ss in s_loc])
+
+                    # Try cancelling out the polynomial
+                    y_true = top*p[0]/bottom/p_shift[0]
+
+                else: y_true = top/bottom
+
+                # Get the extended analytic integral
+                #s_ext = np.linspace(min(s)-4,max(s)+6,400)
+                #y_true_ext = self.vectorised_integration_function_an[0](s_ext+1)[0]/self.vectorised_integration_function_an[0](s_ext)[0]
+
+                #plt.plot(s_ext, c(y_true_ext), label = 'extended')
+                #plt.legend()
+                #plt.show()
+
+                # TODO: IF we know there is a pole, we should be careful when fitting.
+                # TODO: Calculate the errorin the ratio...
+
+                #well_behaved_region = [a,b] and [c,d] and [e,f]
+
+
+                if(True):
+                    popt = (1,1,1)
+                    popt_2 = (1,1,1,1,1)
+                    try:
+                        popt, pcov = curve_fit(gamma_ratio, s_loc, y_true, p0=popt)
+                    except:
+                        print("Warning! -> Gamma Ratio Exception")
+                    try:
+                        popt_2, _ = curve_fit(gamma_ratio_2, s_loc, y_true, p0=popt_2)
+                    except:
+                        print("Warning! -> Gamma Ext. Exception")
+                    print("gamma rat:", popt)
+                    print("gamma rat_2:", popt_2)
+                    
+
+                    plt.plot(s_loc, c(y_true), label = 'correct')
+                    #plt.plot(s_ext, y_true_ext, label = 'extended')
+                    plt.plot(s_loc, gamma_ratio(s_loc, *popt), label = 'gamma ratio')
+                    plt.plot(s_loc, gamma_ratio_2(s_loc, *popt_2), label = 'gamma ratio 2')
+                    plt.legend()
+
+                    plt.grid()
+                    plt.show()
+
+                self.gamma_ratio_popt = popt
+                self.y_true = y_true
+                self.s_loc = s_loc
+                return
+
+
+
+                # TODO: Fit in the complex plane!
+                if(True):
+
+                    fit_dict = {}
+                    init_params = {}
+                    popt = {}
+                    pcov = {}
+                    r2 = {}
+                    ssq = {}
+                    df = {}
+                    # Create an automated rational fitter.
+                    for a1 in range(4):
+                        for a2 in range(4):
+                            for b1 in range(4):
+                                for b2 in range(4):
+                                    total_num_params = 1+a1+a2+b1+b2
+                                    if(total_num_params == 1): 
+                                        # skip the trival case? m(s) = c1 c2^s -> f(x) = Delta
+                                        continue
+                                    fit_string = f"{a1}-{a2}-{b1}-{b2}"
+                                    # TODO: Add a single scale parameter
+                                    # Use up the parameters in the order a1,a2,b1,b2
+                                    total_num_params = 1+a1+a2+b1+b2
+                                    init_params = [1 for _ in range(total_num_params)]
+
+                                    #TODO: Write a function file
+                                    # load this_function
+
+                                    function_list = [
+                                    "def fit_function(s,{}):".format(",".join([f"p{i}" for i in range(total_num_params)])),
+                                    " y = p0", " eps = 1e-8"]
+                                    p_idx = 1
+                                    for _ in range(a1):
+                                        function_list.append(f" y *= (p{p_idx} + s)")
+                                        p_idx+=1
+                                    for _ in range(a2):
+                                        function_list.append(f" y *= (p{p_idx} - s)")
+                                        p_idx+=1
+                                    for _ in range(b1):
+                                        function_list.append(f" y /= (p{p_idx} + s + eps)")
+                                        p_idx+=1
+                                    for _ in range(b2):
+                                        function_list.append(f" y /= (p{p_idx} - s + eps)")
+                                        p_idx+=1
+                                    function_list.append(" return y")
+                                    function_string = "\n".join(function_list)
+                                    # Make this function
+                                    exec(function_string,globals())
+                                    #s_loc = np.linspace(min(s),max(s)-1,200)
+                                    try:
+                                        y_true = top/bottom
+                                        popt[fit_string], pcov[fit_string] = curve_fit(fit_function, s_loc, y_true, p0=init_params)
+                                        fit_dict[fit_string] = fit_function
+                                        y_pred = fit_function(s_loc, *popt[fit_string])
+                                        r2[fit_string] = r2_score(np.real(y_true), np.real(y_pred))
+                                        ssq[fit_string] = np.real(np.sum((y_pred - y_true)**2))
+                                        df[fit_string] = len(s_loc) - total_num_params
+                                        print(fit_string, r2[fit_string])
+
+                                        if(r2[fit_string] > 0.999):
+                                            # Plot on the wider domain
+                                            y_pred = fit_function(s, *popt[fit_string])
+                                            plt.plot(s, y_pred,label=fit_string + " " + str(r2[fit_string]))
+                                    except:
+                                        continue
+                    
+                    # Get a matrix of F-tests between the models?
+
+                    # If p = 1, model j is better than i
+                    # If p = 0, model i is better than j
+                    keys_list = [key for key in df.keys()]
+                    p = np.array([[1-f.cdf((ssq[j]-ssq[i])/(ssq[i]/df[i]), 1, df[i]) for j in keys_list] for i in keys_list])
+                    sample = np.random.binomial(1,p)
+                    print(sample)
+
+                    header = [""] + [str(key) for key in keys_list]
+                    with open("test.csv",'w') as fi:
+                        fi.write(",".join(header)+"\n")
+                        for i, row in enumerate(sample):
+                            fi.write(",".join(['a'+keys_list[i]] + [ "X" if elem==1 else "" for elem in row])+"\n")
+
+                    if(False):
+                        import concepts as con
+
+                        cccc = con.load_csv("test.csv")
+
+                        print(cccc.objects)
+
+                        l=cccc.lattice
+                        dot = l.graphviz()
+
+                        objects = cccc.objects 
+                        print(objects)
+                        properties = cccc.properties
+                        print(properties)
+
+                        for i in objects:
+                            node_list = cccc.neighbors([i])
+                            print(i)
+                            for j in node_list: 
+                                print("  ",end="")
+                                print(j) 
+
+                        dot.render('test/test.gv', view=True)
+                        # We could sample form the above...
+
+
+
+                    #for i in df.keys():
+                    #  for j in df.keys():
+                    #    print(i, " vs ", j)
+                    #    f_ratio=(ssq[j]-ssq[i])/(ssq[i]/df[i])
+                    #    p=1-f.cdf(f_ratio, 1, df[i])
+                    #    print("df, r2, i:",df[i],r2[i])
+                    #    print("df, r2, i:",df[j],r2[j])
+                    #    print(f_ratio,p)
+                    #    breakpoint()
+                    
+                    if(False):
+                        # Print out all the curves??
+                        plt.plot(s,phi_0(s+1)/phi_0(s),'k:',label='Data')
+                        plt.legend()
+                        plt.show()
+
+
+
+                # Can also imagine top/bottom is like (-1)^(k) k in [0,1], but, imagine complex with a1,b1,c1, or higher.
 
 
                 line_start = (1,1)
@@ -638,126 +1026,298 @@ class MomentsBundle():
 
                 # y = rational(x, [-0.2, 0.3, 0.5], [-1.0, 2.0])
                 #ynoise = y * (1.0 + np.random.normal(scale=0.1, size=x.shape))
-                s_loc = np.linspace(min(s),max(s)-1,50)
+                #s_loc = np.linspace(min(s),max(s)-1,50)
                 #popt, pcov = curve_fit(rational4_4, s_loc, phi_0(s_loc+1)/phi_0(s_loc), p0=(0.0, 0.0, 0.9, 0.0, -1.0, 1, 1))
-                popt_line, pcov = curve_fit(line, s_loc, phi_0(s_loc+1)/phi_0(s_loc), p0=line_start)
-                popt_poly2, pcov = curve_fit(poly2, s_loc, phi_0(s_loc+1)/phi_0(s_loc), p0=poly2_start)
+                popt_line, pcov = curve_fit(line, s_loc, top/bottom, p0=line_start)
+                popt_poly2, pcov = curve_fit(poly2, s_loc, top/bottom, p0=poly2_start)
+
+                np.save(self.name+"_ratio_phi", [s, top/bottom, bottom])
 
                 print("line",popt_line)
                 print("poly2",popt_poly2)
 
-                plt.plot(s, phi_0(s+1)/phi_0(s), label='original')
+                plt.plot(s_loc, top/bottom, label='original')
                 #plt.plot(x, ynoise, '.', label='data')
-                plt.plot(s, line(s, *popt_line), label='fit line')
-                plt.plot(s, poly2(s, *popt_poly2), label='fit poly2')
+                plt.plot(s_loc, line(s, *popt_line), label='fit line')
+                plt.plot(s_loc, poly2(s, *popt_poly2), label='fit poly2')
                 plt.legend()
                 plt.show()
+
+                # SO for arbitrarily high polynomials shift only
+                # We can have {scale_constant}*MeijerG[{{}, {}}, {{-r1, -r2, -r3},{}}, x/base_constant]
+
+                # Clearly once we factorize Gamma[a+s], Gamma[a-s], and 1/Gamma[b+s], 1/Gamma[b-s]
+                # We can populate the other fields as well, so any rational type expression
+
+                # Problem is, how to identify if a poly factor on the top or the bottom is +/- s ?
+                # Seems when fitting the curve, we just choose a form... 
+
+                # Fit  ->  C * (a+s)(b-s)/(c+s)(d-s) etc.
+                # TODO: How to fit all gammas with a scaled 's'-> 'As'
+                # For this we just allow -> C * (a+As)(b-As)/(c+As)(d-As) etc.
+                # TODO: Use mpmath to evalulate MeijerG functions if needed.
+
+
 
 
 
                 # Assuming only a line
-                scale_constant = np.mean(phi_0(s)/(popt_line[0]**s * gamma(s + popt_line[1]/popt_line[0])))
-                base_constant = popt_line[0]
-                gamma_shift = popt_line[1]/popt_line[0]
+                base_constant_line = popt_line[0]
+                gamma_shift_line = popt_line[1]/popt_line[0]
+                trial_form_line = (popt_line[0]**s * gamma(s + gamma_shift_line))
 
-                # Assuming a poly2 -> Construct from roots and get constant = base
-                from numpy.polynomial.polynomial import polyroots, polyfromroots, Polynomial
-                roots_2 = polyroots(popt_poly2)
-                print("roots_2",roots_2)
-                test_points = np.array([1,2,3])
-                p_coeffs = Polynomial(popt_poly2)(test_points)
-                p_roots = Polynomial(polyfromroots(roots_2))(test_points)
-                base_constant = p_coeffs/p_roots
+                # TODO: Upgrade this to some kind of mode of a distribution of scale values
+                scale_constant_line = np.mean(bottom/trial_form_line)
+                trial_form_line = scale_constant_line * trial_form_line
+                print(f"{scale_constant_line}*{base_constant_line}^s Gamma[s+{gamma_shift_line}]")
 
-                print("Base constant 2", base_constant)
-                #TODO: Assert that the constant is the same all over
-                base_constant = base_constant[0]
-                gamma_shift_1 =  roots_2[0]/base_constant
-                gamma_shift_2 =  roots_2[1]/base_constant
-                trial_form = base_constant**s * gamma(s + gamma_shift_1) * gamma(s + gamma_shift_2)
+                def gamma_from_params_poly2(popt) -> Tuple[Tuple[float], Callable[[Tuple[float], float], float]]:
+                    # Assuming a poly2 -> Construct from roots and get constant = base
+                    from numpy.polynomial.polynomial import polyroots, polyfromroots, Polynomial
+                    roots_2 = polyroots(popt_poly2)
+                    print("roots_2",roots_2)
+                    test_points = np.array([1,2,3])
+                    p_coeffs = Polynomial(popt_poly2)(test_points)
+                    p_roots = Polynomial(polyfromroots(roots_2))(test_points)
+                    base_constant = p_coeffs/p_roots
 
-                # TODO: Derive a scale constant from the below
-                scale_constant = np.mean(phi_0(s)/trial_form)
+                    print("Base constant 2", base_constant)
+                    #TODO: Assert that the constant is the same all over
+                    base_constant = base_constant[0]
+                    gamma_shift_1 =  -roots_2[0]
+                    gamma_shift_2 =  -roots_2[1]
+
+                    # Return p, form
+                    return (base_constant, gamma_shift_1, gamma_shift_2), lambda p, s : p[0]**s * gamma(s + p[1]) * gamma(s + p[2])
+
+                
+                p_gamma_poly2, form_gamma_poly2 = gamma_from_params_poly2(popt_poly2)
+                base_constant_poly2, gamma_shift_1, gamma_shift_2 = p_gamma_poly2
+
+                #trial_form = base_constant_poly2**s * gamma(s + gamma_shift_1) * gamma(s + gamma_shift_2)
+                trial_form = form_gamma_poly2(p_gamma_poly2, s)
+
+                # TODO: Upgrade this to some kind of mode of a distribution of scale values
+                scale_constant_poly2 = np.mean(phi_0(s)/trial_form)
+                trial_form = scale_constant_poly2 * trial_form
 
 
-                plt.plot(s,phi_0(s), label = 'true')
-                plt.plot(s,(popt_line[0]**s * gamma(s + popt_line[1]/popt_line[0])), label = 'line')
-                plt.plot(s,trial_form, label = 'poly_2')
+                plt.plot(s, phi_0(s), label = 'true')
+                plt.plot(s,scale_constant_line*(popt_line[0]**s * gamma(s + popt_line[1]/popt_line[0])), label = 'line')
+
+                plt.plot(s, trial_form, label = 'poly_2')
+                # Print MMA string for manual exploration
+                print(f"{scale_constant_poly2}*{base_constant_poly2}^s Gamma[s + {gamma_shift_1}]Gamma[s + {gamma_shift_2}]")
                 plt.legend()
                 plt.show()
 
                 #cc = power_constant_base * b
                 #mm = power_constant_base
                 #C * mm**s * gamma(s + cc/mm)
+
+
+
+                # Further optimise. Can I wiggle my parameters, so get the ratio as flat as possible in as many as possible section
+                # Loss ->
+                # If no flat sections at all, fail
+                # The more flat sections the better.
+                # Has to be very flat, i.e. derivative is zero
+                # Bonus:
+                # Able to disregard up to one half of the curve without large penalty.
+                # Bin the curve into sections
+                # Get the maximum derivative across sections (i.e. completely flat is good)
+                # Take the lowest best half, as the score, i.e. rank and filter.
+
+                def bin_deriv_rank_filter_loss(x : Iterable, y : Iterable, n_sections : int) -> Tuple[float]:
+                    """
+                    Split a list into n_sections, and get the max-gradient in each section
+                    Sort the chunks and ignore the worst few
+                    """
+                    N = len(x)
+                    section_width = int(N/n_sections)
+                    max_abs_gradient = []
+                    ys = []
+                    for i in range(n_sections):
+                        top = min((i+1)*section_width, N)
+                        x_i = x[i*section_width:top]
+                        y_i = y[i*section_width:top]
+                        #TODO: verify this is a good function call to make
+                        dy_dx_i = np.gradient(y_i, x_i)
+                        max_dy_dx_i = np.amax(dy_dx_i)
+                        max_abs_gradient.append(np.abs(np.real(max_dy_dx_i)))
+                        ys.append(np.mean(y_i))
+                    
+                    flattest_i = np.argmin(max_abs_gradient)
+                    norm = ys[flattest_i]
+
+                    # Keep a few chunks
+                    keep = int(n_sections/2)+1
+                    loss = sorted(max_abs_gradient)[:keep]
+                    loss = np.mean(loss)
+
+                    # norm is the average value of the function in the flattest section
+                    return loss, norm
+                
+                # Minimise: from scipy.optimize import minimize... 
+                loss, norm = bin_deriv_rank_filter_loss(s, phi_0(s)/trial_form_line, 10)
+                print(loss)
+
+                # TODO: The ratio is quite unstable... So we want a 'masked' difference.
+                def bin_diff_rank_filter_loss(y : Iterable, n_sections : int, ridge = False, alpha = 1e-3, p = None):
+                    """
+                    Split a list into n_sections, and get the max-difference in each section
+                    Sort the chunks and ignore the worst few
+                    """
+                    N = len(y)
+                    section_width = int(N/n_sections)
+                    max_abs_diff = []
+                    for i in range(n_sections):
+                        top = min((i+1)*section_width, N)
+                        delta_y_i = np.abs(np.real(y[i*section_width:top]))
+                        max_abs_diff.append(np.amax(delta_y_i))
+                    
+                    # Keep a few chunks
+                    keep = int(n_sections/2)+1
+                    loss = sorted(max_abs_diff)[:keep]
+                    loss = np.mean(loss)
+                    if(ridge):
+                        loss += alpha * np.sum(np.abs(p))
+                    return loss
+
+
+
+                p_gamma_poly2, form_gamma_poly2 = gamma_from_params_poly2(popt_poly2)
+                trial_form = form_gamma_poly2(p_gamma_poly2, s)
+
+                #def form_to_loss(p,s,form : Callable):
+                #    #trial_form = (p[0]**s * gamma(s + p[1]/p[0]))
+                #    return bin_deriv_rank_filter_loss(s, phi_0(s)/form(p,s), 10)[0]
+                
+                # TODO: This might be unstable because of gamma parameters....
+                def form_to_loss(p,s,form : Callable):
+                    return bin_diff_rank_filter_loss(phi_0(s)-form(p,s), 10)
+                
+                def form_to_loss(p,s,form):
+                    # TODO, consider over a reduced section of s
+                    # As this is trying to fit line to line, or poly to poly
+                    return bin_diff_rank_filter_loss(phi_0(s+1)/phi_0(s) - form(p,s+1)/form(p,s), 10)
+
+                def form_to_norm(p,s,form : Callable):
+                    """
+                    Wrapper of more stable? difference
+                    """
+                    #trial_form = (p[0]**s * gamma(s + p[1]/p[0]))
+                    return bin_deriv_rank_filter_loss(s, phi_0(s)/form(p,s), 10)[1]
+
+                # Do for a line
+                # TODO: Do for as many shapes as needed
+                plt.plot(s,phi_0(s)/form_gamma_poly2(popt_poly2,s),label = 'phi/fit assumption poly2')
+                res = minimize(form_to_loss, x0=popt_poly2, args = (s, form_gamma_poly2), method = "BFGS", tol = 1e-8)
+                solution = res.x
+                constant = form_to_norm(solution, s, form_gamma_poly2)
+
+                # TODO: Can get the loss for each ratio.
+
+                # TODO: Can we vary the parameters of our fit to flatten, this
+                # I.e. minimise the 'curvature'? Or similar.
                 print(self.root_polynomial)
                 plt.title("Is it constant?")
-                plt.plot(s,phi_0(s)/(popt_line[0]**s * gamma(s + popt_line[1]/popt_line[0])),label = 'phi/fit assumption line')
-                plt.plot(s,phi_0(s)/trial_form,label = 'phi/fit assumption line')
+                exact_form = 2**(s-1)*gamma(1/2 + s)
+                plt.plot(s,phi_0(s)/trial_form_line,label = 'phi/fit assumption line')
+
+                plt.plot(s,phi_0(s)/exact_form,label = 'phi/fit exact best case')
+                plt.plot(s,phi_0(s)/form_gamma_poly2(solution,s)/constant,label = 'phi/fit solved-flatten')
                 #plt.plot(s,phi_0(s), label = 'true')
                 plt.legend()
                 plt.show()
-                breakpoint()
+
                 exit()
 
+                if(False):
+                    # TODO: Automatic sympy evalulation of function
+                    def sympy_inverse_mellin(moments_string):
+                        from sympy import inverse_mellin_transform, oo, gamma, sqrt
+                        from sympy.abc import x, s
+                        return inverse_mellin_transform(moments_string, s, x, (0, oo))
 
+                    moments_string = self.root_polynomial + f"*({scale_constant})*({base_constant})^s * Gamma[s + {gamma_shift}]".replace('--','+')
+                    print(moments_string)
+                    #MMA_function = input("Get the MMA function as input, and parse into sympy etc.")
 
-                # TODO: Automatic sympy evalulation of function
-                def sympy_inverse_mellin(moments_string):
-                    from sympy import inverse_mellin_transform, oo, gamma, sqrt
-                    from sympy.abc import x, s
-                    return inverse_mellin_transform(moments_string, s, x, (0, oo))
+                    string = """0.005573457742959165*((-15.925025447742174*x^1.4332110586835183)/E^(3.2464714279171454*x) +(33.259591472696314*(1 - 2.265173303155506*x)*x^(53270321/37168511))/E^(3.2464714279171454*x) +(3.91390619491436*^-15*x^(53270321/37168511)*(2837727099443041 - 1.7340881800943048*^16*x +1.4560406389353844*^16*x^2))/E^(3.2464714279171454*x))"""
+                    #result = sympy_inverse_mellin(moments_string)
 
-                moments_string = self.root_polynomial + f"*({scale_constant})*({base_constant})^s * Gamma[s + {gamma_shift}]".replace('--','+')
-                print(moments_string)
-                #MMA_function = input("Get the MMA function as input, and parse into sympy etc.")
+                    def get_vals(string):
+                        from sympy.parsing.mathematica import parse_mathematica
+                        from sympy.abc import x
+                        expression = parse_mathematica(string)
+                        values = [expression.evalf(subs={x:xx}) for xx in [0,1,2,3]]
+                        print(values)
+                        breakpoint()
+                        return values
+                    
+                    values = get_vals(string)
+                    #func = lambdify(x, expression, 'numpy') # returns a numpy-ready function
 
-                string = """0.005573457742959165*((-15.925025447742174*x^1.4332110586835183)/E^(3.2464714279171454*x) +(33.259591472696314*(1 - 2.265173303155506*x)*x^(53270321/37168511))/E^(3.2464714279171454*x) +(3.91390619491436*^-15*x^(53270321/37168511)*(2837727099443041 - 1.7340881800943048*^16*x +1.4560406389353844*^16*x^2))/E^(3.2464714279171454*x))"""
-                #result = sympy_inverse_mellin(moments_string)
+                from scipy.special import kn
+                from mpmath import meijerg
 
-                def get_vals(string):
-                    from sympy.parsing.mathematica import parse_mathematica
-                    from sympy.abc import x
-                    expression = parse_mathematica(string)
-                    values = [expression.evalf(subs={x:xx}) for xx in [0,1,2,3]]
-                    print(values)
-                    breakpoint()
-                    return values
                 
-                values = get_vals(string)
-                #func = lambdify(x, expression, 'numpy') # returns a numpy-ready function
 
                 # TODO: Simplify and figure out how to plot the result
                 plt.title("Comparison")
-                x = np.linspace(self.x_min,self.x_max,20)
+                x = np.linspace(self.x_min,self.x_max,2000)
+
+                #MeijerG[{{}, {0}}, {{1, 1.4741178655552896, 4.254005239427203}, {}}, 12.695630543690696*x]
+                def temp_f(x): return complex(meijerg([[],[0]], [[1, 1.4741178655552896, 4.254005239427203],[]], 12.695630543690696*x))
+                curve51_mg = np.vectorize(temp_f)
+
+                def temp_f(x): 
+                    ret = -0.5202487172672269*1.74787866*meijerg([[], []], [[3.21408191], []], 23.604485135429552*x, 1.74787866)
+                    ret += meijerg([[],[0]], [[1,3.21408191],[]], 23.604485135429552*x, 1.74787866)/1.74787866**2
+                    return complex(ret)
+                curve51_mg_2 = np.vectorize(temp_f)
+
                 plt.plot(x, self.interpolating_function(x), label = 'Interpolant')
-                #plt.plot(x,(-1.438492776325737*x**1.2369673295454544)* np.exp(-3.5511363636363633*x),label = 'approx')
+
+                #plt.plot(x,(-1.438492776325737*x**1.2369673295454544)* np.exp(-3.5511363636363633*x),label = 'line approx') # line curve ??
+                plt.plot(x,(0.23609829490609555*x**0.8218310997655742)*np.exp(-1.3003278181026625*x),label = 'line approx') # line curve 50
+                plt.plot(x,77.98273638661385*x**4.1178080078394705*kn(5.662842095677695, 7.679414303164028*np.sqrt(x)),label = 'poly2 approx') # pol2 curve 50
+                plt.plot(x,-38.425663041946635*x**2.864061552491246*kn(2.7798873738719134, 7.1261856679967845*np.sqrt(x)) + 0.02549450467547057*curve51_mg(x), label = 'mg') # pol2 curve 51
+                plt.plot(x,curve51_mg_2(x), label = 'mg_2') # pol2 curve 51
                 #mma_x = [0,0.1,0.2,0.05,0.15,0.2,0.25, 0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0]
                 #mma_y = np.array([0., 0.0195802, 0.00540991,0.012437, 0.0167003, 0.00540991, -0.0115681,-0.0315771, -0.0723896, -0.105614, -0.126737,-0.135614, -0.134308, -0.12565, -0.112417, -0.0969391, -0.0809731, -0.0657189, -0.0519062, -0.0399023, -0.0298153, -0.0215822, -0.0150381, -0.00996711, -0.00613756])*0.1
-                plt.plot([0,1,2,3], values, 'r-', label = 'Curve_0 - Approximation')
+                #plt.plot([0,1,2,3], values, 'r-', label = 'Curve_0 - Approximation')
+                plt.legend()
+                plt.show()
+
+                plt.plot(x, self.interpolating_function(x)/((0.23609829490609555*x**0.8218310997655742)*np.exp(-1.3003278181026625*x)), label = 'line' )
+                plt.plot(x, self.interpolating_function(x)/(77.98273638661385*x**4.1178080078394705*kn(5.662842095677695, 7.679414303164028*np.sqrt(x))), label = 'poly2' )
                 plt.legend()
                 plt.show()
                 exit()
 
 
 
-            for i in [1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9]:
-                plt.plot(s, phi_0(s+i)/phi_0(s))
-            plt.plot(s, phi_0(s+1)/phi_0(s), label = 'phi0(s+1)/phi0(s)')
-            plt.plot(s, phi_0(s)/phi_0(s+1), label = 'phi0(s)/phi0(s+1)')
-            plt.plot(s, phi_0(s+2)/phi_0(s), label = 'phi0(s+2)/phi0(s)')
-            plt.plot(s, mm*s + cc, label = f'line {mm}s+{cc}')
-            plt.plot(s, mm_inv*s + cc_inv, label = f'line {mm_inv}s+{cc_inv}')
-            #plt.plot(s, 3 * (4+s)/5/(3- 4*s), label = 'F rat')
-            plt.plot(s, 1 + 2*s)
-            plt.plot(s, 3 + 8 * s + 4 * s**2)
-            #plt.plot(s, phi_1(s+1)/phi_1(s), label = 'phi1(s+1)/phi1(s)')
-            #plt.plot(s, (mm*s+ cc)/(s - 2.401076))
+            if(False):
+                for i in [1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9]:
+                    plt.plot(s, phi_0(s+i)/phi_0(s))
+                plt.plot(s, phi_0(s+1)/phi_0(s), label = 'phi0(s+1)/phi0(s)')
+                plt.plot(s, phi_0(s)/phi_0(s+1), label = 'phi0(s)/phi0(s+1)')
+                plt.plot(s, phi_0(s+2)/phi_0(s), label = 'phi0(s+2)/phi0(s)')
+                plt.plot(s, mm*s + cc, label = f'line {mm}s+{cc}')
+                plt.plot(s, mm_inv*s + cc_inv, label = f'line {mm_inv}s+{cc_inv}')
+                #plt.plot(s, 3 * (4+s)/5/(3- 4*s), label = 'F rat')
+                plt.plot(s, 1 + 2*s)
+                plt.plot(s, 3 + 8 * s + 4 * s**2)
+                #plt.plot(s, phi_1(s+1)/phi_1(s), label = 'phi1(s+1)/phi1(s)')
+                #plt.plot(s, (mm*s+ cc)/(s - 2.401076))
 
-            # TODO: Fit a polynomial/line etc.
-            # TODO: Find the poles, or roots of the reciprocal function?
+                # TODO: Fit a polynomial/line etc.
+                # TODO: Find the poles, or roots of the reciprocal function?
 
-            plt.legend()
-            plt.show()
+                plt.legend()
+                plt.show()
 
             # Print
 
@@ -961,19 +1521,21 @@ class MomentsBundle():
 
             # TODO: Try to remove unstable regions from sampling s, i.e. poles
             # But do note them down?
-            plt.title("q, dq, ddq, dddq")
-            plt.plot(s_loc,c(np.real(q)), label=f'q')
-            plt.plot(s_loc,c(np.real(dq)), label=f'dq')
-            plt.plot(s_loc,c(np.real(ddq)), label=f'ddq')
-            plt.plot(s_loc,c(np.real(dddq)), label=f'dddq')
-            plt.legend()
-            plt.show()
+            if(False):
+                plt.title("q, dq, ddq, dddq")
+                plt.plot(s_loc,c(np.real(q)), label=f'q')
+                plt.plot(s_loc,c(np.real(dq)), label=f'dq')
+                plt.plot(s_loc,c(np.real(ddq)), label=f'ddq')
+                plt.plot(s_loc,c(np.real(dddq)), label=f'dddq')
+                plt.legend()
+                plt.show()
 
 
 
-            plt.title("dq/q")
-            plt.plot(s_loc,c(np.real(dq/q)), label=f'{k} real')
-            plt.plot([min(s),max(s)],[0,0],'k:')
+            if(False):
+                plt.title("dq/q")
+                plt.plot(s_loc,c(np.real(dq/q)), label=f'{k} real')
+                plt.plot([min(s),max(s)],[0,0],'k:')
             #plt.plot(s_loc,np.real(dq/q) * (re1/np.real(q) + re2/np.real(dq)), label=f'{k} real error via prop')
             #plt.plot(s_loc,np.real(dq_an/q_an) * (re1a/np.real(q_an) + re2a/np.real(dq_an)), label=f'{k} real error_an via prop')
             if(test_data):
@@ -986,8 +1548,8 @@ class MomentsBundle():
                 plt.plot(s_loc,c(-np.log(2) - digamma(2 - s)) , label = "r -log 2 - p(0,2-s)")
                 #plt.plot(s_loc,c(-np.log(2) - digamma(1 - 1j * s_loc)) , label = "r* -log 2 - p(0,2-s)")
                 #plt.plot(s_loc,d(-np.log(2) - digamma(2 - s)) , label = "i -log 2 - p(0,2-s)")
-            plt.legend()
-            plt.show()
+                plt.legend()
+                plt.show()
 
             if(test_data):
                 plt.title("ddq/q for numeric and analytic comparison")
@@ -996,8 +1558,8 @@ class MomentsBundle():
                 plt.legend()
                 plt.show()
 
-            plt.title("ddq/q - (dq/q)^2 for numeric and analytic comparison")
-            plt.plot(s_loc,c(np.real(ddq/q - (dq/q)**2)), label=f'{k} real')
+                plt.title("ddq/q - (dq/q)^2 for numeric and analytic comparison")
+                plt.plot(s_loc,c(np.real(ddq/q - (dq/q)**2)), label=f'{k} real')
             if(test_data):
                 plt.plot(s_loc,c(np.real(ddq_an/q_an - (dq_an/q_an)**2)), label=f'{k} real analytic')
                 #np.save("curve_3_2ndorder",np.real(ddq/q - (dq/q)**2))
@@ -1005,9 +1567,9 @@ class MomentsBundle():
                 #plt.plot(s_loc,np.imag(ddq/q - (dq/q)**2), label=f'{k} imag')
                 #plt.plot(s_loc,c(trigamma(0.5 - s) + trigamma(1+s)), label = "p(1,0.5-s) + p(1,1+s)")
                 plt.plot(s_loc,c(trigamma(2 - s)), label = "p(1,2-s)")
-            plt.plot([min(s),max(s)],[0,0],'k:')
-            plt.legend()
-            plt.show()
+                plt.plot([min(s),max(s)],[0,0],'k:')
+                plt.legend()
+                plt.show()
 
             if(False):
                 def ff(ss):
@@ -1023,16 +1585,17 @@ class MomentsBundle():
                 plt.plot(s_loc, np.exp(- s_loc))
                 plt.show()
 
-            plt.title("dddq/q - 3(ddq/q)(dq/q) + 2 (dq/q)^3 for numeric and analytic comparison")
-            plt.plot(s_loc, c(np.real(2 *(dq/q)**3 - 3 *(dq/q) * (ddq/q) + (dddq/q))), label='3rd order, real')
+            if(False):
+                plt.title("dddq/q - 3(ddq/q)(dq/q) + 2 (dq/q)^3 for numeric and analytic comparison")
+                plt.plot(s_loc, c(np.real(2 *(dq/q)**3 - 3 *(dq/q) * (ddq/q) + (dddq/q))), label='3rd order, real')
             if(test_data):
                 #plt.plot(s_loc, np.imag(2 *(dq/q)**3 - 3 *(dq/q) * (ddq/q) + (dddq/q)), label='3rd order, imag')
                 #plt.plot(s,c(-polygamma(2, 0.5 - s) + polygamma(2, 1+s)), label = "-p(2,0.5-s) + p(2,1+s)")
                 #plt.plot(s,c(-polygamma(2, 2 - s)), label = "-p(2,2-s)")
                 plt.plot(s_loc,c(-tetragamma(2 - s)), label = "p(2,2-s)")
-            plt.plot([min(s),max(s)],[0,0],'k:')
-            plt.legend()
-            plt.show()
+                plt.plot([min(s),max(s)],[0,0],'k:')
+                plt.legend()
+                plt.show()
 
             #plt.plot(s_loc, c((np.real(2 *(dq/q)**3 - 3 *(dq/q) * (ddq/q) + (dddq/q)))*ff(s)/tetragamma(2 - s)), label='3rd order, real')
             #plt.show()
@@ -1323,7 +1886,6 @@ class MomentsBundle():
         # TODO: determine domain of validity
 
         print("We must control logic to remove the polynomial correctly before proceeding! Moments are resampled above and not correct.")
-        #breakpoint()
 
         # Perform the numerical integration for moments m(s)
         # Calculate m(s), m'(s), m''(s),..., m^{(k)}(s) etc. as  E[log(X)^k X^{s-1} f(x)](s)
